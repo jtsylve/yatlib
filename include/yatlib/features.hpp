@@ -24,6 +24,17 @@
   #define YAT_CONSTEVAL constexpr
 #endif
 
+// Compiler type detection
+#if defined(__clang__)
+  #define YAT_IS_CLANG
+#elif defined(__GNUC__) || defined(__GNUG__))
+  #define YAT_IS_GCC
+#elif _MSC_VER
+  #define YAT_IS_MSVC
+#else
+  #warning "unsupported compiler"
+#endif
+
 // Check if compiler has clang/gcc __has_builtin
 #ifdef __has_builtin
   #define YAT_HAS_BUILTIN(x) __has_builtin(x)
@@ -32,13 +43,13 @@
 #endif
 
 // Add compiler hints that code should be unreachable
-#if YAT_HAS_BUILTIN(__builtin_unreachable)
+#if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
   #define YAT_UNREACHABLE()    \
     do {                       \
       __builtin_unreachable(); \
       assert(false);           \
     } while (0);
-#elif defined(_MSC_VER)
+#elif defined(YAT_IS_MSVC)
   #define YAT_UNREACHABLE() \
     do {                    \
       __assume(0);          \
