@@ -25,7 +25,7 @@
 namespace yat {
 
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-constexpr T swap_endian(const T& value) noexcept {
+inline T swap_endian(const T& value) noexcept {
   if constexpr (sizeof(T) == 1) {
     return value;
   }
@@ -52,10 +52,9 @@ class base_endian_scalar {
   constexpr base_endian_scalar() noexcept = default;
 
   // cppcheck-suppress noExplicitConstructor
-  constexpr base_endian_scalar(const T& value) noexcept
-      : _value{to_native(value)} {}
+  base_endian_scalar(const T& value) noexcept : _value{to_native(value)} {}
 
-  constexpr operator T() const noexcept { return to_native(_value); }
+  inline operator T() const noexcept { return to_native(_value); }
 
   // We can get a performance improvement by allowing direct comparisions of
   // scalar types with the same endianess
@@ -103,7 +102,7 @@ class base_endian_scalar {
   }
 
  private:
-  static constexpr T to_native(const T& value) noexcept {
+  static inline T to_native(const T& value) noexcept {
     if constexpr (endianess == endian::native) {
       return value;
     }
