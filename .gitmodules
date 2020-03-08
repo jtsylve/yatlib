@@ -1,3 +1,6 @@
 [submodule "thirdparty/abseil-cpp"]
 	path = thirdparty/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp.git
+[submodule "thirdparty/catch2"]
+	path = thirdparty/catch2
+	url = https://github.com/catchorg/Catch2.git
