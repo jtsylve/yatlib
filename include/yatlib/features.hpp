@@ -27,7 +27,7 @@
 // Compiler type detection
 #if defined(__clang__)
   #define YAT_IS_CLANG
-#elif defined(__GNUC__) || defined(__GNUG__))
+#elif defined(__GNUC__) || defined(__GNUG__)
   #define YAT_IS_GCC
 #elif _MSC_VER
   #define YAT_IS_MSVC
