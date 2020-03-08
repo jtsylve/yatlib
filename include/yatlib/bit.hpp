@@ -18,6 +18,8 @@
 #include <cstring>
 #include <type_traits>
 
+#include "features.hpp"
+
 // Checks to see if stdlib support is available
 #if __cplusplus > 201703L && __has_include("bit")
   #include <bit>
@@ -46,6 +48,16 @@
   #error "endian detection not supported for this compiler"
 #endif
 
+// Check for __builtin_bit_cast
+#if YAT_HAS_BUILTIN(__builtin_bit_cast)
+  #define YAT_HAS_BUILTIN_BIT_CAST
+#endif
+
+// Add feature for constexpr bitcast
+#if defined(YAT_USE_STD_ENDIAN) || defined(YAT_HAS_BUILTIN_BIT_CAST)
+  #define YAT_HAS_CONSTEXPR_BIT_CAST
+#endif
+
 namespace yat {
 #ifdef YAT_USE_STD_ENDIAN
 using std::endian;
@@ -62,23 +74,41 @@ enum class endian {
   native,
   #endif
 };
-#endif  // USE_STD_ENDIAN
 
-#ifdef USE_STD_BITCAST
+#endif  // YAT_USE_STD_ENDIAN
+
+#ifdef YAT_USE_STD_BIT_CAST
 using std::bit_cast;
 #else
 
-template <class To, class From,
-          typename = std::enable_if_t<(sizeof(To) == sizeof(From)) &&
-                                      std::is_trivially_copyable_v<From> &&
-                                      std::is_trivial_v<To> > >
+  #ifdef YAT_HAS_BUILTIN_BIT_CAST
+
+template <
+    class To, class From,
+    typename = std::enable_if_t<std::conjunction_v<
+        std::bool_constant<sizeof(To) == sizeof(From)>,
+        std::is_trivially_copyable<From>, std::is_trivially_copyable<To> > > >
 constexpr To bit_cast(const From &src) noexcept {
+  return __builtin_bit_cast(To, src);
+}
+
+  #else
+
+/// This version of std::bit_cast differs from the official version in two ways.
+/// 1.) To is required to be trivial instead of just trivially copyable
+/// 2.) This function is not constexpr
+template <class To, class From,
+          typename = std::enable_if_t<std::conjunction_v<
+              std::bool_constant<sizeof(To) == sizeof(From)>,
+              std::is_trivially_copyable<From>, std::is_trivial<To> > > >
+To bit_cast(const From &src) noexcept {
   To dst;
   std::memcpy(&dst, &src, sizeof(To));
   return dst;
 }
+  #endif  // YAT_HAS_BUILTIN_BIT_CAST
 
-#endif  // USE_STD_BITCAST
+#endif  // YAT_USE_STD_BIT_CAST
 
 }  // namespace yat
 
@@ -86,4 +116,5 @@ constexpr To bit_cast(const From &src) noexcept {
 #undef YAT_IS_LITTLE_ENDIAN
 
 #undef YAT_USE_STD_ENDIAN
-#undef YAT_USE_STD_BITCAST
+#undef YAT_USE_STD_BIT_CAST
+#undef YAT_HAS_BUILTIN_BIT_CAST

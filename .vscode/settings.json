@@ -7,5 +7,6 @@
         "-Wno-unused-macros"
     ],
     "c-cpp-flylint.clang.language": "c++",
-    "c-cpp-flylint.cppcheck.suppressions": []
+    "c-cpp-flylint.cppcheck.suppressions": [],
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
 }
