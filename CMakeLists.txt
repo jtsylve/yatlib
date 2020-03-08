@@ -35,6 +35,12 @@ target_include_directories(
   INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
+# library dependencies
+find_package(absl REQUIRED)
+target_link_libraries(
+  ${PROJECT_NAME}
+  INTERFACE absl::absl)
+
 # Boilerplate cmake library install nonsense
 
 install(
