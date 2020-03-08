@@ -1,0 +1,15 @@
+language: cpp
+
+os:
+  - osx
+  - linux
+  - windows
+
+compiler:
+  - gcc
+  - clang
+
+script:
+  - cmake -D ENABLE_TESTING:BOOL=TRUE .
+  - cmake --build .
+  - ctest .
