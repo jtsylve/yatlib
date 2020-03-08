@@ -7,6 +7,12 @@
         "-Wno-unused-macros"
     ],
     "c-cpp-flylint.clang.language": "c++",
+    "c-cpp-flylint.clang.includePaths": [
+        "${workspaceFolder}/include"
+    ],
     "c-cpp-flylint.cppcheck.suppressions": [],
+    "c-cpp-flylint.cppcheck.includePaths": [
+        "${workspaceFolder}/include"
+    ],
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
 }

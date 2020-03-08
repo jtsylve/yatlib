@@ -39,7 +39,13 @@ target_include_directories(
 find_package(absl REQUIRED)
 target_link_libraries(
   ${PROJECT_NAME}
-  INTERFACE absl::absl)
+  INTERFACE absl::base)
+
+option(ENABLE_TESTING "Enable Test Builds" ON)
+if(ENABLE_TESTING)
+  enable_testing()
+  add_subdirectory("tests")
+endif()
 
 # Boilerplate cmake library install nonsense
 

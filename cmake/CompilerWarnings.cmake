@@ -71,13 +71,18 @@ function(set_project_warnings project_name)
   )
 
   if(MSVC)
-    set(PROJECT_WARNINGS ${MSVC_WARNINGS})
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(PROJECT_WARNINGS ${CLANG_WARNINGS})
+    set(PROJECT_WARNINGS
+        ${MSVC_WARNINGS})
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(PROJECT_WARNINGS
+        ${CLANG_WARNINGS})
   else()
-    set(PROJECT_WARNINGS ${GCC_WARNINGS})
+    set(PROJECT_WARNINGS
+        ${GCC_WARNINGS})
   endif()
 
-  target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
+  target_compile_options(
+    ${project_name}
+    INTERFACE ${PROJECT_WARNINGS})
 
 endfunction()
