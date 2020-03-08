@@ -24,11 +24,11 @@
 #if __cplusplus > 201703L && __has_include("bit")
   #include <bit>
   #if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907
-    #define YAT_USE_STD_ENDIAN
+    #define _YAT_USE_STD_ENDIAN
   #endif
 
   #if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806
-    #define YAT_USE_STD_BIT_CAST
+    #define _YAT_USE_STD_BIT_CAST
   #endif
 #endif
 
@@ -36,52 +36,51 @@
 // definition, and all Windows systems are little endian
 #ifdef __BYTE_ORDER__  // Clang and gcc support byteorder
   #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define YAT_IS_LITTLE_ENDIAN
+    #define _YAT_IS_LITTLE_ENDIAN
   #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define YAT_IS_BIG_ENDIAN
+    #define _YAT_IS_BIG_ENDIAN
   #else
     #error "endian type is not supported"
   #endif
 #elif defined(_WIN32)  // All Windows systems are all little endian
-  #define YAT_IS_LITTLE_ENDIAN
+  #define _YAT_IS_LITTLE_ENDIAN
 #else
   #error "endian detection not supported for this compiler"
 #endif
 
 // Check for __builtin_bit_cast
 #if YAT_HAS_BUILTIN(__builtin_bit_cast)
-  #define YAT_HAS_BUILTIN_BIT_CAST
+  #define _YAT_HAS_BUILTIN_BIT_CAST
 #endif
 
 // Add feature for constexpr bitcast
-#if defined(YAT_USE_STD_ENDIAN) || defined(YAT_HAS_BUILTIN_BIT_CAST)
+#if defined(_YAT_USE_STD_ENDIAN) || defined(_YAT_HAS_BUILTIN_BIT_CAST)
   #define YAT_HAS_CONSTEXPR_BIT_CAST
 #endif
 
 namespace yat {
-#ifdef YAT_USE_STD_ENDIAN
+#ifdef _YAT_USE_STD_ENDIAN
 using std::endian;
 #else
 
 enum class endian {
   little,
   big,
-  #if defined(YAT_IS_LITTLE_ENDIAN)
+  #if defined(_YAT_IS_LITTLE_ENDIAN)
   native = little,
-  #elif defined(YAT_IS_BIG_ENDIAN)
+  #elif defined(_YAT_IS_BIG_ENDIAN)
   native = big,
   #else
   native,
   #endif
 };
 
-#endif  // YAT_USE_STD_ENDIAN
+#endif  // _YAT_USE_STD_ENDIAN
 
-#ifdef YAT_USE_STD_BIT_CAST
+#ifdef _YAT_USE_STD_BIT_CAST
 using std::bit_cast;
 #else
-
-  #ifdef YAT_HAS_BUILTIN_BIT_CAST
+  #ifdef _YAT_HAS_BUILTIN_BIT_CAST
 
 template <
     class To, class From,
@@ -106,15 +105,15 @@ To bit_cast(const From &src) noexcept {
   std::memcpy(&dst, &src, sizeof(To));
   return dst;
 }
-  #endif  // YAT_HAS_BUILTIN_BIT_CAST
 
-#endif  // YAT_USE_STD_BIT_CAST
+  #endif  // _YAT_HAS_BUILTIN_BIT_CAST
+#endif    // _YAT_USE_STD_BIT_CAST
 
 }  // namespace yat
 
-#undef YAT_IS_BIG_ENDIAN
-#undef YAT_IS_LITTLE_ENDIAN
+#undef _YAT_IS_BIG_ENDIAN
+#undef _YAT_IS_LITTLE_ENDIAN
 
-#undef YAT_USE_STD_ENDIAN
-#undef YAT_USE_STD_BIT_CAST
-#undef YAT_HAS_BUILTIN_BIT_CAST
+#undef _YAT_USE_STD_ENDIAN
+#undef _YAT_USE_STD_BIT_CAST
+#undef _YAT_HAS_BUILTIN_BIT_CAST
