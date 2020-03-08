@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-abseil-*,-android-*,-boost-*,-fuchsia-*,-google-*,-hicpp-*,-llvm-*,-zircon-*,-modernize-use-trailing-return-type'
-WarningsAsErrors: '*'
-HeaderFilterRegex: ''
-FormatStyle:     none
+Checks: "*,-abseil-*,-android-*,-boost-*,-fuchsia-*,-google-*,-hicpp-*,-llvm-*,-zircon-*,-modernize-use-trailing-return-type"
+WarningsAsErrors: "*"
+HeaderFilterRegex: ""
+FormatStyle: none
