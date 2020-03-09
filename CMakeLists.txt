@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 OLD)
+endif()
+
 project(
   yat
   VERSION 0.0.0
@@ -14,6 +18,9 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_compile_features(
   ${PROJECT_NAME}
   INTERFACE cxx_std_17)
+
+set(CMAKE_CXX_STANDARD
+    20)
 
 # static code analyzers
 include(cmake/StaticAnalyzers.cmake)
@@ -36,53 +43,17 @@ target_include_directories(
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # library dependencies
-find_package(absl REQUIRED)
+
+add_subdirectory("thirdparty")
+
 target_link_libraries(
   ${PROJECT_NAME}
-  INTERFACE absl::base)
+  INTERFACE absl::base_internal)
 
 option(ENABLE_TESTING "Enable Test Builds" ON)
 if(ENABLE_TESTING)
   enable_testing()
+  list(APPEND CMAKE_MODULE_PATH
+       "${PROJECT_SOURCE_DIR}/thirdparty/catch2/contrib")
   add_subdirectory("tests")
 endif()
-
-# Boilerplate cmake library install nonsense
-
-install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}_Targets
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-  "YatConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion)
-
-configure_package_config_file(
-  "${PROJECT_SOURCE_DIR}/cmake/YatConfig.cmake.in"
-  "${PROJECT_BINARY_DIR}/YatConfig.cmake" INSTALL_DESTINATION
-  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-
-install(
-  EXPORT ${PROJECT_NAME}_Targets
-  FILE "YatTargets.cmake"
-  NAMESPACE ${PROJECT_NAME}::
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-
-install(
-  FILES "${PROJECT_BINARY_DIR}/YatConfig.cmake"
-        "${PROJECT_BINARY_DIR}/YatConfigVersion.cmake"
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-
-install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/include/yatlib
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-set(CPACK_RESOURCE_FILE_LICENSE
-    "${PROJECT_SOURCE_DIR}/LICENSE")
-
-include(CPack)
