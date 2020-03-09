@@ -19,9 +19,6 @@ target_compile_features(
   ${PROJECT_NAME}
   INTERFACE cxx_std_17)
 
-set(CMAKE_CXX_STANDARD
-    20)
-
 # static code analyzers
 include(cmake/StaticAnalyzers.cmake)
 
