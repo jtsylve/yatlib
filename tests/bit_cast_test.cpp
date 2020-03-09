@@ -276,27 +276,31 @@ TEST_CASE("bit_cast floats", "[bit_cast][bit]") {
 
 #ifdef YAT_HAS_CONSTEXPR_BIT_CAST
 TEST_CASE("bit_cast floats (constexpr)", "[bit_cast][bit][constexpr]") {
-  unsigned int as_int = std::bit_cast<unsigned int>(0x0.000002p-126f);
-  STATIC_REQUIRE(as_int == 1);
-  STATIC_REQUIRE(std::bit_cast<float>(as_int) == 0x0.000002p-126f);
-  as_int = std::bit_cast<unsigned int>(0x1.1p1f);
-  STATIC_REQUIRE(as_int == 0x40080000);
-  STATIC_REQUIRE(std::bit_cast<float>(as_int) == 0x1.1p1f);
-  as_int = std::bit_cast<unsigned int>(0x0.0p0f);
-  STATIC_REQUIRE(as_int == 0);
-  STATIC_REQUIRE(std::bit_cast<float>(as_int) == 0x0.0p0f);
+  constexpr unsigned int as_int1 = bit_cast<unsigned int>(0x0.000002p-126f);
+  STATIC_REQUIRE(as_int1 == 1);
+  STATIC_REQUIRE(bit_cast<float>(as_int1) == 0x0.000002p-126f);
 
-  as_int = std::bit_cast<unsigned int>(-0x0.0p0f);
-  STATIC_REQUIRE(as_int == 0x80000000);
-  STATIC_REQUIRE(std::bit_cast<float>(as_int) == -0x0.0p0f);
+  constexpr unsigned int as_int2 = bit_cast<unsigned int>(0x1.1p1f);
+  STATIC_REQUIRE(as_int2 == 0x40080000);
+  STATIC_REQUIRE(bit_cast<float>(as_int2) == 0x1.1p1f);
+
+  constexpr unsigned int as_int3 = bit_cast<unsigned int>(0x0.0p0f);
+  STATIC_REQUIRE(as_int3 == 0);
+  STATIC_REQUIRE(bit_cast<float>(as_int3) == 0x0.0p0f);
+
+  constexpr unsigned int as_int4 = bit_cast<unsigned int>(-0x0.0p0f);
+  STATIC_REQUIRE(as_int4 == 0x80000000);
+  STATIC_REQUIRE(bit_cast<float>(as_int4) == -0x0.0p0f);
 
   // signaling nan
-  as_int = 0x7fc00001;
-  float snan = std::bit_cast<float>(as_int);
-  STATIC_REQUIRE(as_int == std::bit_cast<unsigned int>(snan));
-  as_int = std::bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
-  STATIC_REQUIRE(as_int == 0x7f800000);
-  STATIC_REQUIRE(std::bit_cast<float>(as_int) ==
+  constexpr unsigned int as_int5 = 0x7fc00001;
+  constexpr float snan = bit_cast<float>(as_int5);
+  STATIC_REQUIRE(as_int5 == bit_cast<unsigned int>(snan));
+
+  constexpr unsigned int as_int6 =
+      bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
+  STATIC_REQUIRE(as_int6 == 0x7f800000);
+  STATIC_REQUIRE(bit_cast<float>(as_int6) ==
                  std::numeric_limits<float>::infinity());
 }
 #endif  // YAT_HAS_CONSTEXPR_BIT_CAST
