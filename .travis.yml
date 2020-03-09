@@ -1,7 +1,4 @@
 language: cpp
-os:
-  - osx
-  - linux
 
 jobs:
   include:
