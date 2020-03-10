@@ -77,6 +77,12 @@ enum class endian {
 
 #endif  // PRIV_YAT_USE_STD_ENDIAN
 
+/// Tells whether we're compiling for a little endian system
+constexpr bool is_little_endian_system = (endian::native == endian::little);
+
+/// Tells whether we're compiling for a big endian system
+constexpr bool is_big_endian_system = (endian::native == endian::big);
+
 #ifdef PRIV_YAT_USE_STD_BIT_CAST
 using std::bit_cast;
 #else
