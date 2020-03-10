@@ -89,7 +89,7 @@ template <
     typename = std::enable_if_t<std::conjunction_v<
         std::bool_constant<sizeof(To) == sizeof(From)>,
         std::is_trivially_copyable<From>, std::is_trivially_copyable<To> > > >
-constexpr To bit_cast(const From &src) noexcept {
+YAT_PURE_FUNCTION constexpr To bit_cast(const From &src) noexcept {
   return __builtin_bit_cast(To, src);
 }
 
@@ -103,7 +103,7 @@ template <class To, class From,
               std::bool_constant<sizeof(To) == sizeof(From)>,
               std::is_trivially_copyable<From>, std::is_trivially_copyable<To>,
               std::is_trivially_default_constructible<To> > > >
-To bit_cast(const From &src) noexcept {
+YAT_PURE_FUNCTION To bit_cast(const From &src) noexcept {
   To dst;
   std::memcpy(&dst, &src, sizeof(To));
   return dst;

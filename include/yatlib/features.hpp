@@ -42,6 +42,13 @@
   #define YAT_HAS_BUILTIN(x) 0
 #endif
 
+// Check if compiler has clang/gcc __has_attribute
+#ifdef __has_attribute
+  #define YAT_HAS_ATTRIBUTE(x) __has_attribute(x)
+#else
+  #define YAT_HAS_ATTRIBUTE(x) 0
+#endif
+
 // Add compiler hints that code should be unreachable
 #if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
   #define YAT_UNREACHABLE()    \
@@ -60,4 +67,13 @@
     do {                    \
       assert(false);        \
     } while (0);
+#endif
+
+// Add pure and const function attribute support
+#if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
+  #define YAT_CONST_FUNCTION [[gnu::const]]
+  #define YAT_PURE_FUNCTION [[gnu::pure]]
+#else
+  #define YAT_CONST_FUNCTION
+  #define YAT_PURE_FUNCTION
 #endif

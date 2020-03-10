@@ -32,7 +32,7 @@ constexpr bool is_big_endian_system = (endian::native == endian::big);
 
 /// Creates a new scalar value with the opposite endianness of the one provided
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-inline T swap_endian(const T& value) noexcept {
+YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
   if constexpr (sizeof(T) == 1) {
     return value;
   }
