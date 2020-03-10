@@ -57,6 +57,8 @@ template <typename T, endian endianess,
           typename = std::enable_if_t<std::is_scalar_v<T>>>
 class base_endian_scalar {
  public:
+  using value_type = T;
+
   constexpr base_endian_scalar() noexcept = default;
 
   // cppcheck-suppress noExplicitConstructor

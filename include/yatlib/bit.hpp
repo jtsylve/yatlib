@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#if __cplusplus > 201703L && __has_include("bit")
+#if __has_include("bit")
   #include <bit>
 #endif
 
