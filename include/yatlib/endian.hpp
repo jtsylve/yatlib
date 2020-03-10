@@ -24,6 +24,13 @@
 
 namespace yat {
 
+/// Tells whether we're compiling for a little endian system
+constexpr bool is_little_endian_system = (endian::native == endian::little);
+
+/// Tells whether we're compiling for a big endian system
+constexpr bool is_big_endian_system = (endian::native == endian::big);
+
+/// Creates a new scalar value with the opposite endianness of the one provided
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
 inline T swap_endian(const T& value) noexcept {
   if constexpr (sizeof(T) == 1) {
@@ -45,6 +52,7 @@ inline T swap_endian(const T& value) noexcept {
   YAT_UNREACHABLE();
 }
 
+/// Type support for handling scalar values with regards to endianess
 template <typename T, endian endianess,
           typename = std::enable_if_t<std::is_scalar_v<T>>>
 class base_endian_scalar {
