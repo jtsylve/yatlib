@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <yatlib/features.hpp>
 
-// Tell Catch2 to generate a main
-#define CATCH_CONFIG_MAIN
-#include "catch_config.hpp"
+YAT_IGNORE_WARNING_PUSH(4619);
+#include <catch2/catch.hpp>
+YAT_IGNORE_WARNING_POP();

@@ -73,6 +73,18 @@
     } while (0);
 #endif
 
+// Add support for ignoring MSVC warnings
+#ifdef YAT_IS_MSVC
+  #define YAT_IGNORE_WARNING_PUSH(n) \
+    __pragma(warning(push));         \
+    __pragma(warning(disable : n));
+
+  #define YAT_IGNORE_WARNING_POP() __pragma(warning(pop));
+#else
+  #define YAT_IGNORE_WARNING_PUSH(n)
+  #define YAT_IGNORE_WARNING_POP()
+#endif
+
 // Add pure and const function attribute support
 #ifdef YAT_IS_GCC_COMPATIBLE
   #define YAT_CONST_FUNCTION [[gnu::const]]

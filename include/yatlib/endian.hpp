@@ -30,6 +30,8 @@ constexpr bool is_little_endian_system = (endian::native == endian::little);
 constexpr bool is_big_endian_system = (endian::native == endian::big);
 
 /// Creates a new scalar value with the opposite endianness of the one provided
+
+YAT_IGNORE_WARNING_PUSH(4702);
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
 YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
   if constexpr (sizeof(T) == 1) {
@@ -50,6 +52,7 @@ YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
 
   YAT_UNREACHABLE();
 }
+YAT_IGNORE_WARNING_POP();
 
 template <>
 YAT_PURE_FUNCTION inline uint16_t swap_endian(const uint16_t& value) noexcept {
@@ -158,9 +161,9 @@ class base_endian_scalar {
   static inline T to_native(const T& value) noexcept {
     if constexpr (endianess == endian::native) {
       return value;
+    } else {
+      return swap_endian(value);
     }
-
-    return swap_endian(value);
   }
 
   T _value{};

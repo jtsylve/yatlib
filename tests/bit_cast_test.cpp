@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-#include <catch2/catch.hpp>
 #include <yatlib/bit.hpp>
+
+#include "catch_config.hpp"
 
 using namespace yat;
 

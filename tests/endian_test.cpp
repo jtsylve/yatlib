@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#include <catch2/catch.hpp>
 #include <cstddef>
 #include <cstring>
 #include <random>
 #include <vector>
 #include <yatlib/endian.hpp>
+
+#include "catch_config.hpp"
 
 using namespace yat;
 
