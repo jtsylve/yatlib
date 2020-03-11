@@ -33,21 +33,21 @@ constexpr bool is_big_endian_system = (endian::native == endian::big);
 
 YAT_IGNORE_WARNING_PUSH(4702);
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
+YAT_PURE_FUNCTION inline T byteswap(const T& value) noexcept {
   if constexpr (sizeof(T) == 1) {
     return value;
   }
 
   if constexpr (sizeof(T) == sizeof(uint16_t)) {
-    return bit_cast<T>(swap_endian(bit_cast<uint16_t>(value)));
+    return bit_cast<T>(byteswap(bit_cast<uint16_t>(value)));
   }
 
   if constexpr (sizeof(T) == sizeof(uint32_t)) {
-    return bit_cast<T>(swap_endian(bit_cast<uint32_t>(value)));
+    return bit_cast<T>(byteswap(bit_cast<uint32_t>(value)));
   }
 
   if constexpr (sizeof(T) == sizeof(uint64_t)) {
-    return bit_cast<T>(swap_endian(bit_cast<uint64_t>(value)));
+    return bit_cast<T>(byteswap(bit_cast<uint64_t>(value)));
   }
 
   YAT_UNREACHABLE();
@@ -55,7 +55,7 @@ YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
 YAT_IGNORE_WARNING_POP();
 
 template <>
-YAT_PURE_FUNCTION inline uint16_t swap_endian(const uint16_t& value) noexcept {
+YAT_PURE_FUNCTION inline uint16_t byteswap(const uint16_t& value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap16(value);
 #elif defined(YAT_IS_MSVC)
@@ -67,34 +67,34 @@ YAT_PURE_FUNCTION inline uint16_t swap_endian(const uint16_t& value) noexcept {
 }
 
 template <>
-YAT_PURE_FUNCTION inline uint32_t swap_endian(const uint32_t& value) noexcept {
+YAT_PURE_FUNCTION inline uint32_t byteswap(const uint32_t& value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap32(value);
 #elif defined(YAT_IS_MSVC)
   return _byteswap_ulong(value);
 #else
-  return ((value & 0x000000FFU) << (8 * 3)) |
-         ((value & 0x0000FF00U) << (8 * 1)) |
-         ((value & 0x00FF0000U) >> (8 * 1)) |
-         ((value & 0xFF000000U) >> (8 * 3));
+  return ((value & 0x0000'00FFU) << (8 * 3)) |
+         ((value & 0x0000'FF00U) << (8 * 1)) |
+         ((value & 0x00FF'0000U) >> (8 * 1)) |
+         ((value & 0xFF00'0000U) >> (8 * 3));
 #endif
 }
 
 template <>
-YAT_PURE_FUNCTION inline uint64_t swap_endian(const uint64_t& value) noexcept {
+YAT_PURE_FUNCTION inline uint64_t byteswap(const uint64_t& value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap64(value);
 #elif defined(YAT_IS_MSVC)
   return _byteswap_uint64(value);
 #else
-  return (value & 0x00000000000000FFULL) << (8 * 7) |
-         (value & 0x000000000000FF00ULL) << (8 * 5) |
-         (value & 0x0000000000FF0000ULL) << (8 * 3) |
-         (value & 0x00000000FF000000ULL) << (8 * 1) |
-         (value & 0x000000FF00000000ULL) >> (8 * 1) |
-         (value & 0x0000FF0000000000ULL) >> (8 * 3) |
-         (value & 0x00FF000000000000ULL) >> (8 * 5) |
-         (value & 0xFF00000000000000ULL) >> (8 * 7);
+  return (value & 0x0000'0000'0000'00FFULL) << (8 * 7) |
+         (value & 0x0000'0000'0000'FF00ULL) << (8 * 5) |
+         (value & 0x0000'0000'00FF'0000ULL) << (8 * 3) |
+         (value & 0x0000'0000'FF00'0000ULL) << (8 * 1) |
+         (value & 0x0000'00FF'0000'0000ULL) >> (8 * 1) |
+         (value & 0x0000'FF00'0000'0000ULL) >> (8 * 3) |
+         (value & 0x00FF'0000'0000'0000ULL) >> (8 * 5) |
+         (value & 0xFF00'0000'0000'0000ULL) >> (8 * 7);
 #endif
 }
 
@@ -158,11 +158,12 @@ class base_endian_scalar {
   }
 
  private:
+  YAT_PURE_FUNCTION
   static inline T to_native(const T& value) noexcept {
     if constexpr (endianess == endian::native) {
       return value;
     } else {
-      return swap_endian(value);
+      return byteswap(value);
     }
   }
 

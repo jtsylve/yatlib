@@ -74,11 +74,11 @@ static void swap_test(const std::vector<T>& host_values_to_test) {
     memcpy(swapped_bytes, &value, sizeof(T));
     manual_byte_swap(swapped_bytes, sizeof(T));
 
-    REQUIRE(swap_endian(value) == bit_cast<T>(swapped_bytes));
+    REQUIRE(byteswap(value) == bit_cast<T>(swapped_bytes));
   }
 }
 
-TEST_CASE("swap_endian", "[endian]") {
+TEST_CASE("byteswap", "[endian]") {
   // Test swapping all integers
   swap_test(generate_all_values<int8_t>());
   swap_test(generate_all_values<uint8_t>());
@@ -102,17 +102,17 @@ static void endian_test(const std::vector<T>& values_to_test) {
     REQUIRE(big_val == value);
     REQUIRE(little_val == big_val);
 
-    REQUIRE(bit_cast<T>(little_val) == swap_endian(bit_cast<T>(big_val)));
-    REQUIRE(bit_cast<T>(big_val) == swap_endian(bit_cast<T>(little_val)));
+    REQUIRE(bit_cast<T>(little_val) == byteswap(bit_cast<T>(big_val)));
+    REQUIRE(bit_cast<T>(big_val) == byteswap(bit_cast<T>(little_val)));
 
     if constexpr (is_little_endian_system) {
       REQUIRE(bit_cast<T>(little_val) == value);
-      REQUIRE(bit_cast<T>(big_val) == swap_endian(value));
+      REQUIRE(bit_cast<T>(big_val) == byteswap(value));
     }
 
     if constexpr (is_big_endian_system) {
       REQUIRE(bit_cast<T>(big_val) == value);
-      REQUIRE(bit_cast<T>(little_val) == swap_endian(value));
+      REQUIRE(bit_cast<T>(little_val) == byteswap(value));
     }
   }
 }
