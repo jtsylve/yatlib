@@ -35,6 +35,10 @@
   #warning "unsupported compiler"
 #endif
 
+#if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
+  #define YAT_IS_GCC_COMPATIBLE
+#endif
+
 // Check if compiler has clang/gcc __has_builtin
 #ifdef __has_builtin
   #define YAT_HAS_BUILTIN(x) __has_builtin(x)
@@ -50,7 +54,7 @@
 #endif
 
 // Add compiler hints that code should be unreachable
-#if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
+#ifdef YAT_IS_GCC_COMPATIBLE
   #define YAT_UNREACHABLE()    \
     do {                       \
       __builtin_unreachable(); \
@@ -70,7 +74,7 @@
 #endif
 
 // Add pure and const function attribute support
-#if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
+#ifdef YAT_IS_GCC_COMPATIBLE
   #define YAT_CONST_FUNCTION [[gnu::const]]
   #define YAT_PURE_FUNCTION [[gnu::pure]]
 #else

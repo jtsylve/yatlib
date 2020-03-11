@@ -43,10 +43,6 @@ target_include_directories(
 
 add_subdirectory("thirdparty")
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  INTERFACE absl::base_internal)
-
 option(ENABLE_TESTING "Enable Test Builds" ON)
 if(ENABLE_TESTING)
   enable_testing()

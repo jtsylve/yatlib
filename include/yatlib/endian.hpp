@@ -15,9 +15,8 @@
  */
 #pragma once
 
-#include <absl/base/internal/endian.h>
-
 #include <cstdint>
+#include <cstdlib>
 
 #include "bit.hpp"
 #include "features.hpp"
@@ -38,18 +37,62 @@ YAT_PURE_FUNCTION inline T swap_endian(const T& value) noexcept {
   }
 
   if constexpr (sizeof(T) == sizeof(uint16_t)) {
-    return bit_cast<T>(absl::gbswap_16(bit_cast<uint16_t>(value)));
+    return bit_cast<T>(swap_endian(bit_cast<uint16_t>(value)));
   }
 
   if constexpr (sizeof(T) == sizeof(uint32_t)) {
-    return bit_cast<T>(absl::gbswap_32(bit_cast<uint32_t>(value)));
+    return bit_cast<T>(swap_endian(bit_cast<uint32_t>(value)));
   }
 
   if constexpr (sizeof(T) == sizeof(uint64_t)) {
-    return bit_cast<T>(absl::gbswap_64(bit_cast<uint64_t>(value)));
+    return bit_cast<T>(swap_endian(bit_cast<uint64_t>(value)));
   }
 
   YAT_UNREACHABLE();
+}
+
+template <>
+YAT_PURE_FUNCTION inline uint16_t swap_endian(const uint16_t& value) noexcept {
+#ifdef YAT_IS_GCC_COMPATIBLE
+  return __builtin_bswap16(value);
+#elif defined(YAT_IS_MSVC)
+  return _byteswap_ushort(value);
+#else
+  return static_cast<uint16_t>((value & 0x00FF) << 8) |
+         static_cast<uint16_t>((value & 0xFF00) >> 8);
+#endif
+}
+
+template <>
+YAT_PURE_FUNCTION inline uint32_t swap_endian(const uint32_t& value) noexcept {
+#ifdef YAT_IS_GCC_COMPATIBLE
+  return __builtin_bswap32(value);
+#elif defined(YAT_IS_MSVC)
+  return _byteswap_ulong(value);
+#else
+  return ((value & 0x000000FFU) << (8 * 3)) |
+         ((value & 0x0000FF00U) << (8 * 1)) |
+         ((value & 0x00FF0000U) >> (8 * 1)) |
+         ((value & 0xFF000000U) >> (8 * 3));
+#endif
+}
+
+template <>
+YAT_PURE_FUNCTION inline uint64_t swap_endian(const uint64_t& value) noexcept {
+#ifdef YAT_IS_GCC_COMPATIBLE
+  return __builtin_bswap64(value);
+#elif defined(YAT_IS_MSVC)
+  return _byteswap_uint64(value);
+#else
+  return (value & 0x00000000000000FFULL) << (8 * 7) |
+         (value & 0x000000000000FF00ULL) << (8 * 5) |
+         (value & 0x0000000000FF0000ULL) << (8 * 3) |
+         (value & 0x00000000FF000000ULL) << (8 * 1) |
+         (value & 0x000000FF00000000ULL) >> (8 * 1) |
+         (value & 0x0000FF0000000000ULL) >> (8 * 3) |
+         (value & 0x00FF000000000000ULL) >> (8 * 5) |
+         (value & 0xFF00000000000000ULL) >> (8 * 7);
+#endif
 }
 
 /// Type support for handling scalar values with regards to endianess
