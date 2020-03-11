@@ -3,27 +3,34 @@ language: cpp
 jobs:
   include:
     # macOS Xcode
-    - os: osx
+    - name: Xcode 11.3
+      os: osx
       osx_image: xcode11.3
-    - os: osx
+    - name: Xcode 10.3
+      os: osx
       osx_image: xcode10.3
-    - os: osx
+    - name: Xcode 9.4
+      os: osx
       osx_image: xcode9.4
-    - os: osx
+    - name: Xcode 11.3 (macOS 10.12)
+      os: osx
       osx_image: xcode11.3
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - os: osx
+    - name: XCode 10.3 (macOS 10.12)
+      os: osx
       osx_image: xcode10.3
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - os: osx
+    - name: Xcode 9.4 (macOS 10.12)
+      os: osx
       osx_image: xcode9.4
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
 
     # Linux gcc
-    - os: linux
+    - name: gcc 7
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -33,7 +40,8 @@ jobs:
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-    - os: linux
+    - name: gcc 8
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -43,7 +51,8 @@ jobs:
             - g++-8
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-    - os: linux
+    - name: gcc 9
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -55,7 +64,8 @@ jobs:
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
 
     # Linux clang
-    - os: linux
+    - name: clang 5
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -66,7 +76,8 @@ jobs:
             - clang-5.0
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-    - os: linux
+    - name: clang 6
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -77,7 +88,8 @@ jobs:
             - clang-6.0
       env:
         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
-    - os: linux
+    - name: clang 7
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -88,7 +100,8 @@ jobs:
             - clang-7
       env:
         - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
-    - os: linux
+    - name: clang 8
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -99,7 +112,8 @@ jobs:
             - clang-8
       env:
         - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
-    - os: linux
+    - name: clang 9
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -110,7 +124,8 @@ jobs:
             - clang-9
       env:
         - MATRIX_EVAL="CC=clang-9 && CXX=clang++-9"
-    - os: linux
+    - name: clang 10
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -121,7 +136,8 @@ jobs:
             - clang-10
       env:
         - MATRIX_EVAL="CC=clang-10 && CXX=clang++-10"
-    - os: linux
+    - name: clang 11
+      os: linux
       dist: bionic
       addons:
         apt:
@@ -132,6 +148,10 @@ jobs:
             - clang-11
       env:
         - MATRIX_EVAL="CC=clang-11 && CXX=clang++-11"
+
+    # Windows MSVC
+    - name: Windows (MSVC)
+      os: windows
 
 before_install:
   - eval "${MATRIX_EVAL}"
