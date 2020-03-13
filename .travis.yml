@@ -157,6 +157,6 @@ before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
-  - cmake -D ENABLE_TESTING:BOOL=TRUE .
+  - cmake -DENABLE_TESTING:BOOL=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo .
   - cmake --build .
   - ctest .
