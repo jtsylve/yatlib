@@ -95,8 +95,8 @@ TEST_CASE("byteswap", "[endian]") {
 template <typename T>
 static void endian_test(const std::vector<T>& values_to_test) {
   for (const T value : values_to_test) {
-    const le<T> little_val = value;
-    const be<T> big_val = value;
+    const little_scaler<T> little_val = value;
+    const big_scaler<T> big_val = value;
 
     REQUIRE(little_val == value);
     REQUIRE(big_val == value);

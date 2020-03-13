@@ -174,9 +174,31 @@ class base_endian_scalar {
 };
 
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-using be = base_endian_scalar<T, endian::big>;
+using big_scaler = base_endian_scalar<T, endian::big>;
 
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-using le = base_endian_scalar<T, endian::little>;
+using little_scaler = base_endian_scalar<T, endian::little>;
+
+using big_int8_t = big_scaler<int8_t>;
+using big_uint8_t = big_scaler<uint8_t>;
+using big_int16_t = big_scaler<int16_t>;
+using big_uint16_t = big_scaler<uint16_t>;
+using big_int32_t = big_scaler<int32_t>;
+using big_uint32_t = big_scaler<uint32_t>;
+using big_int64_t = big_scaler<int64_t>;
+using big_uint64_t = big_scaler<uint64_t>;
+using big_intptr_t = big_scaler<intptr_t>;
+using big_uintptr_t = big_scaler<uintptr_t>;
+
+using little_int8_t = little_scaler<int8_t>;
+using little_uint8_t = little_scaler<uint8_t>;
+using little_int16_t = little_scaler<int16_t>;
+using little_uint16_t = little_scaler<uint16_t>;
+using little_int32_t = little_scaler<int32_t>;
+using little_uint32_t = little_scaler<uint32_t>;
+using little_int64_t = little_scaler<int64_t>;
+using little_uint64_t = little_scaler<uint64_t>;
+using little_intptr_t = little_scaler<intptr_t>;
+using little_uintptr_t = little_scaler<uintptr_t>;
 
 }  // namespace yat
