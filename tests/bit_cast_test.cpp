@@ -16,7 +16,7 @@
 
 #include <yatlib/bit.hpp>
 
-#include "catch_config.hpp"
+#include "common.hpp"
 
 using namespace yat;
 

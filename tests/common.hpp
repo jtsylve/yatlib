@@ -18,3 +18,28 @@
 YAT_IGNORE_WARNING_PUSH(4619);
 #include <catch2/catch.hpp>
 YAT_IGNORE_WARNING_POP();
+
+constexpr int random_seed = 12345;
+
+template <typename T>
+std::vector<T> generate_all_values() {
+  std::vector<T> result;
+  T next = std::numeric_limits<T>::min();
+  while (true) {
+    result.push_back(next);
+    if (next == std::numeric_limits<T>::max()) {
+      return result;
+    }
+    ++next;
+  }
+}
+
+template <typename T>
+std::vector<T> generate_random_values(size_t numValuesToTest) {
+  std::vector<T> result;
+  std::mt19937_64 rng(random_seed);
+  for (size_t i = 0; i < numValuesToTest; ++i) {
+    result.push_back(static_cast<T>(rng()));
+  }
+  return result;
+}

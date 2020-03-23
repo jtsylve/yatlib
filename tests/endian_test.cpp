@@ -20,7 +20,7 @@
 #include <vector>
 #include <yatlib/endian.hpp>
 
-#include "catch_config.hpp"
+#include "common.hpp"
 
 using namespace yat;
 
@@ -28,69 +28,6 @@ using namespace yat;
 // https://github.com/abseil/abseil-cpp/blob/master/absl/base/internal/endian_test.cc
 
 const int num_random_values = 1000000;
-const int random_seed = 12345;
-
-template <typename T>
-static std::vector<T> generate_all_values() {
-  std::vector<T> result;
-  T next = std::numeric_limits<T>::min();
-  while (true) {
-    result.push_back(next);
-    if (next == std::numeric_limits<T>::max()) {
-      return result;
-    }
-    ++next;
-  }
-}
-
-template <typename T>
-static std::vector<T> generate_random_values(size_t numValuesToTest) {
-  std::vector<T> result;
-  std::mt19937_64 rng(random_seed);
-  for (size_t i = 0; i < numValuesToTest; ++i) {
-    result.push_back(static_cast<T>(rng()));
-  }
-  return result;
-}
-
-static void manual_byte_swap(std::byte* bytes, int length) {
-  if (length == 1) {
-    return;
-  }
-
-  REQUIRE(length % 2 == 0);
-
-  for (int i = 0; i < length / 2; ++i) {
-    int j = (length - 1) - i;
-    using std::swap;
-    swap(bytes[i], bytes[j]);
-  }
-}
-
-template <typename T>
-static void swap_test(const std::vector<T>& host_values_to_test) {
-  for (const T value : host_values_to_test) {
-    std::byte swapped_bytes[sizeof(T)];
-    memcpy(swapped_bytes, &value, sizeof(T));
-    manual_byte_swap(swapped_bytes, sizeof(T));
-
-    REQUIRE(byteswap(value) == bit_cast<T>(swapped_bytes));
-  }
-}
-
-TEST_CASE("byteswap", "[endian]") {
-  // Test swapping all integers
-  swap_test(generate_all_values<int8_t>());
-  swap_test(generate_all_values<uint8_t>());
-  swap_test(generate_all_values<int16_t>());
-  swap_test(generate_all_values<uint16_t>());
-
-  // There are too many of these so let's do some random sampling
-  swap_test(generate_random_values<int32_t>(num_random_values));
-  swap_test(generate_random_values<uint32_t>(num_random_values));
-  swap_test(generate_random_values<int64_t>(num_random_values));
-  swap_test(generate_random_values<uint64_t>(num_random_values));
-}
 
 template <typename T>
 static void endian_test(const std::vector<T>& values_to_test) {

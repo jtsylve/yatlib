@@ -16,4 +16,4 @@
 
 // Tell Catch2 to generate a main
 #define CATCH_CONFIG_MAIN
-#include "catch_config.hpp"
+#include "common.hpp"

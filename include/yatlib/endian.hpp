@@ -29,78 +29,10 @@ constexpr bool is_little_endian_system = (endian::native == endian::little);
 /// Tells whether we're compiling for a big endian system
 constexpr bool is_big_endian_system = (endian::native == endian::big);
 
-/// Creates a new scalar value with the opposite endianness of the one provided
-
-YAT_IGNORE_WARNING_PUSH(4702);
-template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-YAT_PURE_FUNCTION inline T byteswap(const T& value) noexcept {
-  if constexpr (sizeof(T) == 1) {
-    return value;
-  }
-
-  if constexpr (sizeof(T) == sizeof(uint16_t)) {
-    return bit_cast<T>(byteswap(bit_cast<uint16_t>(value)));
-  }
-
-  if constexpr (sizeof(T) == sizeof(uint32_t)) {
-    return bit_cast<T>(byteswap(bit_cast<uint32_t>(value)));
-  }
-
-  if constexpr (sizeof(T) == sizeof(uint64_t)) {
-    return bit_cast<T>(byteswap(bit_cast<uint64_t>(value)));
-  }
-
-  YAT_UNREACHABLE();
-}
-YAT_IGNORE_WARNING_POP();
-
-template <>
-YAT_PURE_FUNCTION inline uint16_t byteswap(const uint16_t& value) noexcept {
-#ifdef YAT_IS_GCC_COMPATIBLE
-  return __builtin_bswap16(value);
-#elif defined(YAT_IS_MSVC)
-  return _byteswap_ushort(value);
-#else
-  return static_cast<uint16_t>((value & 0x00FF) << 8) |
-         static_cast<uint16_t>((value & 0xFF00) >> 8);
-#endif
-}
-
-template <>
-YAT_PURE_FUNCTION inline uint32_t byteswap(const uint32_t& value) noexcept {
-#ifdef YAT_IS_GCC_COMPATIBLE
-  return __builtin_bswap32(value);
-#elif defined(YAT_IS_MSVC)
-  return _byteswap_ulong(value);
-#else
-  return ((value & 0x0000'00FFU) << (8 * 3)) |
-         ((value & 0x0000'FF00U) << (8 * 1)) |
-         ((value & 0x00FF'0000U) >> (8 * 1)) |
-         ((value & 0xFF00'0000U) >> (8 * 3));
-#endif
-}
-
-template <>
-YAT_PURE_FUNCTION inline uint64_t byteswap(const uint64_t& value) noexcept {
-#ifdef YAT_IS_GCC_COMPATIBLE
-  return __builtin_bswap64(value);
-#elif defined(YAT_IS_MSVC)
-  return _byteswap_uint64(value);
-#else
-  return (value & 0x0000'0000'0000'00FFULL) << (8 * 7) |
-         (value & 0x0000'0000'0000'FF00ULL) << (8 * 5) |
-         (value & 0x0000'0000'00FF'0000ULL) << (8 * 3) |
-         (value & 0x0000'0000'FF00'0000ULL) << (8 * 1) |
-         (value & 0x0000'00FF'0000'0000ULL) >> (8 * 1) |
-         (value & 0x0000'FF00'0000'0000ULL) >> (8 * 3) |
-         (value & 0x00FF'0000'0000'0000ULL) >> (8 * 5) |
-         (value & 0xFF00'0000'0000'0000ULL) >> (8 * 7);
-#endif
-}
-
 /// Type support for handling scalar values with regards to endianess
-template <typename T, endian endianess,
-          typename = std::enable_if_t<std::is_scalar_v<T>>>
+template <typename T, endian Endianess,
+          typename = std::enable_if_t<
+              std::is_nothrow_invocable_r_v<T, decltype(byteswap<T>), T>>>
 class base_endian_scalar {
  public:
   using value_type = T;
@@ -112,55 +44,29 @@ class base_endian_scalar {
 
   inline operator T() const noexcept { return to_native(_value); }
 
-  // We can get a performance improvement by allowing direct comparisions of
-  // scalar types with the same endianess
+  [[nodiscard]] inline T value() const noexcept { return to_native(_value); }
+
+  // We can get a performance improvement by allowing direct equality
+  // comparisions of types with the same Endianess
 
   template <typename U>
   friend constexpr bool operator==(
       const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
+      const base_endian_scalar<U, Endianess>& rhs) noexcept {
     return (lhs._value == rhs._value);
   }
 
   template <typename U>
   friend constexpr bool operator!=(
       const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
+      const base_endian_scalar<U, Endianess>& rhs) noexcept {
     return (lhs._value != rhs._value);
   }
 
-  template <typename U>
-  friend constexpr bool operator<(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
-    return (lhs._value < rhs._value);
-  }
-
-  template <typename U>
-  friend constexpr bool operator>(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
-    return (lhs._value > rhs._value);
-  }
-
-  template <typename U>
-  friend constexpr bool operator<=(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
-    return (lhs._value <= rhs._value);
-  }
-
-  template <typename U>
-  friend constexpr bool operator>=(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, endianess>& rhs) noexcept {
-    return (lhs._value >= rhs._value);
-  }
-
  private:
-  YAT_PURE_FUNCTION
-  static inline T to_native(const T& value) noexcept {
-    if constexpr (endianess == endian::native) {
+  [[nodiscard]] YAT_PURE_FUNCTION static inline T to_native(
+      const T& value) noexcept {
+    if constexpr (Endianess == endian::native) {
       return value;
     } else {
       return byteswap(value);
