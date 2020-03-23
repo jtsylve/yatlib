@@ -9,9 +9,6 @@ jobs:
     - name: Xcode 10.3
       os: osx
       osx_image: xcode10.3
-    - name: Xcode 9.4
-      os: osx
-      osx_image: xcode9.4
     - name: Xcode 11.3 (macOS 10.12)
       os: osx
       osx_image: xcode11.3
@@ -20,11 +17,6 @@ jobs:
     - name: XCode 10.3 (macOS 10.12)
       os: osx
       osx_image: xcode10.3
-      env:
-        - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - name: Xcode 9.4 (macOS 10.12)
-      os: osx
-      osx_image: xcode9.4
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
 
