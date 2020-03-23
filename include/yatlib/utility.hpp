@@ -15,6 +15,18 @@
  */
 #pragma once
 
-#include "bit.hpp"
-#include "endian.hpp"
-#include "utility.hpp"
+#include <type_traits>
+#include <utility>
+
+/////////////////////////////////////////
+// P1682R0 - https://wg21.link/P1682R0 //
+/////////////////////////////////////////
+
+namespace yat {
+
+template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+constexpr std::underlying_type_t<T> to_underlying(T value) noexcept {
+  return static_cast<std::underlying_type_t<T>>(value);
+}
+
+}  // namespace yat
