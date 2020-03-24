@@ -32,7 +32,7 @@ constexpr bool is_big_endian_system = (endian::native == endian::big);
 /// Type support for handling scalar values with regards to endianess
 template <typename T, endian Endianess,
           typename = std::enable_if_t<
-              std::is_nothrow_invocable_r_v<T, decltype(byteswap<T>), T>>>
+              std::is_nothrow_invocable_r_v<T, YAT_DECLTYPE(byteswap<T>), T>>>
 class base_endian_scalar {
  public:
   using value_type = T;

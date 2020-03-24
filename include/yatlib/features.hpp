@@ -93,3 +93,16 @@
   #define YAT_CONST_FUNCTION
   #define YAT_PURE_FUNCTION
 #endif
+
+// Earlier versions of MSVC have issues with getting decltype of specialized
+// functions.  See:
+// https://softnfuzzy.blogspot.com/2011/12/decltype-on-visual-studio.html
+#ifdef YAT_IS_MSVC
+namespace yat::internal {
+template <typename T>
+T decl_identity(T);
+}  // namespace yat::internal
+  #define YAT_DECLTYPE(T) decltype(yat::internal::decl_identity(T))
+#else
+  #define YAT_DECLTYPE(T) decltype(T)
+#endif
