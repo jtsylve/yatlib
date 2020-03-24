@@ -46,23 +46,6 @@ class base_endian_scalar {
 
   [[nodiscard]] inline T value() const noexcept { return to_native(_value); }
 
-  // We can get a performance improvement by allowing direct equality
-  // comparisions of types with the same Endianess
-
-  template <typename U>
-  friend constexpr bool operator==(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, Endianess>& rhs) noexcept {
-    return (lhs._value == rhs._value);
-  }
-
-  template <typename U>
-  friend constexpr bool operator!=(
-      const base_endian_scalar& lhs,
-      const base_endian_scalar<U, Endianess>& rhs) noexcept {
-    return (lhs._value != rhs._value);
-  }
-
  private:
   [[nodiscard]] YAT_PURE_FUNCTION static inline T to_native(
       const T& value) noexcept {
@@ -74,9 +57,6 @@ class base_endian_scalar {
   }
 
   T _value{};
-
-  template <typename, endian, typename>
-  friend class base_endian_scalar;
 };
 
 template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
