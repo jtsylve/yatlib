@@ -139,22 +139,8 @@ template <class To, class From,
   #define YAT_INTERNAL_BYTESWAP_CONSTEXPR inline
 #endif
 
-namespace yat {
+namespace yat::detail {
 
-template <typename IntegerType>
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
-    IntegerType value) noexcept
-    -> std::enable_if_t<std::is_integral_v<IntegerType>, IntegerType> {
-  if constexpr (sizeof(IntegerType) == 1) {
-    return value;
-  }
-
-  const auto uvalue = static_cast<std::make_unsigned_t<IntegerType>>(value);
-
-  return static_cast<IntegerType>(byteswap(uvalue));
-}
-
-template <>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint16_t
 byteswap(uint16_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
@@ -167,7 +153,6 @@ byteswap(uint16_t value) noexcept {
 #endif
 }
 
-template <>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint32_t
 byteswap(uint32_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
@@ -182,7 +167,6 @@ byteswap(uint32_t value) noexcept {
 #endif
 }
 
-template <>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint64_t
 byteswap(uint64_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
@@ -201,6 +185,23 @@ byteswap(uint64_t value) noexcept {
 #endif
 }
 
+}  // namespace yat::detail
+
+namespace yat {
+
+template <typename IntegerType>
+[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
+    IntegerType value) noexcept
+    -> std::enable_if_t<std::is_integral_v<IntegerType>, IntegerType> {
+  if constexpr (sizeof(IntegerType) == 1) {
+    return value;
+  } else {
+    const auto uvalue = static_cast<std::make_unsigned_t<IntegerType>>(value);
+
+    return static_cast<IntegerType>(yat::detail::byteswap(uvalue));
+  }
+}
+
 }  // namespace yat
 
 ////////////////////////////////////////////////////////////////////////////
@@ -210,6 +211,7 @@ byteswap(uint64_t value) noexcept {
 // byteswap overload for enums
 
 namespace yat {
+
 template <typename T>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
     T value) noexcept -> std::enable_if_t<std::is_enum_v<T>, T> {
