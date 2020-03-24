@@ -24,6 +24,7 @@
 #include <type_traits>
 
 #include "features.hpp"
+#include "utility.hpp"
 
 /////////////////////////////////////////
 // P0463R1 - https://wg21.link/P0463R1 //
@@ -140,10 +141,10 @@ template <class To, class From,
 
 namespace yat {
 
-template <typename IntegerType,
-          typename = std::enable_if_t<std::is_integral_v<IntegerType>>>
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR IntegerType
-byteswap(IntegerType value) noexcept {
+template <typename IntegerType>
+[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
+    IntegerType value) noexcept
+    -> std::enable_if_t<std::is_integral_v<IntegerType>, IntegerType> {
   if constexpr (sizeof(IntegerType) == 1) {
     return value;
   }
@@ -198,6 +199,21 @@ byteswap(uint64_t value) noexcept {
          (value & 0x00FF'0000'0000'0000ULL) >> (8 * 5) |
          (value & 0xFF00'0000'0000'0000ULL) >> (8 * 7);
 #endif
+}
+
+}  // namespace yat
+
+////////////////////////////////////////////////////////////////////////////
+// PXXXXRX - https://twitter.com/slurpsmadrips/status/1237915884573741057 //
+////////////////////////////////////////////////////////////////////////////
+
+// byteswap overload for enums
+
+namespace yat {
+template <typename T>
+[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
+    T value) noexcept -> std::enable_if_t<std::is_enum_v<T>, T> {
+  return static_cast<T>(byteswap(to_underlying(value)));
 }
 
 }  // namespace yat
