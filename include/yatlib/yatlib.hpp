@@ -17,4 +17,5 @@
 
 #include "bit.hpp"
 #include "endian.hpp"
+#include "format.hpp"
 #include "utility.hpp"

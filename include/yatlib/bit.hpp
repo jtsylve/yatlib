@@ -31,7 +31,7 @@
 /////////////////////////////////////////
 
 // Check to see if stdlib support is available
-#if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907
+#if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907L
   #define YAT_INTERNAL_USE_STD_ENDIAN
 #endif
 
@@ -77,7 +77,7 @@ enum class endian {
 ////////////////////////////////////////
 
 // Check to see if stdlib support is available
-#if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806
+#if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
   #define YAT_INTERNAL_USE_STD_BIT_CAST
 #endif
 
