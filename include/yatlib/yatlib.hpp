@@ -18,4 +18,5 @@
 #include "bit.hpp"
 #include "endian.hpp"
 #include "format.hpp"
+#include "type_traits.hpp"
 #include "utility.hpp"

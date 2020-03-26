@@ -19,16 +19,29 @@
 
 #include "common.hpp"
 
-using namespace yat;
+TEST_CASE("formatter (disabled)", "[format][formatter]") {
+  struct dummy {};
 
-static void format_parse_context_test() noexcept {
+  // In disabled specialization of a formatter, F, these values are false:
+  // is_default_constructible_v<F>, is_copy_constructible_v<F>,
+  // is_move_constructible_v<F>, is_copy_assignable_v<F>,
+  // is_move_assignable_v<F>
+  STATIC_REQUIRE_FALSE(std::is_default_constructible_v<yat::formatter<dummy>>);
+  STATIC_REQUIRE_FALSE(std::is_copy_constructible_v<yat::formatter<dummy>>);
+  STATIC_REQUIRE_FALSE(std::is_move_constructible_v<yat::formatter<dummy>>);
+  STATIC_REQUIRE_FALSE(std::is_copy_assignable_v<yat::formatter<dummy>>);
+  STATIC_REQUIRE_FALSE(std::is_move_assignable_v<yat::formatter<dummy>>);
+}
+
+TEST_CASE("basic_format_parse_context",
+          "[format][basic_format_parse_context]") {
   // context should not be copyable
-  STATIC_REQUIRE_FALSE(std::is_copy_constructible_v<format_parse_context>);
-  STATIC_REQUIRE_FALSE(std::is_copy_assignable_v<format_parse_context>);
+  STATIC_REQUIRE_FALSE(std::is_copy_constructible_v<yat::format_parse_context>);
+  STATIC_REQUIRE_FALSE(std::is_copy_assignable_v<yat::format_parse_context>);
 
   constexpr std::string_view fmt1 = "Hello, {}!";
 
-  auto context1 = basic_format_parse_context{fmt1};
+  auto context1 = yat::basic_format_parse_context{fmt1};
 
   // cppcheck-suppress mismatchingContainerExpression
   REQUIRE(context1.begin() == fmt1.begin());
@@ -42,13 +55,97 @@ static void format_parse_context_test() noexcept {
   REQUIRE(context1.begin() == it1);
 
   REQUIRE_NOTHROW(context1.next_arg_id() == 1);
-  REQUIRE_THROWS_AS(context1.check_arg_id(0), format_error);
+  REQUIRE_THROWS_AS(context1.check_arg_id(0), yat::format_error);
 
-  auto context2 = basic_format_parse_context{fmt1};
+  auto context2 = yat::basic_format_parse_context{fmt1};
   REQUIRE_NOTHROW(context2.check_arg_id(0));
-  REQUIRE_THROWS_AS(context2.next_arg_id(), format_error);
+  REQUIRE_THROWS_AS(context2.next_arg_id(), yat::format_error);
 }
 
-TEST_CASE("format_parse_context", "[format][format_parse_context]") {
-  format_parse_context_test();
+struct dummy_context {
+  using char_type = char;
+
+  template <typename T>
+  using formatter_type = yat::formatter<T, char_type>;
+};
+
+TEST_CASE("basic_format_arg", "[format][basic_format_arg]") {
+  yat::basic_format_arg<dummy_context> default_arg;
+  REQUIRE(!default_arg);
+
+  constexpr auto monostate_visitor = [](const auto& arg) {
+    using arg_type = std::decay_t<decltype(arg)>;
+
+    if constexpr (std::is_same_v<arg_type, std::monostate>) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  REQUIRE(yat::visit_format_arg(monostate_visitor, default_arg));
+}
+
+TEST_CASE("make_format_args", "[format][make_format_args]") {
+  enum arg_t {
+    unknown_type,
+    int_type,
+    float_type,
+    unsigned_int_type,
+  };
+
+  constexpr auto visitor = [](const auto& arg) {
+    using arg_type = std::decay_t<decltype(arg)>;
+
+    if constexpr (std::is_same_v<arg_type, int>) {
+      return int_type;
+    } else if constexpr (std::is_same_v<arg_type, float>) {
+      return float_type;
+    } else if constexpr (std::is_same_v<arg_type, unsigned int>) {
+      return unsigned_int_type;
+    } else {
+      return unknown_type;
+    }
+  };
+
+  const auto args = yat::make_format_args<dummy_context>(1, 2.0f, 3U);
+
+  REQUIRE(args.size() == 3);
+  REQUIRE(yat::visit_format_arg(visitor, args[0]) == int_type);
+  REQUIRE(yat::visit_format_arg(visitor, args[1]) == float_type);
+  REQUIRE(yat::visit_format_arg(visitor, args[2]) == unsigned_int_type);
+}
+
+TEST_CASE("basic_format_args", "[format][basic_format_args]") {
+  yat::basic_format_args<dummy_context> default_args;
+  REQUIRE_FALSE(default_args.get(0));
+
+  enum arg_t {
+    unknown_type,
+    int_type,
+    float_type,
+    unsigned_int_type,
+  };
+
+  constexpr auto visitor = [](const auto& arg) {
+    using arg_type = std::decay_t<decltype(arg)>;
+
+    if constexpr (std::is_same_v<arg_type, int>) {
+      return int_type;
+    } else if constexpr (std::is_same_v<arg_type, float>) {
+      return float_type;
+    } else if constexpr (std::is_same_v<arg_type, unsigned int>) {
+      return unsigned_int_type;
+    } else {
+      return unknown_type;
+    }
+  };
+
+  const auto store = yat::make_format_args<dummy_context>(1, 2.0f, 3U);
+  yat::basic_format_args<dummy_context> args{store};
+  REQUIRE_FALSE(args.get(3));
+
+  REQUIRE(yat::visit_format_arg(visitor, args.get(0)) == int_type);
+  REQUIRE(yat::visit_format_arg(visitor, args.get(1)) == float_type);
+  REQUIRE(yat::visit_format_arg(visitor, args.get(2)) == unsigned_int_type);
 }
