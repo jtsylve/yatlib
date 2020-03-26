@@ -98,7 +98,8 @@ template <typename Context>
 class basic_format_arg;
 
 template <typename Visitor, typename Context>
-constexpr auto visit_format_arg(Visitor&& vis, basic_format_arg<Context> arg);
+constexpr auto visit_format_arg(Visitor&& vis, basic_format_arg<Context> arg)
+    -> decltype(vis(0));
 
 template <typename Context, typename... Args>
 detail::basic_format_args_store<Context> make_format_args(const Args&... args);
@@ -270,7 +271,8 @@ class basic_format_arg {
   /// Applies the visitor vis to the object contained in arg.
   template <typename Visitor, typename Ctx>
   friend constexpr auto visit_format_arg(Visitor&& vis,
-                                         basic_format_arg<Ctx> arg) {
+                                         basic_format_arg<Ctx> arg)
+      -> decltype(vis(0)) {
     return std::visit(std::forward<Visitor>(vis), arg._value);
   }
 
