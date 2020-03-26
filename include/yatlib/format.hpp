@@ -268,7 +268,6 @@ class basic_format_arg {
 
   storage_type _value{};
 
-  /// Applies the visitor vis to the object contained in arg.
   template <typename Visitor, typename Ctx>
   friend constexpr auto visit_format_arg(Visitor&& vis,
                                          basic_format_arg<Ctx> arg)
@@ -277,6 +276,7 @@ class basic_format_arg {
   friend class detail::basic_format_args_store<Context>;
 };
 
+/// Applies the visitor vis to the object contained in arg.
 template <typename Visitor, typename Ctx>
 constexpr auto visit_format_arg(Visitor&& vis, basic_format_arg<Ctx> arg)
     -> decltype(vis(0)) {
