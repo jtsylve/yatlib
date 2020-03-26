@@ -13,6 +13,7 @@ add_executable(
   "common.hpp"
   "endian_test.cpp"
   "format_test.cpp"
+  "type_traits_test.cpp"
   "utility_test.cpp"
   "yatlib_test.cpp")
 target_link_libraries(unittests catch_main)
