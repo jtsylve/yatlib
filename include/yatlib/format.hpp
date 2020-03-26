@@ -272,12 +272,16 @@ class basic_format_arg {
   template <typename Visitor, typename Ctx>
   friend constexpr auto visit_format_arg(Visitor&& vis,
                                          basic_format_arg<Ctx> arg)
-      -> decltype(vis(0)) {
-    return std::visit(std::forward<Visitor>(vis), arg._value);
-  }
+      -> decltype(vis(0));
 
   friend class detail::basic_format_args_store<Context>;
 };
+
+template <typename Visitor, typename Ctx>
+constexpr auto visit_format_arg(Visitor&& vis, basic_format_arg<Ctx> arg)
+    -> decltype(vis(0)) {
+  return std::visit(std::forward<Visitor>(vis), arg._value);
+}
 
 template <typename Context, typename... Args>
 detail::basic_format_args_store<Context> make_format_args(const Args&... args) {
