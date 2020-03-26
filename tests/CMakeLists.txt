@@ -15,6 +15,7 @@ add_executable(
   "format_test.cpp"
   "type_traits_test.cpp"
   "utility_test.cpp"
+  "variant_test.cpp"
   "yatlib_test.cpp")
 target_link_libraries(unittests catch_main)
 catch_discover_tests(unittests)

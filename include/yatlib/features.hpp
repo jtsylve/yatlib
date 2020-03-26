@@ -106,3 +106,18 @@ T decl_identity(T);
 #else
   #define YAT_DECLTYPE(T) decltype(T)
 #endif
+
+// macOS 10.13 and iOS 10.11 don't let you use <any>, <optional>, or <variant>
+// even though the headers exist and are publicly noted to work.
+// This check is borrowed from abseil.
+#if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&             \
+    ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+      __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) ||  \
+     (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
+     (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+      __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 120000) ||  \
+     (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+      __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 50000))
+  #define YAT_APPLE_CXX17_TYPES_UNAVAILABLE
+#endif

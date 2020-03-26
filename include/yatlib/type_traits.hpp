@@ -16,7 +16,8 @@
 #pragma once
 
 #include <type_traits>
-#include <variant>
+
+#include "variant.hpp"
 
 /////////////////////////////////////////////////////////////
 // Determine if a given type is a member of a std::variant //
@@ -28,7 +29,7 @@ template <typename T, typename VariantType>
 struct is_variant_member;
 
 template <typename T, typename... Types>
-struct is_variant_member<T, std::variant<Types...>>
+struct is_variant_member<T, yat::variant<Types...>>
     : public std::disjunction<std::is_same<T, Types>...> {};
 
 template <typename T, typename... Types>
