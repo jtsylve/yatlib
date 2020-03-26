@@ -16,6 +16,7 @@
 #pragma once
 
 #include "type_traits.hpp"
+#include "variant.hpp"
 
 #if __has_include("format")
   #include <format>
@@ -26,7 +27,6 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <variant>
 
 ///////////////////////////////////////////
 // P0645R10 - https://wg21.link/P0645R10 //
@@ -256,7 +256,7 @@ class basic_format_arg {
 
  private:
   using storage_type =
-      std::variant<std::monostate, bool, char_type, int, unsigned int,
+      yat::variant<std::monostate, bool, char_type, int, unsigned int,
                    long long int, unsigned long long int, float, double,
                    long double, const char_type*,
                    std::basic_string_view<char_type>, const void*, handle>;
@@ -280,7 +280,7 @@ class basic_format_arg {
 template <typename Visitor, typename Ctx>
 constexpr auto visit_format_arg(Visitor&& vis, basic_format_arg<Ctx> arg)
     -> decltype(vis(0)) {
-  return std::visit(std::forward<Visitor>(vis), arg._value);
+  return yat::visit(std::forward<Visitor>(vis), arg._value);
 }
 
 template <typename Context, typename... Args>
