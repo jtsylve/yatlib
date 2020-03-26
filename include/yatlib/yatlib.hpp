@@ -17,4 +17,6 @@
 
 #include "bit.hpp"
 #include "endian.hpp"
+#include "type_traits.hpp"
 #include "utility.hpp"
+#include "variant.hpp"

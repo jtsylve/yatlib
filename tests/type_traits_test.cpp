@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <variant>
 #include <yatlib/type_traits.hpp>
+#include <yatlib/variant.hpp>
 
 #include "common.hpp"
 
 TEST_CASE("is_variant_member", "[type_traits][is_variant_member]") {
-  using vtype = std::variant<std::monostate, char, int, unsigned int, long,
+  using vtype = yat::variant<yat::monostate, char, int, unsigned int, long,
                              unsigned long long>;
 
-  STATIC_REQUIRE(yat::is_variant_member_v<std::monostate, vtype>);
+  STATIC_REQUIRE(yat::is_variant_member_v<yat::monostate, vtype>);
   STATIC_REQUIRE(yat::is_variant_member_v<char, vtype>);
   STATIC_REQUIRE(yat::is_variant_member_v<int, vtype>);
   STATIC_REQUIRE(yat::is_variant_member_v<unsigned int, vtype>);
@@ -34,7 +34,7 @@ TEST_CASE("is_variant_member", "[type_traits][is_variant_member]") {
   STATIC_REQUIRE_FALSE(yat::is_variant_member_v<long long, vtype>);
   STATIC_REQUIRE_FALSE(yat::is_variant_member_v<int *, vtype>);
 
-  STATIC_REQUIRE(std::is_same_v<yat::is_variant_member_t<std::monostate, vtype>,
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_member_t<yat::monostate, vtype>,
                                 std::true_type>);
   STATIC_REQUIRE(
       std::is_same_v<yat::is_variant_member_t<char, vtype>, std::true_type>);
