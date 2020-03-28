@@ -15,11 +15,8 @@ enum class endian
 template <typename To, typename From>
 constexpr To bit_cast(const From& from) noexcept;
 
-template <typename IntegerType>
-constexpr IntegerType byteswap(IntegerType value) noexcept;
-
-template <typename EnumType>
-constexpr EnumType byteswap(EnumType value) noexcept;
+template <typename T>
+constexpr T byteswap(T value) noexcept;
 ```
 
 ### yat::endian
@@ -31,15 +28,15 @@ constexpr EnumType byteswap(EnumType value) noexcept;
 
 `yat::bitcast provides an implementation of [std::bitcast](https://en.cppreference.com/w/cpp/numeric/bit_cast).
 
-NOTE: On compilers without `__builtin_bitcast` support and no native `std::bitcast` library implementation, this function is not `constexpr` and requires the return type to be default constructable.
+NOTE: On compilers without `__builtin_bitcast` support and no native `std::bitcast` library implementation, this function is not `constexpr` and requires the return type to be default constructible.
 
 ### yat::byteswap
 
-`yat::byteswap` provides an implementation of the proposed `std::byteswap` from [P1272R3](https://wg21.link/P1272R2).  It also defines a specialization to support swapping of enumeration types, which will be the subject of a [future proposal](https://twitter.com/slurpsmadrips/status/1237915884573741057).  
+`yat::byteswap` provides an implementation of the proposed `std::byteswap` from [P1272R3](https://wg21.link/P1272R2) that swaps the bytes of integral types.  It also defines a specialization to support swapping of enumeration types, which will be the subject of a [future proposal](https://twitter.com/slurpsmadrips/status/1237915884573741057).  
 
 These functions return a endian-swapped value of select scalar types.
 
-NOTE: On MSVC compilers, this function is not constexpr
+NOTE: On MSVC compilers, this function is not `constexpr`
 
 ### Macros
 
@@ -95,8 +92,8 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 
 ### Endian Scalar Types
 
-* `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmatic operations, as misuse of these could cause performance issues.
-* `yat::endian_byte_swapper` can be specialized so that custom types can be supported by yat::basic_endian_scalar.  The default implementation supports all types supported by `yat::byteswap`.
+* `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
+* `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
 
 ## type_traits.hpp
 
@@ -115,7 +112,7 @@ constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
 
 * `yat::is_variant_member` determines if a given type `T` is a member type of a `VariantType`
 * `yat::is_variant_member_t` is a helper type that is set to either `std::true_type` or `std::false_type` for a given type/variant combination
-* `yat::is_variant_member_v` is a convience type that provides a boolean value for a given type/variant combination
+* `yat::is_variant_member_v` is a convenience type that provides a boolean value for a given type/variant combination
 
 ## utility.hpp
 
@@ -128,7 +125,7 @@ constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
 
 `yat::to_underlying` provides an implementation of the proposed `std::to_underlying` from [P1682R0](https://wg21.link/P1682R0).  
 
-It converts an enumeration to it's underlying type.
+It converts an enumeration to its underlying type.
 
 ## variant.hpp
 
