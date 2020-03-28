@@ -22,8 +22,6 @@
 
 #include "common.hpp"
 
-using namespace yat;
-
 // Inspired by
 // https://github.com/abseil/abseil-cpp/blob/master/absl/base/internal/endian_test.cc
 
@@ -32,24 +30,26 @@ const int num_random_values = 1000000;
 template <typename T>
 static void endian_test(const std::vector<T>& values_to_test) {
   for (const T value : values_to_test) {
-    const little_scaler<T> little_val = value;
-    const big_scaler<T> big_val = value;
+    const yat::little_scalar<T> little_val = value;
+    const yat::big_scalar<T> big_val = value;
 
     REQUIRE(little_val == value);
     REQUIRE(big_val == value);
     REQUIRE(little_val == big_val);
 
-    REQUIRE(bit_cast<T>(little_val) == byteswap(bit_cast<T>(big_val)));
-    REQUIRE(bit_cast<T>(big_val) == byteswap(bit_cast<T>(little_val)));
+    REQUIRE(yat::bit_cast<T>(little_val) ==
+            yat::byteswap(yat::bit_cast<T>(big_val)));
+    REQUIRE(yat::bit_cast<T>(big_val) ==
+            yat::byteswap(yat::bit_cast<T>(little_val)));
 
-    if constexpr (is_little_endian_system) {
-      REQUIRE(bit_cast<T>(little_val) == value);
-      REQUIRE(bit_cast<T>(big_val) == byteswap(value));
+    if constexpr (yat::is_little_endian_system) {
+      REQUIRE(yat::bit_cast<T>(little_val) == value);
+      REQUIRE(yat::bit_cast<T>(big_val) == yat::byteswap(value));
     }
 
-    if constexpr (is_big_endian_system) {
-      REQUIRE(bit_cast<T>(big_val) == value);
-      REQUIRE(bit_cast<T>(little_val) == byteswap(value));
+    if constexpr (yat::is_big_endian_system) {
+      REQUIRE(yat::bit_cast<T>(big_val) == value);
+      REQUIRE(yat::bit_cast<T>(little_val) == yat::byteswap(value));
     }
   }
 }
