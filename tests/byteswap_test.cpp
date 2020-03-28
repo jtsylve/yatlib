@@ -22,8 +22,6 @@
 
 #include "common.hpp"
 
-using namespace yat;
-
 constexpr int num_random_values = 1000000;
 
 static void manual_byte_swap(std::byte* bytes, int length) {
@@ -44,10 +42,10 @@ template <typename T>
 static void swap_test(const std::vector<T>& host_values_to_test) {
   for (const T value : host_values_to_test) {
     std::byte swapped_bytes[sizeof(T)];
-    memcpy(swapped_bytes, &value, sizeof(T));
+    std::memcpy(swapped_bytes, &value, sizeof(T));
     manual_byte_swap(swapped_bytes, sizeof(T));
 
-    REQUIRE(byteswap(value) == bit_cast<T>(swapped_bytes));
+    REQUIRE(yat::byteswap(value) == yat::bit_cast<T>(swapped_bytes));
   }
 }
 

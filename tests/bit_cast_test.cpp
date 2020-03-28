@@ -18,8 +18,6 @@
 
 #include "common.hpp"
 
-using namespace yat;
-
 // Tests adapted from
 // https://github.com/microsoft/STL/blob/master/tests/std/tests/P0476R2_bit_cast/test.cpp
 
@@ -160,24 +158,25 @@ constexpr bool bit_cast_invocable = false;
 
 template <typename To, typename From>
 constexpr bool bit_cast_invocable<
-    To, From, std::void_t<decltype(bit_cast<To>(std::declval<From>()))>> = true;
+    To, From, std::void_t<decltype(yat::bit_cast<To>(std::declval<From>()))>> =
+    true;
 
 template <int zero = 0,
-          int = ((void)bit_cast<test_union_1>(test_union_2{}), zero)>
+          int = ((void)yat::bit_cast<test_union_1>(test_union_2{}), zero)>
 constexpr bool bit_cast_is_constexpr_union(int) {
   return true;
 }
 
 constexpr bool bit_cast_is_constexpr_union(long) { return false; }
 
-template <int zero = 0, int = ((void)bit_cast<float*>(nullptr), zero)>
+template <int zero = 0, int = ((void)yat::bit_cast<float*>(nullptr), zero)>
 constexpr bool bit_cast_is_constexpr_pointer(int) {
   return true;
 }
 
 constexpr bool bit_cast_is_constexpr_pointer(long) { return false; }
 
-template <int zero = 0, int = ((void)bit_cast<void (test_struct_1::*)()>(
+template <int zero = 0, int = ((void)yat::bit_cast<void (test_struct_1::*)()>(
                                    &test_struct_2::a_member_function),
                                zero)>
 constexpr bool bit_cast_is_constexpr_member_fn_pointer(int) {
@@ -188,7 +187,7 @@ constexpr bool bit_cast_is_constexpr_member_fn_pointer(long) { return false; }
 
 constexpr bool bit_cast_is_constexpr_pmf_datamember(long) { return false; }
 
-template <int zero = 0, int = ((void)bit_cast<test_struct_5_struct>(
+template <int zero = 0, int = ((void)yat::bit_cast<test_struct_5_struct>(
                                    test_struct_4_large_member_fn_pointer{}),
                                zero)>
 constexpr bool bit_cast_is_constexpr_large_member_fn_pointer(int) {
@@ -202,10 +201,10 @@ constexpr bool bit_cast_is_constexpr_large_member_fn_pointer(long) {
 template <typename To, typename From>
 void zero_initialized_round_trip() {
   From before{};
-  To middle = bit_cast<To>(before);
-  REQUIRE(memcmp(&before, &middle, sizeof(From)) == 0);
-  From after = bit_cast<From>(middle);
-  REQUIRE(memcmp(&before, &after, sizeof(From)) == 0);
+  To middle = yat::bit_cast<To>(before);
+  REQUIRE(std::memcmp(&before, &middle, sizeof(From)) == 0);
+  From after = yat::bit_cast<From>(middle);
+  REQUIRE(std::memcmp(&before, &after, sizeof(From)) == 0);
 }
 
 TEST_CASE("bit_cast", "[bit][bit_cast]") {
@@ -249,59 +248,61 @@ TEST_CASE("bit_cast", "[bit][bit_cast]") {
 }
 
 TEST_CASE("bit_cast floats", "[bit_cast][bit]") {
-  unsigned int as_int = bit_cast<unsigned int>(0x0.000002p-126f);
+  unsigned int as_int = yat::bit_cast<unsigned int>(0x0.000002p-126f);
   REQUIRE(as_int == 1);
-  REQUIRE(bit_cast<float>(as_int) == 0x0.000002p-126f);
-  as_int = bit_cast<unsigned int>(0x1.1p1f);
+  REQUIRE(yat::bit_cast<float>(as_int) == 0x0.000002p-126f);
+  as_int = yat::bit_cast<unsigned int>(0x1.1p1f);
   REQUIRE(as_int == 0x40080000);
-  REQUIRE(bit_cast<float>(as_int) == 0x1.1p1f);
-  as_int = bit_cast<unsigned int>(0x0.0p0f);
+  REQUIRE(yat::bit_cast<float>(as_int) == 0x1.1p1f);
+  as_int = yat::bit_cast<unsigned int>(0x0.0p0f);
   REQUIRE(as_int == 0);
-  REQUIRE(bit_cast<float>(as_int) == 0x0.0p0f);
+  REQUIRE(yat::bit_cast<float>(as_int) == 0x0.0p0f);
 
-  REQUIRE(std::signbit(bit_cast<float>(as_int)) == false);
+  REQUIRE(std::signbit(yat::bit_cast<float>(as_int)) == false);
 
-  as_int = bit_cast<unsigned int>(-0x0.0p0f);
+  as_int = yat::bit_cast<unsigned int>(-0x0.0p0f);
   REQUIRE(as_int == 0x80000000);
-  REQUIRE(bit_cast<float>(as_int) == -0x0.0p0f);
-  REQUIRE(std::signbit(bit_cast<float>(as_int)) == true);
+  REQUIRE(yat::bit_cast<float>(as_int) == -0x0.0p0f);
+  REQUIRE(std::signbit(yat::bit_cast<float>(as_int)) == true);
 
   // signaling nan
   as_int = 0x7fc00001;
-  float snan = bit_cast<float>(as_int);
-  REQUIRE(as_int == bit_cast<unsigned int>(snan));
-  as_int = bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
+  float snan = yat::bit_cast<float>(as_int);
+  REQUIRE(as_int == yat::bit_cast<unsigned int>(snan));
+  as_int = yat::bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
   REQUIRE(as_int == 0x7f800000);
-  REQUIRE(bit_cast<float>(as_int) == std::numeric_limits<float>::infinity());
+  REQUIRE(yat::bit_cast<float>(as_int) ==
+          std::numeric_limits<float>::infinity());
 }
 
 #ifdef YAT_HAS_CONSTEXPR_BIT_CAST
 TEST_CASE("bit_cast floats (constexpr)", "[bit_cast][bit][constexpr]") {
-  constexpr unsigned int as_int1 = bit_cast<unsigned int>(0x0.000002p-126f);
+  constexpr unsigned int as_int1 =
+      yat::bit_cast<unsigned int>(0x0.000002p-126f);
   STATIC_REQUIRE(as_int1 == 1);
-  STATIC_REQUIRE(bit_cast<float>(as_int1) == 0x0.000002p-126f);
+  STATIC_REQUIRE(yat::bit_cast<float>(as_int1) == 0x0.000002p-126f);
 
-  constexpr unsigned int as_int2 = bit_cast<unsigned int>(0x1.1p1f);
+  constexpr unsigned int as_int2 = yat::bit_cast<unsigned int>(0x1.1p1f);
   STATIC_REQUIRE(as_int2 == 0x40080000);
-  STATIC_REQUIRE(bit_cast<float>(as_int2) == 0x1.1p1f);
+  STATIC_REQUIRE(yat::bit_cast<float>(as_int2) == 0x1.1p1f);
 
-  constexpr unsigned int as_int3 = bit_cast<unsigned int>(0x0.0p0f);
+  constexpr unsigned int as_int3 = yat::bit_cast<unsigned int>(0x0.0p0f);
   STATIC_REQUIRE(as_int3 == 0);
-  STATIC_REQUIRE(bit_cast<float>(as_int3) == 0x0.0p0f);
+  STATIC_REQUIRE(yat::bit_cast<float>(as_int3) == 0x0.0p0f);
 
-  constexpr unsigned int as_int4 = bit_cast<unsigned int>(-0x0.0p0f);
+  constexpr unsigned int as_int4 = yat::bit_cast<unsigned int>(-0x0.0p0f);
   STATIC_REQUIRE(as_int4 == 0x80000000);
-  STATIC_REQUIRE(bit_cast<float>(as_int4) == -0x0.0p0f);
+  STATIC_REQUIRE(yat::bit_cast<float>(as_int4) == -0x0.0p0f);
 
   // signaling nan
   constexpr unsigned int as_int5 = 0x7fc00001;
-  constexpr float snan = bit_cast<float>(as_int5);
-  STATIC_REQUIRE(as_int5 == bit_cast<unsigned int>(snan));
+  constexpr float snan = yat::bit_cast<float>(as_int5);
+  STATIC_REQUIRE(as_int5 == yat::bit_cast<unsigned int>(snan));
 
   constexpr unsigned int as_int6 =
-      bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
+      yat::bit_cast<unsigned int>(std::numeric_limits<float>::infinity());
   STATIC_REQUIRE(as_int6 == 0x7f800000);
-  STATIC_REQUIRE(bit_cast<float>(as_int6) ==
+  STATIC_REQUIRE(yat::bit_cast<float>(as_int6) ==
                  std::numeric_limits<float>::infinity());
 }
 #endif  // YAT_HAS_CONSTEXPR_BIT_CAST
