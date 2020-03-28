@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include <type_traits>
+#include <yatlib/any.hpp>
 
-#include "any.hpp"
-#include "bit.hpp"
-#include "endian.hpp"
-#include "optional.hpp"
-#include "type_traits.hpp"
-#include "utility.hpp"
-#include "variant.hpp"
+#include "common.hpp"
+
+TEST_CASE("bad_any_cast", "[optional][bad_any_cast]") {
+  REQUIRE(yat::bad_any_cast().what() != nullptr);
+
+  constexpr auto do_throw = [] { throw yat::bad_any_cast(); };
+
+  REQUIRE_THROWS_AS(do_throw(), yat::bad_any_cast);
+
+  yat::any v = 1;
+
+  REQUIRE_THROWS_AS(yat::any_cast<float>(v), yat::bad_any_cast);
+}
