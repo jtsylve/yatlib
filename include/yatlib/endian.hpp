@@ -29,12 +29,21 @@ constexpr bool is_little_endian_system = (endian::native == endian::little);
 /// Tells whether we're compiling for a big endian system
 constexpr bool is_big_endian_system = (endian::native == endian::big);
 
+/// This type can be specialized so that custom types can be supported by
+/// yat::base_endian_scalar
+template <typename T>
+struct endian_byte_swapper {
+  YAT_BYTESWAP_CONSTEXPR T operator()(T value) const noexcept {
+    return byteswap(value);
+  }
+};
+
 /// Type support for handling scalar values with regards to endianess.
 ///
 /// ByteSwapper must be both default constructible and nothrow invocable with
 /// the same calling convention as yat::byteswap.
 template <typename T, endian Endianess,
-          typename ByteSwapper = YAT_DECLTYPE(&byteswap<T>)>
+          typename ByteSwapper = endian_byte_swapper<T>>
 class base_endian_scalar {
   static_assert(
       std::conjunction_v<std::is_default_constructible<ByteSwapper>,
@@ -44,6 +53,7 @@ class base_endian_scalar {
 
  public:
   using value_type = T;
+  using byte_swapper_type = ByteSwapper;
 
   constexpr base_endian_scalar() noexcept = default;
 

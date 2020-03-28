@@ -117,7 +117,7 @@ template <class To, class From,
           typename = std::enable_if_t<std::conjunction_v<
               std::bool_constant<sizeof(To) == sizeof(From)>,
               std::is_trivially_copyable<From>, std::is_trivially_copyable<To>,
-              std::is_trivially_default_constructible<To>>>>
+              std::is_default_constructible<To>>>>
 [[nodiscard]] YAT_PURE_FUNCTION To bit_cast(const From& src) noexcept {
   To dst;
   std::memcpy(&dst, &src, sizeof(To));
@@ -134,14 +134,14 @@ template <class To, class From,
 // MSVC _byteswap functions aren't constexpr
 #ifndef YAT_IS_MSVC
   #define YAT_HAS_CONSTEXPR_BYTESWAP
-  #define YAT_INTERNAL_BYTESWAP_CONSTEXPR constexpr
+  #define YAT_BYTESWAP_CONSTEXPR constexpr
 #else
-  #define YAT_INTERNAL_BYTESWAP_CONSTEXPR inline
+  #define YAT_BYTESWAP_CONSTEXPR inline
 #endif
 
 namespace yat::detail {
 
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint16_t
+[[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR uint16_t
 byteswap(uint16_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap16(value);
@@ -153,7 +153,7 @@ byteswap(uint16_t value) noexcept {
 #endif
 }
 
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint32_t
+[[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR uint32_t
 byteswap(uint32_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap32(value);
@@ -167,7 +167,7 @@ byteswap(uint32_t value) noexcept {
 #endif
 }
 
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR uint64_t
+[[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR uint64_t
 byteswap(uint64_t value) noexcept {
 #ifdef YAT_IS_GCC_COMPATIBLE
   return __builtin_bswap64(value);
@@ -190,7 +190,7 @@ byteswap(uint64_t value) noexcept {
 namespace yat {
 
 template <typename IntegerType>
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
+[[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR auto byteswap(
     IntegerType value) noexcept
     -> std::enable_if_t<std::is_integral_v<IntegerType>, IntegerType> {
   if constexpr (sizeof(IntegerType) == 1) {
@@ -213,7 +213,7 @@ template <typename IntegerType>
 namespace yat {
 
 template <typename T>
-[[nodiscard]] YAT_PURE_FUNCTION YAT_INTERNAL_BYTESWAP_CONSTEXPR auto byteswap(
+[[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR auto byteswap(
     T value) noexcept -> std::enable_if_t<std::is_enum_v<T>, T> {
   return static_cast<T>(byteswap(to_underlying(value)));
 }
@@ -221,7 +221,6 @@ template <typename T>
 }  // namespace yat
 
 // Cleanup internal macros
-#undef YAT_INTERNAL_BYTESWAP_CONSTEXPR
 #undef YAT_INTERNAL_IS_BIG_ENDIAN
 #undef YAT_INTERNAL_IS_LITTLE_ENDIAN
 #undef YAT_INTERNAL_USE_STD_ENDIAN
