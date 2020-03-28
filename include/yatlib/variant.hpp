@@ -17,6 +17,11 @@
 
 #include "features.hpp"
 
+// Apple disallows the use of std::variant before macOS 10.14 because the
+// bad_variant_access::what implementation is compiled into libc++.so and is not
+// available on those systems.  We provide an inline implementation and attempt
+// to disable the macros that prevent the use of std::variant on those systems.
+
 #ifdef YAT_APPLE_CXX17_TYPES_UNAVAILABLE
   #include <__config>
 
@@ -29,7 +34,7 @@
 
   #include <variant>
 
-// Define the bad_variant_access::what() function that is not in libstdc++.so on
+// Define the bad_variant_access::what() function that is not in libc++.so on
 // older versions of macOS
 inline const char* std::bad_variant_access::what() const _NOEXCEPT {
   return "bad_variant_access";
