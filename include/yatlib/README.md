@@ -131,6 +131,6 @@ It converts an enumeration to its underlying type.
 
 Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access::what` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
 
-All of the `std` types in the
+All of the `std` types in the `<variant>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
 
-NOTE: If your project or its dependencies import the `<variant>` header, this may fail to work properly.
+NOTE: If your project or its dependencies import the `<variant>` header elsewhere, this may fail to work properly.
