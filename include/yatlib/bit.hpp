@@ -57,6 +57,7 @@ namespace yat {
 using std::endian;
 #else
 
+/// Indicates the endianness of all scalar types
 enum class endian {
   little,
   big,
@@ -98,27 +99,47 @@ namespace yat {
 using std::bit_cast;
 #elif defined(YAT_INTERNAL_HAS_BUILTIN_BIT_CAST)
 
-template <
-    class To, class From,
-    typename = std::enable_if_t<std::conjunction_v<
-        std::bool_constant<sizeof(To) == sizeof(From)>,
-        std::is_trivially_copyable<From>, std::is_trivially_copyable<To>>>>
-[[nodiscard]] YAT_PURE_FUNCTION constexpr To bit_cast(
-    const From& src) noexcept {
+/// Obtain a value of type To by reinterpreting the object representation of
+/// from. Every bit in the value representation of the returned To object is
+/// equal to the corresponding bit in the object representation of from. The
+/// values of padding bits in the returned To object are unspecified.
+///
+/// If there is no value of type To corresponding to the value representation
+/// produced, the behavior is undefined. If there are multiple such values,
+/// which value is produced is unspecified.
+template <class To, class From>
+[[nodiscard]] YAT_PURE_FUNCTION constexpr auto bit_cast(
+    const From& src) noexcept
+    -> std::enable_if_t<
+        std::conjunction_v<std::bool_constant<sizeof(To) == sizeof(From)>,
+                           std::is_trivially_copyable<From>,
+                           std::is_trivially_copyable<To>>,
+        To> {
   return __builtin_bit_cast(To, src);
 }
 
 #else
 
+/// Obtain a value of type To by reinterpreting the object representation of
+/// from. Every bit in the value representation of the returned To object is
+/// equal to the corresponding bit in the object representation of from. The
+/// values of padding bits in the returned To object are unspecified.
+///
+/// If there is no value of type To corresponding to the value representation
+/// produced, the behavior is undefined. If there are multiple such values,
+/// which value is produced is unspecified.
+///
 /// This version of std::bit_cast differs from the official version in two ways.
-/// 1.) To is required to be trivialy default constructible
+/// 1.) To is required to be default constructible
 /// 2.) This function is not constexpr
-template <class To, class From,
-          typename = std::enable_if_t<std::conjunction_v<
-              std::bool_constant<sizeof(To) == sizeof(From)>,
-              std::is_trivially_copyable<From>, std::is_trivially_copyable<To>,
-              std::is_default_constructible<To>>>>
-[[nodiscard]] YAT_PURE_FUNCTION To bit_cast(const From& src) noexcept {
+template <class To, class From>
+[[nodiscard]] YAT_PURE_FUNCTION auto bit_cast(const From& src) noexcept
+    -> std::enable_if_t<
+        std::conjunction_v<std::bool_constant<sizeof(To) == sizeof(From)>,
+                           std::is_trivially_copyable<From>,
+                           std::is_trivially_copyable<To>,
+                           std::is_default_constructible<To>>,
+        To> {
   To dst;
   std::memcpy(&dst, &src, sizeof(To));
   return dst;
@@ -189,6 +210,8 @@ byteswap(uint64_t value) noexcept {
 
 namespace yat {
 
+/// Takes any integer type and swaps its byteorder to the reverse of its current
+/// state.
 template <typename IntegerType>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR auto byteswap(
     IntegerType value) noexcept
@@ -212,6 +235,8 @@ template <typename IntegerType>
 
 namespace yat {
 
+/// Takes any enumeration type and swaps its byteorder to the reverse of its
+/// current state.
 template <typename T>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR auto byteswap(
     T value) noexcept -> std::enable_if_t<std::is_enum_v<T>, T> {
