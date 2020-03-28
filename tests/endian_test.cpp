@@ -22,8 +22,6 @@
 
 #include "common.hpp"
 
-using namespace yat;
-
 // Inspired by
 // https://github.com/abseil/abseil-cpp/blob/master/absl/base/internal/endian_test.cc
 
@@ -31,30 +29,33 @@ const int num_random_values = 1000000;
 
 template <typename T>
 static void endian_test(const std::vector<T>& values_to_test) {
-  for (const T value : values_to_test) {
-    const little_scaler<T> little_val = value;
-    const big_scaler<T> big_val = value;
+  for (const T& value : values_to_test) {
+    const yat::little_scalar<T> little_val = value;
+    const yat::big_scalar<T> big_val = value;
+
+    // get the scalar swapper type
+    const typename yat::little_scalar<T>::byte_swapper_type swapper{};
 
     REQUIRE(little_val == value);
     REQUIRE(big_val == value);
     REQUIRE(little_val == big_val);
 
-    REQUIRE(bit_cast<T>(little_val) == byteswap(bit_cast<T>(big_val)));
-    REQUIRE(bit_cast<T>(big_val) == byteswap(bit_cast<T>(little_val)));
+    REQUIRE(yat::bit_cast<T>(little_val) == swapper(yat::bit_cast<T>(big_val)));
+    REQUIRE(yat::bit_cast<T>(big_val) == swapper(yat::bit_cast<T>(little_val)));
 
-    if constexpr (is_little_endian_system) {
-      REQUIRE(bit_cast<T>(little_val) == value);
-      REQUIRE(bit_cast<T>(big_val) == byteswap(value));
+    if constexpr (yat::is_little_endian_system) {
+      REQUIRE(yat::bit_cast<T>(little_val) == value);
+      REQUIRE(yat::bit_cast<T>(big_val) == swapper(value));
     }
 
-    if constexpr (is_big_endian_system) {
-      REQUIRE(bit_cast<T>(big_val) == value);
-      REQUIRE(bit_cast<T>(little_val) == byteswap(value));
+    if constexpr (yat::is_big_endian_system) {
+      REQUIRE(yat::bit_cast<T>(big_val) == value);
+      REQUIRE(yat::bit_cast<T>(little_val) == swapper(value));
     }
   }
 }
 
-TEST_CASE("endian_scalar", "[endian]") {
+TEST_CASE("endian_scalar", "[endian][endian_scalar]") {
   // Test swapping all integers
   endian_test(generate_all_values<int8_t>());
   endian_test(generate_all_values<uint8_t>());
@@ -66,4 +67,28 @@ TEST_CASE("endian_scalar", "[endian]") {
   endian_test(generate_random_values<uint32_t>(num_random_values));
   endian_test(generate_random_values<int64_t>(num_random_values));
   endian_test(generate_random_values<uint64_t>(num_random_values));
+}
+
+struct S {
+  constexpr S() noexcept = default;
+  // cppcheck-suppress noExplicitConstructor
+  constexpr S(uint64_t v) noexcept : value{v} {}
+  constexpr operator uint64_t() const noexcept { return value; }
+
+  uint64_t value{};
+};
+
+constexpr bool operator==(const S& lhs, const S& rhs) noexcept {
+  return (lhs.value == rhs.value);
+}
+
+template <>
+struct yat::endian_byte_swapper<S> {
+  constexpr S operator()(const S& s) const noexcept {
+    return yat::byteswap(s.value);
+  }
+};
+
+TEST_CASE("endian_scalar (custom)", "[endian][endian_scalar]") {
+  endian_test(generate_random_values<S>(num_random_values));
 }

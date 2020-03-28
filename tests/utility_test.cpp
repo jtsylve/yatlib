@@ -18,8 +18,6 @@
 
 #include "common.hpp"
 
-using namespace yat;
-
 TEST_CASE("to_underlying", "[utlity][to_underlying]") {
   enum class unspecified_enum {};
   enum class int_enum : int {};
@@ -33,22 +31,22 @@ TEST_CASE("to_underlying", "[utlity][to_underlying]") {
   enum class uint64_t_enum : uint64_t {};
 
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(unspecified_enum{})), int>);
-  STATIC_REQUIRE(std::is_same_v<decltype(to_underlying(int_enum{})), int>);
+      std::is_same_v<decltype(yat::to_underlying(unspecified_enum{})), int>);
+  STATIC_REQUIRE(std::is_same_v<decltype(yat::to_underlying(int_enum{})), int>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(int8_t_enum{})), int8_t>);
+      std::is_same_v<decltype(yat::to_underlying(int8_t_enum{})), int8_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(uint8_t_enum{})), uint8_t>);
+      std::is_same_v<decltype(yat::to_underlying(uint8_t_enum{})), uint8_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(int16_t_enum{})), int16_t>);
+      std::is_same_v<decltype(yat::to_underlying(int16_t_enum{})), int16_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(uint16_t_enum{})), uint16_t>);
+      std::is_same_v<decltype(yat::to_underlying(uint16_t_enum{})), uint16_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(int32_t_enum{})), int32_t>);
+      std::is_same_v<decltype(yat::to_underlying(int32_t_enum{})), int32_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(uint32_t_enum{})), uint32_t>);
+      std::is_same_v<decltype(yat::to_underlying(uint32_t_enum{})), uint32_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(int64_t_enum{})), int64_t>);
+      std::is_same_v<decltype(yat::to_underlying(int64_t_enum{})), int64_t>);
   STATIC_REQUIRE(
-      std::is_same_v<decltype(to_underlying(uint64_t_enum{})), uint64_t>);
+      std::is_same_v<decltype(yat::to_underlying(uint64_t_enum{})), uint64_t>);
 }

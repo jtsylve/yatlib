@@ -29,13 +29,31 @@ constexpr bool is_little_endian_system = (endian::native == endian::little);
 /// Tells whether we're compiling for a big endian system
 constexpr bool is_big_endian_system = (endian::native == endian::big);
 
-/// Type support for handling scalar values with regards to endianess
+/// This type can be specialized so that custom types can be supported by
+/// yat::base_endian_scalar
+template <typename T>
+struct endian_byte_swapper {
+  YAT_BYTESWAP_CONSTEXPR T operator()(T value) const noexcept {
+    return byteswap(value);
+  }
+};
+
+/// Type support for handling scalar values with regards to endianess.
+///
+/// ByteSwapper must be both default constructible and nothrow invocable with
+/// the same calling convention as yat::byteswap.
 template <typename T, endian Endianess,
-          typename = std::enable_if_t<
-              std::is_nothrow_invocable_r_v<T, YAT_DECLTYPE(byteswap<T>), T>>>
+          typename ByteSwapper = endian_byte_swapper<T>>
 class base_endian_scalar {
+  static_assert(
+      std::conjunction_v<std::is_default_constructible<ByteSwapper>,
+                         std::is_nothrow_invocable_r<T, ByteSwapper, T>>,
+      "ByteSwapper must be both default contructible and invocable in the form "
+      "of the following: T ByteSwapper(T) noexcept");
+
  public:
   using value_type = T;
+  using byte_swapper_type = ByteSwapper;
 
   constexpr base_endian_scalar() noexcept = default;
 
@@ -52,39 +70,39 @@ class base_endian_scalar {
     if constexpr (Endianess == endian::native) {
       return value;
     } else {
-      return byteswap(value);
+      return ByteSwapper{}(value);
     }
   }
 
   T _value{};
 };
 
-template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-using big_scaler = base_endian_scalar<T, endian::big>;
+template <typename T>
+using big_scalar = base_endian_scalar<T, endian::big>;
 
-template <typename T, typename = std::enable_if_t<std::is_scalar_v<T>>>
-using little_scaler = base_endian_scalar<T, endian::little>;
+template <typename T>
+using little_scalar = base_endian_scalar<T, endian::little>;
 
-using big_int8_t = big_scaler<int8_t>;
-using big_uint8_t = big_scaler<uint8_t>;
-using big_int16_t = big_scaler<int16_t>;
-using big_uint16_t = big_scaler<uint16_t>;
-using big_int32_t = big_scaler<int32_t>;
-using big_uint32_t = big_scaler<uint32_t>;
-using big_int64_t = big_scaler<int64_t>;
-using big_uint64_t = big_scaler<uint64_t>;
-using big_intptr_t = big_scaler<intptr_t>;
-using big_uintptr_t = big_scaler<uintptr_t>;
+using big_int8_t = big_scalar<int8_t>;
+using big_uint8_t = big_scalar<uint8_t>;
+using big_int16_t = big_scalar<int16_t>;
+using big_uint16_t = big_scalar<uint16_t>;
+using big_int32_t = big_scalar<int32_t>;
+using big_uint32_t = big_scalar<uint32_t>;
+using big_int64_t = big_scalar<int64_t>;
+using big_uint64_t = big_scalar<uint64_t>;
+using big_intptr_t = big_scalar<intptr_t>;
+using big_uintptr_t = big_scalar<uintptr_t>;
 
-using little_int8_t = little_scaler<int8_t>;
-using little_uint8_t = little_scaler<uint8_t>;
-using little_int16_t = little_scaler<int16_t>;
-using little_uint16_t = little_scaler<uint16_t>;
-using little_int32_t = little_scaler<int32_t>;
-using little_uint32_t = little_scaler<uint32_t>;
-using little_int64_t = little_scaler<int64_t>;
-using little_uint64_t = little_scaler<uint64_t>;
-using little_intptr_t = little_scaler<intptr_t>;
-using little_uintptr_t = little_scaler<uintptr_t>;
+using little_int8_t = little_scalar<int8_t>;
+using little_uint8_t = little_scalar<uint8_t>;
+using little_int16_t = little_scalar<int16_t>;
+using little_uint16_t = little_scalar<uint16_t>;
+using little_int32_t = little_scalar<int32_t>;
+using little_uint32_t = little_scalar<uint32_t>;
+using little_int64_t = little_scalar<int64_t>;
+using little_uint64_t = little_scalar<uint64_t>;
+using little_intptr_t = little_scalar<intptr_t>;
+using little_uintptr_t = little_scalar<uintptr_t>;
 
 }  // namespace yat
