@@ -30,7 +30,7 @@ constexpr bool is_little_endian_system = (endian::native == endian::little);
 constexpr bool is_big_endian_system = (endian::native == endian::big);
 
 /// This type can be specialized so that custom types can be supported by
-/// yat::base_endian_scalar
+/// yat::basic_endian_scalar
 template <typename T>
 struct endian_byte_swapper {
   YAT_BYTESWAP_CONSTEXPR T operator()(T value) const noexcept {
@@ -44,7 +44,7 @@ struct endian_byte_swapper {
 /// the same calling convention as yat::byteswap.
 template <typename T, endian Endianess,
           typename ByteSwapper = endian_byte_swapper<T>>
-class base_endian_scalar {
+class basic_endian_scalar {
   static_assert(
       std::conjunction_v<std::is_default_constructible<ByteSwapper>,
                          std::is_nothrow_invocable_r<T, ByteSwapper, T>>,
@@ -55,10 +55,10 @@ class base_endian_scalar {
   using value_type = T;
   using byte_swapper_type = ByteSwapper;
 
-  constexpr base_endian_scalar() noexcept = default;
+  constexpr basic_endian_scalar() noexcept = default;
 
   // cppcheck-suppress noExplicitConstructor
-  base_endian_scalar(const T& value) noexcept : _value{to_native(value)} {}
+  basic_endian_scalar(const T& value) noexcept : _value{to_native(value)} {}
 
   inline operator T() const noexcept { return to_native(_value); }
 
@@ -78,10 +78,10 @@ class base_endian_scalar {
 };
 
 template <typename T>
-using big_scalar = base_endian_scalar<T, endian::big>;
+using big_scalar = basic_endian_scalar<T, endian::big>;
 
 template <typename T>
-using little_scalar = base_endian_scalar<T, endian::little>;
+using little_scalar = basic_endian_scalar<T, endian::little>;
 
 using big_int8_t = big_scalar<int8_t>;
 using big_uint8_t = big_scalar<uint8_t>;

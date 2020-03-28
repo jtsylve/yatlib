@@ -35,11 +35,11 @@ struct is_variant_member<T, yat::variant<Types...>>
     : public std::disjunction<std::is_same<T, Types>...> {};
 
 /// Determines if a given type is a member type of a variant.
-template <typename T, typename... Types>
-using is_variant_member_t = typename is_variant_member<T, Types...>::type;
+template <typename T, typename VariantType>
+using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 
 /// Determines if a given type is a member type of a variant.
-template <typename T, typename... Types>
-constexpr bool is_variant_member_v = is_variant_member<T, Types...>::value;
+template <typename T, typename VariantType>
+constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
 
 }  // namespace yat

@@ -237,10 +237,11 @@ namespace yat {
 
 /// Takes any enumeration type and swaps its byteorder to the reverse of its
 /// current state.
-template <typename T>
+template <typename EnumType>
 [[nodiscard]] YAT_PURE_FUNCTION YAT_BYTESWAP_CONSTEXPR auto byteswap(
-    T value) noexcept -> std::enable_if_t<std::is_enum_v<T>, T> {
-  return static_cast<T>(byteswap(to_underlying(value)));
+    EnumType value) noexcept
+    -> std::enable_if_t<std::is_enum_v<EnumType>, EnumType> {
+  return static_cast<EnumType>(byteswap(to_underlying(value)));
 }
 
 }  // namespace yat

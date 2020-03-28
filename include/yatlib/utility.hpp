@@ -24,8 +24,8 @@
 
 namespace yat {
 
-/// Converts an enumberation to it's underlying type
-template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+/// Converts an enumeration to it's underlying type
+template <typename T>
 constexpr std::underlying_type_t<T> to_underlying(T value) noexcept {
   return static_cast<std::underlying_type_t<T>>(value);
 }
