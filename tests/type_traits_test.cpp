@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <yatlib/features.hpp>
 #include <yatlib/type_traits.hpp>
 #include <yatlib/variant.hpp>
 
@@ -56,4 +57,71 @@ TEST_CASE("is_variant_member", "[type_traits][is_variant_member]") {
                                 std::false_type>);
   STATIC_REQUIRE(
       std::is_same_v<yat::is_variant_member_t<int *, vtype>, std::false_type>);
+}
+
+TEST_CASE("is_one_of", "[type_traits][is_one_of]") {
+  STATIC_REQUIRE(yat::is_one_of_v<int, char, int, float, double>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_one_of_t<int, char, int, float, double>,
+                                std::true_type>);
+
+  STATIC_REQUIRE_FALSE(yat::is_one_of_v<unsigned, char, int, float, double>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_one_of_t<unsigned, char, int, float, double>,
+                     std::true_type>);
+}
+
+TEST_CASE("is_char_type", "[type_traits][is_char_type]") {
+  STATIC_REQUIRE(yat::is_char_type_v<char>);
+  STATIC_REQUIRE(yat::is_char_type_v<wchar_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char16_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char32_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<unsigned char>);
+  STATIC_REQUIRE(yat::is_char_type_v<wchar_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char16_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char32_t>);
+
+#ifdef YAT_SUPPORTS_CPP20
+  STATIC_REQUIRE(yat::is_char_type_v<char8_t>);
+#endif
+
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<wchar_t>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char16_t>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char32_t>, std::true_type>);
+  STATIC_REQUIRE(
+      std::is_same_v<yat::is_char_type_t<unsigned char>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<wchar_t>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char16_t>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char32_t>, std::true_type>);
+
+#ifdef YAT_SUPPORTS_CPP20
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char8_t>, std::true_type>);
+#endif
+
+  STATIC_REQUIRE(yat::is_char_type_v<char>);
+  STATIC_REQUIRE(yat::is_char_type_v<wchar_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char16_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char32_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<unsigned char>);
+  STATIC_REQUIRE(yat::is_char_type_v<wchar_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char16_t>);
+  STATIC_REQUIRE(yat::is_char_type_v<char32_t>);
+
+#ifdef YAT_SUPPORTS_CPP20
+  STATIC_REQUIRE(yat::is_char_type_v<char8_t>);
+#endif
+
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<int>, std::true_type>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<float>, std::true_type>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<double>, std::true_type>);
+
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<int>, std::true_type>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<float>, std::true_type>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<yat::is_char_type_t<double>, std::true_type>);
 }

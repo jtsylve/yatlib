@@ -2,6 +2,14 @@
 
 This document describes the features available in YATLib.  It is organized by header.  When `std` versions of implementations are available, implementations in the `yat` namespace are simply aliases to their `std` counterpart.
 
+## any.hpp
+
+Apple disallows the use of std::any before macOS 10.14 because the `std::bad_any_cast` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<any>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::any` on those systems.
+
+All of the `std` types in the `<any>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
+
+NOTE: If your project or its dependencies import the `<any>` header elsewhere, this may fail to work properly.
+
 ## bit.hpp
 
 ```cpp
@@ -95,6 +103,14 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 * `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
 * `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
 
+## optional.hpp
+
+Apple disallows the use of std::optional before macOS 10.14 because the `std::bad_optional_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<optional>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::optional` on those systems.
+
+All of the `std` types in the `<optional>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
+
+NOTE: If your project or its dependencies import the `<optional>` header elsewhere, this may fail to work properly.
+
 ## type_traits.hpp
 
 ```cpp
@@ -106,13 +122,43 @@ using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 
 template <typename T, typename VariantType>
 constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+
+template <typename T, typename... Types>
+struct is_one_of;
+
+template <typename T, typename... Types>
+using is_one_of_t = typename is_one_of<T, Types...>::type;
+
+template <typename T, typename... Types>
+constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
+
+template <typename T>
+struct is_char_type;
+
+template <typename T>
+constexpr bool is_char_type_v = is_char_type<T>::value;
+
+template <typename T>
+using is_char_type_t = typename is_char_type<T>::type;
 ```
 
 ### yat::is_variant_member
 
 * `yat::is_variant_member` determines if a given type `T` is a member type of a `VariantType`
-* `yat::is_variant_member_t` is a helper type that is set to either `std::true_type` or `std::false_type` for a given type/variant combination
-* `yat::is_variant_member_v` is a convenience type that provides a boolean value for a given type/variant combination
+* `yat::is_variant_member_t` gives the type of a given `yat::is_variant_member` result
+* `yat::is_variant_member_v` gives the boolean value of a given `yat::is_variant_member` result
+
+### yat::is_one_of
+
+* `yat::is_one_of` determines if a given type `T` is the same as any one of the given set of `Types`
+* `yat::is_one_of_t` gives the type of a given `yat::is_one_of` result
+* `yat::is_one_of_v` gives the boolean value of a given `yat::is_one_of` result
+
+### yat::is_char_type
+
+* `yat::is_char_type` determines if a given type `T` is a character type
+* `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
+* `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
 
 ## utility.hpp
 
@@ -129,8 +175,8 @@ It converts an enumeration to its underlying type.
 
 ## variant.hpp
 
-Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access::what` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
+Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
 
-All of the `std` types in the
+All of the `std` types in the `<variant>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
 
-NOTE: If your project or its dependencies import the `<variant>` header, this may fail to work properly.
+NOTE: If your project or its dependencies import the `<variant>` header elsewhere, this may fail to work properly.

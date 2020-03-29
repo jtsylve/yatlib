@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include <type_traits>
+#include <yatlib/optional.hpp>
 
-#include "any.hpp"
-#include "bit.hpp"
-#include "endian.hpp"
-#include "format.hpp"
-#include "optional.hpp"
-#include "type_traits.hpp"
-#include "utility.hpp"
-#include "variant.hpp"
+#include "common.hpp"
+
+TEST_CASE("bad_optional_access", "[optional][bad_optional_access]") {
+  REQUIRE(yat::bad_optional_access().what() != nullptr);
+
+  constexpr auto do_throw = [] { throw yat::bad_optional_access(); };
+
+  REQUIRE_THROWS_AS(do_throw(), yat::bad_optional_access);
+
+  yat::optional<int> v;
+
+  REQUIRE_THROWS_AS(v.value(), yat::bad_optional_access);
+}

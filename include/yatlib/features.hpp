@@ -17,6 +17,11 @@
 
 #include <cassert>
 
+// Check for C++20 support
+#if __cplusplus > 201703L
+  #define YAT_SUPPORTS_CPP20
+#endif
+
 // Check for consteval support
 #if defined(__cpp_consteval) && __cpp_consteval >= 201811
   #define YAT_CONSTEVAL consteval
