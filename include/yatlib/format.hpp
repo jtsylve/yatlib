@@ -78,6 +78,9 @@ namespace yat::detail {
 template <typename Context>
 class basic_format_args_store;
 
+template <typename T, typename CharT = char, bool Enabled = false>
+struct basic_formatter;
+
 }  // namespace yat::detail
 
 // Forward declarations
@@ -124,18 +127,40 @@ class format_error : public std::runtime_error {
 /// The enabled specializations of formatter define formatting rules for a given
 /// type. Enabled specializations meet the Formatter requirements.
 template <typename T, typename CharT = char>
-struct formatter {
-  // Disabled formatters are not default constructible
-  formatter() = delete;
+struct formatter
+    : detail::basic_formatter<
+          T, CharT,
+          std::conjunction_v<std::is_arithmetic<T>,
+                             std::negation<yat::is_char_type<T> > > > {};
 
-  // Disabled formatters are not copyable
-  formatter(const formatter&) = delete;
-  formatter& operator=(const formatter&) = delete;
+template <typename CharT>
+struct formatter<CharT, wchar_t>
+    : detail::basic_formatter<CharT, wchar_t, std::is_same_v<CharT, char> > {};
 
-  // Disabled formatters are not moveable
-  formatter(formatter&&) = delete;
-  formatter& operator=(formatter&&) = delete;
+template <typename CharT>
+struct formatter<CharT, CharT> : detail::basic_formatter<CharT, CharT, true> {};
+
+template <typename CharT>
+struct formatter<CharT*, CharT> : detail::basic_formatter<CharT*, CharT, true> {
 };
+
+template <typename CharT>
+struct formatter<const CharT*, CharT>
+    : detail::basic_formatter<const CharT*, CharT, true> {};
+
+template <typename CharT, std::size_t N>
+struct formatter<const CharT[N], CharT>
+    : detail::basic_formatter<const CharT[N], CharT, true> {};
+
+template <typename CharT, typename Traits, typename Allocator>
+struct formatter<std::basic_string<CharT, Traits, Allocator>, CharT>
+    : detail::basic_formatter<std::basic_string<CharT, Traits, Allocator>,
+                              CharT, true> {};
+
+template <typename CharT, typename Traits>
+struct formatter<std::basic_string_view<CharT, Traits>, CharT>
+    : detail::basic_formatter<std::basic_string_view<CharT, Traits>, CharT,
+                              true> {};
 
 // [format.parse_context]
 
@@ -376,6 +401,25 @@ class basic_format_args_store : public std::vector<basic_format_arg<Context> > {
       : std::vector<basic_format_arg<Context> >(
             {basic_format_arg<Context>{std::forward<Args>(args)}...}) {}
 };
+
+/// Disabled formatter
+template <typename T, typename CharT>
+struct basic_formatter<T, CharT, false> {
+  // Disabled formatters are not default constructible
+  explicit basic_formatter() = delete;
+
+  // Disabled formatters are not copyable
+  basic_formatter(const basic_formatter&) = delete;
+  basic_formatter& operator=(const basic_formatter&) = delete;
+
+  // Disabled formatters are not moveable
+  basic_formatter(basic_formatter&&) = delete;
+  basic_formatter& operator=(basic_formatter&&) = delete;
+};
+
+/// Enabled standard formatters
+template <typename T, typename CharT>
+struct basic_formatter<T, CharT, true> {};
 
 }  // namespace yat::detail
 
