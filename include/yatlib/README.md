@@ -122,13 +122,43 @@ using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 
 template <typename T, typename VariantType>
 constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+
+template <typename T, typename... Types>
+struct is_one_of;
+
+template <typename T, typename... Types>
+using is_one_of_t = typename is_one_of<T, Types...>::type;
+
+template <typename T, typename... Types>
+constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
+
+template <typename T>
+struct is_char_type;
+
+template <typename T>
+constexpr bool is_char_type_v = is_char_type<T>::value;
+
+template <typename T>
+using is_char_type_t = typename is_char_type<T>::type;
 ```
 
 ### yat::is_variant_member
 
 * `yat::is_variant_member` determines if a given type `T` is a member type of a `VariantType`
-* `yat::is_variant_member_t` is a helper type that is set to either `std::true_type` or `std::false_type` for a given type/variant combination
-* `yat::is_variant_member_v` is a convenience type that provides a boolean value for a given type/variant combination
+* `yat::is_variant_member_t` gives the type of a given `yat::is_variant_member` result
+* `yat::is_variant_member_v` gives the boolean value of a given `yat::is_variant_member` result
+
+### yat::is_one_of
+
+* `yat::is_one_of` determines if a given type `T` is the same as any one of the given set of `Types`
+* `yat::is_one_of_t` gives the type of a given `yat::is_one_of` result
+* `yat::is_one_of_v` gives the boolean value of a given `yat::is_one_of` result
+
+### yat::is_char_type
+
+* `yat::is_char_type` determines if a given type `T` is a character type
+* `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
+* `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
 
 ## utility.hpp
 

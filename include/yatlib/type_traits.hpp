@@ -15,8 +15,10 @@
  */
 #pragma once
 
+#include <cstddef>
 #include <type_traits>
 
+#include "features.hpp"
 #include "variant.hpp"
 
 /////////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ struct is_variant_member;
 /// Determines if a given type is a member type of a variant.
 template <typename T, typename... Types>
 struct is_variant_member<T, yat::variant<Types...>>
-    : public std::disjunction<std::is_same<T, Types>...> {};
+    : std::disjunction<std::is_same<T, Types>...> {};
 
 /// Determines if a given type is a member type of a variant.
 template <typename T, typename VariantType>
@@ -41,5 +43,35 @@ using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 /// Determines if a given type is a member type of a variant.
 template <typename T, typename VariantType>
 constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+
+/// Determines if T is among a the set of Types
+template <typename T, typename... Types>
+struct is_one_of : std::disjunction<std::is_same<T, Types>...> {};
+
+/// Determines if T is among a the set of Types
+template <typename T, typename... Types>
+using is_one_of_t = typename is_one_of<T, Types...>::type;
+
+/// Determines if T is among a the set of Types
+template <typename T, typename... Types>
+constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
+
+/// Determines if T is a character type
+template <typename T>
+struct is_char_type : is_one_of<std::decay_t<T>, char, signed char,
+                                unsigned char, wchar_t, char16_t, char32_t> {};
+
+#ifdef YAT_SUPPORTS_CPP20
+template <>
+struct is_char_type<char8_t> : std::true_type {};
+#endif  // YAT_SUPPORTS_CPP20
+
+/// Determines if T is a character type
+template <typename T>
+constexpr bool is_char_type_v = is_char_type<T>::value;
+
+/// Determines if T is a character type
+template <typename T>
+using is_char_type_t = typename is_char_type<T>::type;
 
 }  // namespace yat
