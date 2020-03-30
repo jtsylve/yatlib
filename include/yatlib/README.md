@@ -4,6 +4,17 @@ This document describes the features available in YATLib.  It is organized by he
 
 ## any.hpp
 
+```cpp
+namespace yat {
+
+using std::any;
+using std::any_cast;
+using std::bad_any_cast;
+using std::make_any;
+
+}  // namespace yat
+```
+
 Apple disallows the use of std::any before macOS 10.14 because the `std::bad_any_cast` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<any>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::any` on those systems.
 
 All of the `std` types in the `<any>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
@@ -13,6 +24,8 @@ NOTE: If your project or its dependencies import the `<any>` header elsewhere, t
 ## bit.hpp
 
 ```cpp
+namespace yat {
+
 enum class endian
 {
     little = /*implementation-defined*/,
@@ -25,6 +38,8 @@ constexpr To bit_cast(const From& from) noexcept;
 
 template <typename T>
 constexpr T byteswap(T value) noexcept;
+
+} // namespace yat
 ```
 
 ### yat::endian
@@ -54,6 +69,8 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 ## endian.hpp
 
 ```cpp
+namespace yat {
+
 constexpr bool is_little_endian_system;
 constexpr bool is_big_endian_system;
 
@@ -91,6 +108,8 @@ using little_int64_t = little_scalar<int64_t>;
 using little_uint64_t = little_scalar<uint64_t>;
 using little_intptr_t = little_scalar<intptr_t>;
 using little_uintptr_t = little_scalar<uintptr_t>;
+
+} // namespace yat
 ```
 
 ### Constants
@@ -105,6 +124,18 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 
 ## optional.hpp
 
+```cpp
+namespace yat {
+
+using std::bad_optional_access;
+using std::make_optional;
+using std::nullopt;
+using std::nullopt_t;
+using std::optional;
+
+}  // namespace yat
+```
+
 Apple disallows the use of std::optional before macOS 10.14 because the `std::bad_optional_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<optional>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::optional` on those systems.
 
 All of the `std` types in the `<optional>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
@@ -114,6 +145,8 @@ NOTE: If your project or its dependencies import the `<optional>` header elsewhe
 ## type_traits.hpp
 
 ```cpp
+namespace yat {
+
 template <typename T, typename VariantType>
 struct is_variant_member;
 
@@ -140,6 +173,14 @@ constexpr bool is_char_type_v = is_char_type<T>::value;
 
 template <typename T>
 using is_char_type_t = typename is_char_type<T>::type;
+
+template <typename T, std::size_t = sizeof(T)>
+using complete_t = T;
+
+template <typename T>
+struct is_complete_type;
+
+} // namespace yat
 ```
 
 ### yat::is_variant_member
@@ -160,11 +201,22 @@ using is_char_type_t = typename is_char_type<T>::type;
 * `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
 * `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
 
+### yat::is_complete
+
+* `yat::complete_t` is a helper type that is only enabled when a given type is complete.
+* `yat::is_complete` determines if a given type `T` is complete.  It is useful for determining if a type is specialized.
+* `yat::is_complete_t` gives the type of a given `yat::is_complete` result
+* `yat::is_complete_v` gives the boolean value of a given `yat::is_complete` result
+
 ## utility.hpp
 
 ```cpp
+namespace yat {
+
 template <typename T>
 constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
+
+} // namespace yat
 ```
 
 ### yat::to_underlying
@@ -174,6 +226,25 @@ constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
 It converts an enumeration to its underlying type.
 
 ## variant.hpp
+
+```cpp
+namespace yat {
+
+using std::bad_variant_access;
+using std::get;
+using std::get_if;
+using std::holds_alternative;
+using std::monostate;
+using std::variant;
+using std::variant_alternative;
+using std::variant_alternative_t;
+using std::variant_npos;
+using std::variant_size;
+using std::variant_size_v;
+using std::visit;
+
+}  // namespace yat
+```
 
 Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
 

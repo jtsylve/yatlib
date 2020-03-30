@@ -74,4 +74,26 @@ constexpr bool is_char_type_v = is_char_type<T>::value;
 template <typename T>
 using is_char_type_t = typename is_char_type<T>::type;
 
+/// Helper type that's only enabled if T is a complete type
+template <typename T, std::size_t = sizeof(T)>
+using complete_t = T;
+
+/// Determines if a given type is a complete type.  This is useful for detecting
+/// specializations
+template <typename...>
+struct is_complete_type : std::false_type {};
+
+/// Determines if a given type is a complete type.  This is useful for detecting
+/// specializations
+template <typename T>
+struct is_complete_type<complete_t<T>> : std::true_type {};
+
+/// Determines if T is a complete type
+template <typename T>
+constexpr bool is_complete_type_v = is_complete_type<T>::value;
+
+/// Determines if T is a complete type
+template <typename T>
+using is_complete_type_t = typename is_complete_type<T>::type;
+
 }  // namespace yat

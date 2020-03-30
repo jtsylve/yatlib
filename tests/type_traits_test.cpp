@@ -111,17 +111,27 @@ TEST_CASE("is_char_type", "[type_traits][is_char_type]") {
   STATIC_REQUIRE(yat::is_char_type_v<char8_t>);
 #endif
 
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<int>, std::true_type>);
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<float>, std::true_type>);
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<double>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<int>, std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<float>, std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<double>, std::false_type>);
 
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<int>, std::true_type>);
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<float>, std::true_type>);
-  STATIC_REQUIRE_FALSE(
-      std::is_same_v<yat::is_char_type_t<double>, std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<int>, std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<float>, std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<double>, std::false_type>);
+}
+
+template <typename>
+struct S;
+
+template <>
+struct S<int> {};
+
+TEST_CASE("is_complete_type", "[type_traits][is_complete_type]") {
+  STATIC_REQUIRE_FALSE(yat::is_complete_type_v<S<float>>);
+  STATIC_REQUIRE(yat::is_complete_type_v<S<int>>);
+
+  STATIC_REQUIRE(
+      std::is_same_v<yat::is_complete_type_t<S<float>>, std::false_type>);
+  STATIC_REQUIRE(
+      std::is_same_v<yat::is_complete_type_t<S<int>>, std::true_type>);
 }
