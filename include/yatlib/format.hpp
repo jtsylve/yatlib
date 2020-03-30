@@ -79,7 +79,7 @@ template <typename Context>
 class basic_format_args_store;
 
 template <typename T, typename CharT = char, bool Enabled = false>
-struct basic_formatter;
+class basic_formatter;
 
 }  // namespace yat::detail
 
@@ -128,39 +128,53 @@ class format_error : public std::runtime_error {
 /// type. Enabled specializations meet the Formatter requirements.
 template <typename T, typename CharT = char>
 struct formatter
-    : detail::basic_formatter<
+    : public detail::basic_formatter<
           T, CharT,
           std::conjunction_v<std::is_arithmetic<T>,
                              std::negation<yat::is_char_type<T> > > > {};
 
 template <typename CharT>
 struct formatter<CharT, wchar_t>
-    : detail::basic_formatter<CharT, wchar_t, std::is_same_v<CharT, char> > {};
+    : public detail::basic_formatter<CharT, wchar_t,
+                                     std::is_same_v<CharT, char> > {};
 
 template <typename CharT>
-struct formatter<CharT, CharT> : detail::basic_formatter<CharT, CharT, true> {};
+struct formatter<CharT, CharT>
+    : public detail::basic_formatter<CharT, CharT, true> {};
 
 template <typename CharT>
-struct formatter<CharT*, CharT> : detail::basic_formatter<CharT*, CharT, true> {
-};
+struct formatter<CharT*, CharT>
+    : public detail::basic_formatter<CharT*, CharT, true> {};
 
 template <typename CharT>
 struct formatter<const CharT*, CharT>
-    : detail::basic_formatter<const CharT*, CharT, true> {};
+    : public detail::basic_formatter<const CharT*, CharT, true> {};
+
+template <typename CharT>
+struct formatter<std::nullptr_t, CharT>
+    : public detail::basic_formatter<std::nullptr_t, CharT, true> {};
+
+template <typename CharT>
+struct formatter<void*, CharT>
+    : public detail::basic_formatter<void*, CharT, true> {};
+
+template <typename CharT>
+struct formatter<const void*, CharT>
+    : public detail::basic_formatter<const void*, CharT, true> {};
 
 template <typename CharT, std::size_t N>
 struct formatter<const CharT[N], CharT>
-    : detail::basic_formatter<const CharT[N], CharT, true> {};
+    : public detail::basic_formatter<const CharT[N], CharT, true> {};
 
 template <typename CharT, typename Traits, typename Allocator>
 struct formatter<std::basic_string<CharT, Traits, Allocator>, CharT>
-    : detail::basic_formatter<std::basic_string<CharT, Traits, Allocator>,
-                              CharT, true> {};
+    : public detail::basic_formatter<
+          std::basic_string<CharT, Traits, Allocator>, CharT, true> {};
 
 template <typename CharT, typename Traits>
 struct formatter<std::basic_string_view<CharT, Traits>, CharT>
-    : detail::basic_formatter<std::basic_string_view<CharT, Traits>, CharT,
-                              true> {};
+    : public detail::basic_formatter<std::basic_string_view<CharT, Traits>,
+                                     CharT, true> {};
 
 // [format.parse_context]
 
@@ -404,7 +418,8 @@ class basic_format_args_store : public std::vector<basic_format_arg<Context> > {
 
 /// Disabled formatter
 template <typename T, typename CharT>
-struct basic_formatter<T, CharT, false> {
+class basic_formatter<T, CharT, false> {
+ public:
   // Disabled formatters are not default constructible
   explicit basic_formatter() = delete;
 
@@ -419,7 +434,18 @@ struct basic_formatter<T, CharT, false> {
 
 /// Enabled standard formatters
 template <typename T, typename CharT>
-struct basic_formatter<T, CharT, true> {};
+class basic_formatter<T, CharT, true> {
+  using PC = yat::basic_format_parse_context<CharT>;
+
+  template <typename OutputIt>
+  using FC = yat::basic_format_context<OutputIt, CharT>;
+
+ public:
+  typename PC::iterator parse(PC pc);
+
+  template <typename OutputIt>
+  typename FC<OutputIt>::iterator format(const T& value, FC<OutputIt> fc);
+};
 
 }  // namespace yat::detail
 
