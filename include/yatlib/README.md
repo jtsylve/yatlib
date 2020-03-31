@@ -178,7 +178,7 @@ template <typename T, std::size_t = sizeof(T)>
 using complete_t = T;
 
 template <typename T>
-struct is_complete_type;
+struct is_complete;
 
 } // namespace yat
 ```

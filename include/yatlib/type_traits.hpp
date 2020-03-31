@@ -81,19 +81,19 @@ using complete_t = T;
 /// Determines if a given type is a complete type.  This is useful for detecting
 /// specializations
 template <typename...>
-struct is_complete_type : std::false_type {};
+struct is_complete : std::false_type {};
 
 /// Determines if a given type is a complete type.  This is useful for detecting
 /// specializations
 template <typename T>
-struct is_complete_type<complete_t<T>> : std::true_type {};
+struct is_complete<complete_t<T>> : std::true_type {};
 
 /// Determines if T is a complete type
 template <typename T>
-constexpr bool is_complete_type_v = is_complete_type<T>::value;
+constexpr bool is_complete_v = is_complete<T>::value;
 
 /// Determines if T is a complete type
 template <typename T>
-using is_complete_type_t = typename is_complete_type<T>::type;
+using is_complete_t = typename is_complete<T>::type;
 
 }  // namespace yat
