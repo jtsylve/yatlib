@@ -10,6 +10,22 @@ All of the `std` types in the `<any>` header are aliases into the `yat` namespac
 
 NOTE: If your project or its dependencies import the `<any>` header elsewhere, this may fail to work properly.
 
+## array.hpp
+
+```cpp
+template <typename T, std::size_t N>
+constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N]);
+
+template <typename T, std::size_t N>
+constexpr std::array<std::remove_cv_t<T>, N> to_array(T(&&a)[N]);
+```
+
+### yat::to_array
+
+`yat::to_array` provides an implementation of [std::to_array](https://en.cppreference.com/w/cpp/container/array/to_array).
+
+These functions creates a `std::array` from one dimensional built-in arrays.
+
 ## bit.hpp
 
 ```cpp
@@ -30,7 +46,6 @@ constexpr T byteswap(T value) noexcept;
 ### yat::endian
 
 `yat::endian` provides an implementation of [std::endian](https://en.cppreference.com/w/cpp/types/endian).
-
 
 ### yat::bit_cast
 

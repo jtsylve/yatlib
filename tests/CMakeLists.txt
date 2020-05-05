@@ -9,6 +9,7 @@ target_link_libraries(catch_main Catch2::Catch2 yat::yat)
 add_executable(
   unittests
   "any_test.cpp"
+  "array_test.cpp"
   "bit_cast_test.cpp"
   "byteswap_test.cpp"
   "common.hpp"

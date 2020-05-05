@@ -16,6 +16,7 @@
 #pragma once
 
 #include "any.hpp"
+#include "array.hpp"
 #include "bit.hpp"
 #include "endian.hpp"
 #include "optional.hpp"
