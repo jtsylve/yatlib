@@ -54,6 +54,17 @@ jobs:
             - g++-9
       env:
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+    - name: gcc 10
+      os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: “ppa:ubuntu-toolchain-r/test”
+          packages:
+            - g++-10
+      env:
+        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
 
     # Linux clang
     - name: clang 5
@@ -140,7 +151,6 @@ jobs:
             - clang-11
       env:
         - MATRIX_EVAL="CC=clang-11 && CXX=clang++-11"
-
     # Windows MSVC
     - name: Windows (MSVC)
       os: windows
