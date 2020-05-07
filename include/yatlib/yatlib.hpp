@@ -19,6 +19,7 @@
 #include "array.hpp"
 #include "bit.hpp"
 #include "endian.hpp"
+#include "memory.hpp"
 #include "optional.hpp"
 #include "type_traits.hpp"
 #include "utility.hpp"

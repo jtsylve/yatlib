@@ -118,6 +118,22 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 * `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
 * `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
 
+## memory.hpp
+
+```cpp
+template <typename Ptr>
+constexpr auto to_address(const Ptr& p) noexcept;
+
+template <typename T>
+constexpr T* to_address(T* p) noexcept;
+```
+
+### yat::to_address
+
+`yat::to_address` provides an implementation of [std::to_address](https://en.cppreference.com/w/cpp/memory/to_address).  
+
+It obtains the address represented by p without forming a reference to the pointee.
+
 ## optional.hpp
 
 Apple disallows the use of std::optional before macOS 10.14 because the `std::bad_optional_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<optional>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::optional` on those systems.
