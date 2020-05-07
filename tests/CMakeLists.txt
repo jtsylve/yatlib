@@ -14,6 +14,7 @@ add_executable(
   "byteswap_test.cpp"
   "common.hpp"
   "endian_test.cpp"
+  "memory_test.cpp"
   "optional_test.cpp"
   "type_traits_test.cpp"
   "utility_test.cpp"
