@@ -20,6 +20,7 @@
 #include "bit.hpp"
 #include "endian.hpp"
 #include "optional.hpp"
+#include "span.hpp"
 #include "type_traits.hpp"
 #include "utility.hpp"
 #include "variant.hpp"
