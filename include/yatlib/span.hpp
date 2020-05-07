@@ -26,6 +26,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "memory.hpp"
+
 /////////////////////////////////////////
 // P0122R3 - https://wg21.link/P0122R3 //
 /////////////////////////////////////////
@@ -77,7 +79,7 @@ class span {
   }
 
   /// Constructs a span that is a view over the range [first, first + count);
-  /// the resulting span has data() == std::to_address(first) and size() ==
+  /// the resulting span has data() == yat::to_address(first) and size() ==
   /// count.
   ///
   /// The behavior is undefined if [first, first + count) is not a valid range,
@@ -85,14 +87,14 @@ class span {
   /// std::dynamic_extent && count != extent.
   template <typename It>
   constexpr span(It first, size_type count) noexcept
-      : _count{count}, _data{std::to_address(first)} {
+      : _count{count}, _data{yat::to_address(first)} {
     if constexpr (Extent != dynamic_extent) {
       assert(_count == Extent);
     }
   }
 
   /// Constructs a span that is a view over the range [first, last); the
-  /// resulting span has data() == std::to_address(first) and size() ==
+  /// resulting span has data() == yat::to_address(first) and size() ==
   /// last-first.
   ///
   /// The behavior is undefined if [first, last) is not a valid range, if It
@@ -101,7 +103,7 @@ class span {
   /// last-first != extent.
   template <typename It, typename End>
   constexpr span(It first, End last) noexcept
-      : _count{last - first}, _data{std::to_address(first)} {
+      : _count{last - first}, _data{yat::to_address(first)} {
     if constexpr (Extent != dynamic_extent) {
       assert(_count == Extent);
     }
