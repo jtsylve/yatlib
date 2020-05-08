@@ -19,6 +19,7 @@
   #include <span>
 #endif
 
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <iterator>
@@ -37,14 +38,16 @@
   #define YAT_INTERNAL_USE_STD_SPAN
 #endif
 
-namespace yat {
-
 #ifdef YAT_INTERNAL_USE_STD_SPAN
 
+namespace yat {
 using std::dynamic_extent;
 using std::span;
+}  // namespace yat
 
 #else
+
+namespace yat {
 
 /// yat::dynamic_extent is a constant of type std::size_t that is used to
 /// differentiate yat::span of static and dynamic extent.
@@ -63,20 +66,24 @@ class span {
   using value_type = std::remove_cv_t<ElementType>;
   using size_type = std::size_t;
   using difference_type = std::ptrdiff_t;
-  using pointer = element_type*;
-  using const_pointer = const element_type*;
-  using reference = element_type&;
-  using const_reference = const element_type&;
+  using pointer = element_type *;
+  using const_pointer = const element_type *;
+  using reference = element_type &;
+  using const_reference = const element_type &;
   class iterator;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
   static constexpr size_type extent = Extent;
 
   /// Constructs an empty span whose data() == nullptr and size() == 0.
-  constexpr span() noexcept {
-    static_assert(Extent == 0 || Extent == dynamic_extent,
-                  "can not default construct a non-empty static span");
-  }
+  ///
+  /// This overload only participates in overload resolution if extent == 0 ||
+  /// extent == std::dynamic_extent.
+  template <std::size_t S = Extent,
+            typename = std::enable_if_t<
+                std::disjunction_v<std::bool_constant<S == 0>,
+                                   std::bool_constant<S == dynamic_extent> > > >
+  constexpr span() noexcept {}
 
   /// Constructs a span that is a view over the range [first, first + count);
   /// the resulting span has data() == yat::to_address(first) and size() ==
@@ -108,6 +115,46 @@ class span {
       assert(_count == Extent);
     }
   }
+
+  /// Constructs a span that is a view over the array arr; the resulting span
+  /// has size() == N and data() == std::data(arr).
+  template <std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  constexpr span(element_type (&arr)[N]) noexcept
+      : _count{N}, _data{std::data(arr)} {
+    static_assert(Extent == dynamic_extent || N == Extent);
+  }
+
+  /// Constructs a span that is a view over the array arr; the resulting span
+  /// has size() == N and data() == std::data(arr).
+  template <typename T,
+            std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  constexpr span(std::array<T, N> &arr) noexcept
+      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {
+    static_assert(Extent == dynamic_extent || N == Extent);
+  }
+
+  /// Constructs a span that is a view over the array arr; the resulting span
+  /// has size() == N and data() == std::data(arr).
+  template <typename T,
+            std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  constexpr span(const std::array<T, N> &arr) noexcept
+      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {
+    static_assert(Extent == dynamic_extent || N == Extent);
+  }
+
+  /// Returns the number of elements in the span.
+  [[nodiscard]] constexpr size_type size() const noexcept { return _count; }
+
+  /// Returns the size of the sequence in bytes.
+  [[nodiscard]] constexpr size_type size_bytes() const noexcept {
+    return _count * sizeof(element_type);
+  }
+
+  /// Checks if the span is empty.
+  [[nodiscard]] constexpr bool empty() const noexcept { return (_count == 0); }
+
+  /// Returns a pointer to the beginning of the sequence.
+  [[nodiscard]] constexpr pointer data() const noexcept { return _data; }
 
  private:
   size_type _count{};
