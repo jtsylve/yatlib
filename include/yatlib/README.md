@@ -225,6 +225,13 @@ using type_identity_t = typename type_identity<T>::type;
 * `yat::is_dereferencable_t` gives the type of a given `yat::is_dereferencable` result
 * `yat::is_dereferencable_v` gives the boolean value of a given `yat::is_dereferencable` result
 
+### yat::type_identity
+
+`yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).  
+
+* `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
+* `yat::type_identity_t` gives the type of a given `yat::itype_identity` result
+
 ## utility.hpp
 
 ```cpp
@@ -237,13 +244,6 @@ constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
 `yat::to_underlying` provides an implementation of the proposed `std::to_underlying` from [P1682R0](https://wg21.link/P1682R0).  
 
 It converts an enumeration to its underlying type.
-
-### yat::type_identity
-
-`yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).  
-
-* `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
-* `yat::type_identity_t` gives the type of a given `yat::itype_identity` result
 
 ## variant.hpp
 
