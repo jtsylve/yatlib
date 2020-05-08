@@ -136,3 +136,107 @@ TEST_CASE("is_derefenceable", "[type_traits][is_derefenceable]") {
   STATIC_REQUIRE(yat::is_dereferencable_v<A>);
   STATIC_REQUIRE(yat::is_dereferencable_v<int (*)(int)>);
 }
+
+template <typename T>
+constexpr bool test_type_identity() {
+  static_assert(std::is_same_v<T, typename yat::type_identity<T>::type>);
+  static_assert(std::is_same_v<T, yat::type_identity_t<T>>);
+
+  if constexpr (!std::is_function_v<T>) {
+    static_assert(
+        std::is_same_v<const T, typename yat::type_identity<const T>::type>);
+    static_assert(
+        std::is_same_v<volatile T,
+                       typename yat::type_identity<volatile T>::type>);
+    static_assert(
+        std::is_same_v<const volatile T,
+                       typename yat::type_identity<const volatile T>::type>);
+
+    static_assert(std::is_same_v<const T, yat::type_identity_t<const T>>);
+    static_assert(std::is_same_v<volatile T, yat::type_identity_t<volatile T>>);
+    static_assert(std::is_same_v<const volatile T,
+                                 yat::type_identity_t<const volatile T>>);
+  }
+
+  if constexpr (!std::is_void_v<T>) {
+    static_assert(std::is_same_v<T &, typename yat::type_identity<T &>::type>);
+    static_assert(
+        std::is_same_v<T &&, typename yat::type_identity<T &&>::type>);
+
+    static_assert(std::is_same_v<T &, yat::type_identity_t<T &>>);
+    static_assert(std::is_same_v<T &&, yat::type_identity_t<T &&>>);
+  }
+
+  if constexpr (!std::is_void_v<T> && !std::is_function_v<T>) {
+    static_assert(std::is_same_v<const T &,
+                                 typename yat::type_identity<const T &>::type>);
+    static_assert(
+        std::is_same_v<volatile T &,
+                       typename yat::type_identity<volatile T &>::type>);
+    static_assert(
+        std::is_same_v<const volatile T &,
+                       typename yat::type_identity<const volatile T &>::type>);
+    static_assert(
+        std::is_same_v<const T &&,
+                       typename yat::type_identity<const T &&>::type>);
+    static_assert(
+        std::is_same_v<volatile T &&,
+                       typename yat::type_identity<volatile T &&>::type>);
+    static_assert(
+        std::is_same_v<const volatile T &&,
+                       typename yat::type_identity<const volatile T &&>::type>);
+
+    static_assert(std::is_same_v<const T &, yat::type_identity_t<const T &>>);
+    static_assert(
+        std::is_same_v<volatile T &, yat::type_identity_t<volatile T &>>);
+    static_assert(std::is_same_v<const volatile T &,
+                                 yat::type_identity_t<const volatile T &>>);
+    static_assert(std::is_same_v<const T &&, yat::type_identity_t<const T &&>>);
+    static_assert(
+        std::is_same_v<volatile T &&, yat::type_identity_t<volatile T &&>>);
+    static_assert(std::is_same_v<const volatile T &&,
+                                 yat::type_identity_t<const volatile T &&>>);
+  }
+
+  return true;
+}
+
+class C {};
+
+TEST_CASE("type_identity", "[type_traits][is_derefenceable]") {
+  STATIC_REQUIRE(test_type_identity<void>());
+  STATIC_REQUIRE(test_type_identity<int>());
+  STATIC_REQUIRE(test_type_identity<int *>());
+  STATIC_REQUIRE(test_type_identity<const int *>());
+  STATIC_REQUIRE(test_type_identity<volatile int *>());
+  STATIC_REQUIRE(test_type_identity<const volatile int *>());
+  STATIC_REQUIRE(test_type_identity<int[3]>());
+  STATIC_REQUIRE(test_type_identity<int[]>());
+  STATIC_REQUIRE(test_type_identity<int(int)>());
+  STATIC_REQUIRE(test_type_identity<int &(int)>());
+  STATIC_REQUIRE(test_type_identity<const int &(int)>());
+  STATIC_REQUIRE(test_type_identity<volatile int &(int)>());
+  STATIC_REQUIRE(test_type_identity<const volatile int &(int)>());
+  STATIC_REQUIRE(test_type_identity<int(int &)>());
+  STATIC_REQUIRE(test_type_identity<int(const int &)>());
+  STATIC_REQUIRE(test_type_identity<int(volatile int &)>());
+  STATIC_REQUIRE(test_type_identity<int(const volatile int &)>());
+  STATIC_REQUIRE(test_type_identity<int C::*>());
+  STATIC_REQUIRE(test_type_identity<const int C::*>());
+  STATIC_REQUIRE(test_type_identity<volatile int C::*>());
+  STATIC_REQUIRE(test_type_identity<const volatile int C::*>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int)>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int &)>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(const int &) const>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(volatile int &) volatile>());
+  STATIC_REQUIRE(
+      test_type_identity<int (C::*)(const volatile int &) const volatile>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int) &>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int) const &>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int) &&>());
+  STATIC_REQUIRE(test_type_identity<int (C::*)(int) const &&>());
+  STATIC_REQUIRE(test_type_identity<int &(C::*)(int)>());
+  STATIC_REQUIRE(test_type_identity<const int &(C::*)(int)>());
+  STATIC_REQUIRE(test_type_identity<volatile int &(C::*)(int)>());
+  STATIC_REQUIRE(test_type_identity<const volatile int &(C::*)(int)>());
+}

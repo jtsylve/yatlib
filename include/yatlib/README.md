@@ -193,6 +193,12 @@ using is_dereferencable_t = typename is_dereferencable<T>::type;
 
 template <typename T>
 constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
+
+template <typename T>
+struct type_identity;
+
+template <typename T>
+using type_identity_t = typename type_identity<T>::type;
 ```
 
 ### yat::is_variant_member
@@ -231,6 +237,13 @@ constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
 `yat::to_underlying` provides an implementation of the proposed `std::to_underlying` from [P1682R0](https://wg21.link/P1682R0).  
 
 It converts an enumeration to its underlying type.
+
+### yat::type_identity
+
+`yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).  
+
+* `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
+* `yat::type_identity_t` gives the type of a given `yat::itype_identity` result
 
 ## variant.hpp
 

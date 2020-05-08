@@ -92,3 +92,50 @@ template <typename T>
 constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 
 }  // namespace yat
+
+/////////////////////////////////////////
+// P0887R1 - https://wg21.link/P0887R1 //
+/////////////////////////////////////////
+
+// Check to see if stdlib support is available
+#if defined(__cpp_lib_type_identity) && __cpp_lib_type_identity >= 201806L
+  #define YAT_INTERNAL_USE_STD_TYPE_IDENTITY
+#endif
+
+#ifdef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
+
+namespace yat {
+
+using std::type_identity;
+using std::type_identity_t;
+
+}  // namespace yat
+
+#else
+
+namespace yat {
+
+/// Provides the member typedef type that names T (i.e., the identity
+/// transformation).
+///
+/// The behavior of a program that adds specializations for type_identity is
+/// undefined.
+template <typename T>
+struct type_identity {
+  using type = T;
+};
+
+/// Provides the member typedef type that names T (i.e., the identity
+/// transformation).
+///
+/// The behavior of a program that adds specializations for type_identity is
+/// undefined.
+template <typename T>
+using type_identity_t = typename type_identity<T>::type;
+
+}  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_TYPE_IDENTITY
+
+// Cleanup internal macros
+#undef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
