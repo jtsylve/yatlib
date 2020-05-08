@@ -118,6 +118,19 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 * `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
 * `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
 
+## iterator.hpp
+
+```cpp
+template <typename T, typename = std::enable_if_t<is_dereferencable_v<T> > >
+using iter_reference_t = decltype(*std::declval<T&>());
+```
+
+### yat::iter_reference_t
+
+`yat::iter_reference_t` provides an implementation of [std::iter_reference_t](https://en.cppreference.com/w/cpp/iterator/iter_t).  
+
+It computes the reference type of T..
+
 ## memory.hpp
 
 ```cpp
@@ -171,6 +184,15 @@ constexpr bool is_char_type_v = is_char_type<T>::value;
 
 template <typename T>
 using is_char_type_t = typename is_char_type<T>::type;
+
+template <typename T>
+struct is_dereferencable;
+
+template <typename T>
+using is_dereferencable_t = typename is_dereferencable<T>::type;
+
+template <typename T>
+constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 ```
 
 ### yat::is_variant_member
@@ -190,6 +212,12 @@ using is_char_type_t = typename is_char_type<T>::type;
 * `yat::is_char_type` determines if a given type `T` is a character type
 * `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
 * `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
+
+### yat::is_dereferencable
+
+* `yat::is_dereferencable` determines if a given type `T` is dereferencable
+* `yat::is_dereferencable_t` gives the type of a given `yat::is_dereferencable` result
+* `yat::is_dereferencable_v` gives the boolean value of a given `yat::is_dereferencable` result
 
 ## utility.hpp
 

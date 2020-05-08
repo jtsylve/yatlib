@@ -74,4 +74,21 @@ constexpr bool is_char_type_v = is_char_type<T>::value;
 template <typename T>
 using is_char_type_t = typename is_char_type<T>::type;
 
+/// Determines if T is dereferencable
+template <typename T, typename = void>
+struct is_dereferencable : std::false_type {};
+
+/// Determines if T is dereferencable
+template <typename T>
+struct is_dereferencable<T, std::void_t<decltype(*std::declval<T>())>>
+    : std::true_type {};
+
+/// Determines if T is dereferencable
+template <typename T>
+using is_dereferencable_t = typename is_dereferencable<T>::type;
+
+/// Determines if T is dereferencable
+template <typename T>
+constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
+
 }  // namespace yat

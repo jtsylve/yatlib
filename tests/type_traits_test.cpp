@@ -125,3 +125,14 @@ TEST_CASE("is_char_type", "[type_traits][is_char_type]") {
   STATIC_REQUIRE_FALSE(
       std::is_same_v<yat::is_char_type_t<double>, std::true_type>);
 }
+
+struct A {
+  constexpr void *operator*() const noexcept;
+};
+
+TEST_CASE("is_derefenceable", "[type_traits][is_derefenceable]") {
+  STATIC_REQUIRE(yat::is_dereferencable_v<int *>);
+  STATIC_REQUIRE_FALSE(yat::is_dereferencable_v<int>);
+  STATIC_REQUIRE(yat::is_dereferencable_v<A>);
+  STATIC_REQUIRE(yat::is_dereferencable_v<int (*)(int)>);
+}
