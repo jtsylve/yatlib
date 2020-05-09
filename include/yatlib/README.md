@@ -194,6 +194,15 @@ using is_dereferencable_t = typename is_dereferencable<T>::type;
 template <typename T>
 constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 
+template <typename T, typename U>
+struct is_array_convertible;
+
+template <typename T, typename U>
+using is_array_convertible_t = typename is_array_convertible<T, U>::type;
+
+template <typename T, typename U>
+constexpr bool is_array_convertible_v = is_array_convertible<T, U>::value;
+
 template <typename T>
 struct type_identity;
 
@@ -224,6 +233,12 @@ using type_identity_t = typename type_identity<T>::type;
 * `yat::is_dereferencable` determines if a given type `T` is dereferencable
 * `yat::is_dereferencable_t` gives the type of a given `yat::is_dereferencable` result
 * `yat::is_dereferencable_v` gives the boolean value of a given `yat::is_dereferencable` result
+
+### yat::is_array_convertible
+
+* `yat::is_array_convertible` determines if a given array of type `T` is a convertible to an array of type `U`
+* `yat::is_array_convertible_t` gives the type of a given `yat::is_array_convertible` result
+* `yat::is_array_convertible_v` gives the boolean value of a given `yat::is_array_convertible` result
 
 ### yat::type_identity
 
