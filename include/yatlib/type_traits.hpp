@@ -91,6 +91,18 @@ using is_dereferencable_t = typename is_dereferencable<T>::type;
 template <typename T>
 constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 
+/// Determines if an array of T is convertible to an array of U
+template <typename T, typename U>
+struct is_array_convertible : std::is_convertible<T (*)[], U (*)[]> {};
+
+/// Determines if an array of T is convertible to an array of U
+template <typename T, typename U>
+using is_array_convertible_t = typename is_array_convertible<T, U>::type;
+
+/// Determines if an array of T is convertible to an array of U
+template <typename T, typename U>
+constexpr bool is_array_convertible_v = is_array_convertible<T, U>::value;
+
 }  // namespace yat
 
 /////////////////////////////////////////
