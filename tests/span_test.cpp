@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <type_traits>
 #include <yatlib/span.hpp>
+#include <yatlib/type_traits.hpp>
 
 #include "common.hpp"
 
@@ -59,8 +59,8 @@ using ContiguousSizedRange = BasicRange<int>;
 // purposes.
 using BorrowedContiguousSizedRange = BasicRange<int, true>;
 
-// template <typename T, size_t Extent = yat::dynamic_extent>
-// constexpr void FunctionTakingSpan(type_identity_t<yat::span<T, Extent>>) {}
+template <typename T, size_t Extent = yat::dynamic_extent>
+constexpr void FunctionTakingSpan(yat::type_identity_t<yat::span<T, Extent>>) {}
 
 template <typename U, typename = void>
 inline constexpr bool AsWritableBytesCompilesFor = false;
@@ -184,8 +184,8 @@ TEST_CASE("span", "[span][span]") {
     REQUIRE(sp_zero.size_bytes() == 0);
     REQUIRE(sp_zero.empty());
 
-    // FunctionTakingSpan<int>({});
-    // FunctionTakingSpan<int, 0>({});
+    FunctionTakingSpan<int>({});
+    FunctionTakingSpan<int, 0>({});
   }
 
   int arr[3]{10, 20, 30};
@@ -245,14 +245,13 @@ TEST_CASE("span", "[span][span]") {
     REQUIRE(sp_const_d.data() == std::begin(arr));
     REQUIRE(sp_const_c.size() == 3);
     REQUIRE(sp_const_d.size() == 3);
-#if 0
+
     FunctionTakingSpan<int>({arr, 3});
     FunctionTakingSpan<int>({std::begin(arr), 3});
     FunctionTakingSpan<const int>({arr, 3});
     FunctionTakingSpan<const int>({std::begin(arr), 3});
-    FunctionTakingSpan<const int>({as_const(arr), 3});
+    FunctionTakingSpan<const int>({std::as_const(arr), 3});
     FunctionTakingSpan<const int>({std::cbegin(arr), 3});
-#endif
 
     STATIC_REQUIRE(std::is_same_v<decltype(yat::span{arr, 3}), yat::span<int>>);
     STATIC_REQUIRE(std::is_same_v<decltype(yat::span{std::begin(arr), 3}),
@@ -263,32 +262,32 @@ TEST_CASE("span", "[span][span]") {
     STATIC_REQUIRE(std::is_same_v<decltype(yat::span{std::cbegin(arr), 3}),
                                   yat::span<const int>>);
 
+    STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<int>,
+                                                   std::array<int, 3>::iterator,
+                                                   size_t>);  // strengthened
     STATIC_REQUIRE(
-        std::is_nothrow_constructible_v<yat::span<int>, array<int, 3>::iterator,
-                                        size_t>);  // strengthened
+        !std::is_constructible_v<yat::span<int>,
+                                 std::array<int, 3>::const_iterator, size_t>);
     STATIC_REQUIRE(
-        !std::is_constructible_v<yat::span<int>, array<int, 3>::const_iterator,
-                                 size_t>);
-    STATIC_REQUIRE(
-        !std::is_constructible_v<yat::span<int>, array<double, 3>::iterator,
-                                 size_t>);
+        !std::is_constructible_v<yat::span<int>,
+                                 std::array<double, 3>::iterator, size_t>);
 
     STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<int, 3>,
-                                                   array<int, 3>::iterator,
+                                                   std::array<int, 3>::iterator,
                                                    size_t>);  // strengthened
     STATIC_REQUIRE(
         !std::is_constructible_v<yat::span<int, 3>,
-                                 array<int, 3>::const_iterator, size_t>);
+                                 std::array<int, 3>::const_iterator, size_t>);
     STATIC_REQUIRE(
-        !std::is_constructible_v<yat::span<int, 3>, array<double, 3>::iterator,
-                                 size_t>);
+        !std::is_constructible_v<yat::span<int, 3>,
+                                 std::array<double, 3>::iterator, size_t>);
 
     STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<const int>,
-                                                   array<int, 3>::iterator,
+                                                   std::array<int, 3>::iterator,
                                                    size_t>);  // strengthened
     STATIC_REQUIRE(
         std::is_nothrow_constructible_v<yat::span<const int>,
-                                        array<int, 3>::const_iterator,
+                                        std::array<int, 3>::const_iterator,
                                         size_t>);  // strengthened
 
     STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<Base>, Base*,
@@ -299,18 +298,20 @@ TEST_CASE("span", "[span][span]") {
     STATIC_REQUIRE(
         !std::is_constructible_v<yat::span<Base, 3>, Derived*, size_t>);
 
-    STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<Base>,
-                                                   array<Base, 3>::iterator,
-                                                   size_t>);  // strengthened
-    STATIC_REQUIRE(std::is_nothrow_constructible_v<yat::span<Base, 3>,
-                                                   array<Base, 3>::iterator,
-                                                   size_t>);  // strengthened
     STATIC_REQUIRE(
-        !std::is_constructible_v<yat::span<Base>, array<Derived, 3>::iterator,
-                                 size_t>);
+        std::is_nothrow_constructible_v<yat::span<Base>,
+                                        std::array<Base, 3>::iterator,
+                                        size_t>);  // strengthened
+    STATIC_REQUIRE(
+        std::is_nothrow_constructible_v<yat::span<Base, 3>,
+                                        std::array<Base, 3>::iterator,
+                                        size_t>);  // strengthened
+    STATIC_REQUIRE(
+        !std::is_constructible_v<yat::span<Base>,
+                                 std::array<Derived, 3>::iterator, size_t>);
     STATIC_REQUIRE(
         !std::is_constructible_v<yat::span<Base, 3>,
-                                 array<Derived, 3>::iterator, size_t>);
+                                 std::array<Derived, 3>::iterator, size_t>);
 
     yat::span<int> sp_dyn_x(stl.begin(), 3);
     REQUIRE(sp_dyn_x.data() == stl.data());

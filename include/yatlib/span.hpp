@@ -22,12 +22,11 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <iterator>
 #include <limits>
-#include <memory>
-#include <type_traits>
 
+#include "iterator.hpp"
 #include "memory.hpp"
+#include "type_traits.hpp"
 
 /////////////////////////////////////////
 // P0122R3 - https://wg21.link/P0122R3 //
@@ -60,6 +59,19 @@ inline constexpr std::size_t dynamic_extent =
 /// in the sequence is known and encoded in the type, or a dynamic extent.
 template <typename ElementType, std::size_t Extent = dynamic_extent>
 class span {
+  template <typename Ref>
+  using is_compatible_ref =
+      is_array_convertible<std::remove_reference_t<Ref>, ElementType>;
+
+  template <typename It>
+  using is_compatible_it = is_compatible_ref<yat::iter_reference_t<It> >;
+
+  template <typename T, std::size_t N,
+            typename = std::enable_if_t<
+                std::disjunction_v<std::bool_constant<Extent == dynamic_extent>,
+                                   std::bool_constant<Extent == N> > > >
+  using is_compatible_array = is_array_convertible<T, ElementType>;
+
  public:
   // constants and types
   using element_type = ElementType;
@@ -92,7 +104,13 @@ class span {
   /// The behavior is undefined if [first, first + count) is not a valid range,
   /// if It does not actually model contiguous_iterator, or if extent !=
   /// std::dynamic_extent && count != extent.
-  template <typename It>
+  ///
+  /// This overload only participates in overload resolution if:
+  ///   * It satisfies contiguous_iterator
+  ///   * the conversion from yat::iter_reference_t<It> to element_type is at
+  ///     most a qualification conversion.
+  template <typename It,
+            typename = std::enable_if_t<is_compatible_it<It>::value> >
   constexpr span(It first, size_type count) noexcept
       : _count{count}, _data{yat::to_address(first)} {
     if constexpr (Extent != dynamic_extent) {
@@ -108,7 +126,17 @@ class span {
   /// does not actually model contiguous_iterator, if End does not actually
   /// model sized_sentinel_for for It, or if extent != std::dynamic_extent &&
   /// last-first != extent.
-  template <typename It, typename End>
+  ///
+  /// This overload only participates in overload resolution if:
+  ///   * It satisfies contiguous_iterator
+  ///   * End satisfies sized_sentinel_for for It,
+  ///   * the conversion from std::iter_reference_t<It> to element_type is at
+  ///     most a qualification conversion, and
+  ///   * std::is_convertible_v<End, std::size_t> is false.
+  template <
+      typename It, typename End,
+      typename = std::enable_if_t<is_compatible_it<It>::value &&
+                                  !std::is_convertible_v<End, std::size_t> > >
   constexpr span(It first, End last) noexcept
       : _count{last - first}, _data{yat::to_address(first)} {
     if constexpr (Extent != dynamic_extent) {
@@ -118,29 +146,40 @@ class span {
 
   /// Constructs a span that is a view over the array arr; the resulting span
   /// has size() == N and data() == std::data(arr).
-  template <std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  template <std::size_t N, typename = std::enable_if_t<std::disjunction_v<
+                               std::bool_constant<Extent == dynamic_extent>,
+                               std::bool_constant<Extent == N> > > >
+  // cppcheck-suppress noExplicitConstructor
   constexpr span(element_type (&arr)[N]) noexcept
-      : _count{N}, _data{std::data(arr)} {
-    static_assert(Extent == dynamic_extent || N == Extent);
-  }
+      : _count{N}, _data{std::data(arr)} {}
 
   /// Constructs a span that is a view over the array arr; the resulting span
   /// has size() == N and data() == std::data(arr).
-  template <typename T,
-            std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  template <typename T, std::size_t N,
+            typename = std::enable_if_t<is_compatible_array<T, N>::value> >
+  // cppcheck-suppress noExplicitConstructor
   constexpr span(std::array<T, N> &arr) noexcept
-      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {
-    static_assert(Extent == dynamic_extent || N == Extent);
-  }
+      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {}
 
   /// Constructs a span that is a view over the array arr; the resulting span
   /// has size() == N and data() == std::data(arr).
-  template <typename T,
-            std::size_t N>  // cppcheck-suppress noExplicitConstructor
+  template <
+      typename T, std::size_t N,
+      typename = std::enable_if_t<is_compatible_array<const T, N>::value> >
+  // cppcheck-suppress noExplicitConstructor
   constexpr span(const std::array<T, N> &arr) noexcept
-      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {
-    static_assert(Extent == dynamic_extent || N == Extent);
-  }
+      : _count{N}, _data{static_cast<pointer>(std::data(arr))} {}
+
+  template <typename T, std::size_t N,
+            typename = std::enable_if_t<
+                std::disjunction_v<std::bool_constant<Extent == dynamic_extent>,
+                                   std::bool_constant<N == dynamic_extent>,
+                                   std::bool_constant<Extent == N> > &&
+                is_array_convertible_v<T, element_type> > >
+  constexpr span(const span<T, N> &s) noexcept
+      : _count{s.size()}, _data{s.data()} {}
+
+  constexpr span(const span &) noexcept = default;
 
   /// Returns the number of elements in the span.
   [[nodiscard]] constexpr size_type size() const noexcept { return _count; }
@@ -160,6 +199,20 @@ class span {
   size_type _count{};
   pointer _data{};
 };
+
+// Template deduction guides
+
+template <class T, std::size_t N>
+span(T (&)[N])->span<T, N>;
+
+template <class T, size_t N>
+span(std::array<T, N> &)->span<T, N>;
+
+template <class T, size_t N>
+span(const std::array<T, N> &)->span<const T, N>;
+
+template <typename _Iter, typename _End>
+span(_Iter, _End)->span<std::remove_reference_t<iter_reference_t<_Iter> > >;
 
 #endif  // YAT_INTERNAL_USE_STD_SPAN
 
