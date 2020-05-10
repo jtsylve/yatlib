@@ -41,7 +41,7 @@ using std::to_address;
 // MSVC's standard library has a std::_Get_first_parameter helper type that
 // doesn't have a specialization for types with type template parameters.  This
 // breaks std::pointer_traits.  This specialization is a workaround.
-template <template <typename, size_t> typename T, class U, size_t N>
+template <template <typename, size_t> typename T, typename U, std::size_t N>
 struct std::_Get_first_parameter<T<U, N> > {
   using type = U;
 };
