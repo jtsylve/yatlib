@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <array>
 #include <type_traits>
 #include <yatlib/memory.hpp>
 
@@ -98,4 +99,7 @@ TEST_CASE("to_address", "[memory][to_address]") {
 
   P4 p4{&i};
   REQUIRE(yat::to_address(p4) == &i);
+
+  std::array<int, 1> a{};
+  REQUIRE(yat::to_address(a.cbegin()) == &a[0]);
 }

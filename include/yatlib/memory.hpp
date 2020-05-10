@@ -18,6 +18,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "features.hpp"
+
 /////////////////////////////////////////
 // P0653R2 - https://wg21.link/P0653R2 //
 /////////////////////////////////////////
@@ -35,15 +37,24 @@ using std::to_address;
 
 #else
 
+  #ifdef YAT_IS_MSVC
+// MSVC's standard library has a std::_Get_first_parameter helper type that
+// doesn't have a specialization for types with type template parameters.  This
+// breaks std::pointer_traits.  This specialization is a workaround.
+template <template <typename, size_t> typename T, class U, size_t N>
+struct std::_Get_first_parameter<T<U, N> > {
+  using type = U;
+};
+  #endif
+
 namespace yat::detail {
 
-template <typename T, typename = void>
-struct has_pt_to_address : std::false_type {};
+template <typename, typename = void>
+constexpr bool has_pt_to_address_v = false;
 
 template <typename T>
-struct has_pt_to_address<
-    T, std::void_t<decltype(std::pointer_traits<T>::to_address(
-           std::declval<const T&>()))> > : std::true_type {};
+constexpr bool has_pt_to_address_v<
+    T, std::void_t<decltype(std::pointer_traits<T>::to_address)> > = true;
 
 }  // namespace yat::detail
 
@@ -61,7 +72,7 @@ constexpr T* to_address(T* p) noexcept {
 /// pointee.
 template <typename T>
 constexpr auto to_address(const T& p) noexcept {
-  if constexpr (detail::has_pt_to_address<T>::value) {
+  if constexpr (detail::has_pt_to_address_v<T>) {
     return std::pointer_traits<T>::to_address(p);
   } else {
     return to_address(p.operator->());
