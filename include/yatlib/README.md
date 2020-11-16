@@ -271,6 +271,24 @@ It converts an enumeration to its underlying type.
 
 ## variant.hpp
 
+```cpp
+template <typename... Ts>
+struct overloaded;
+
+template <typename Variant, typename... Handlers>
+auto match(Variant&& v, Handlers&&... handlers);
+```
+
+### yat::overloaded
+
+`yat::overloaded` allows the overloading of lamdas and other function objects.  This is useful for matching on variants and lambdas
+
+### yat::match
+
+`yat::match` is a helper function to provide variant matching on function-like objects
+
+### Apple macOS Support
+
 Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
 
 All of the `std` types in the `<variant>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.

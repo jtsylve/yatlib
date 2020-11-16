@@ -58,4 +58,33 @@ using std::variant_size;
 using std::variant_size_v;
 using std::visit;
 
+/////////////////////////////////////////
+// P0051R3 - https://wg21.link/P0051R3 //
+/////////////////////////////////////////
+
+/// Helper type to allow overloading of lamdas and other function objects.
+///
+/// This is very useful to use with yat::visit
+template <typename... Ts>
+struct overloaded : Ts... {
+  using Ts::operator()...;
+};
+
+/// Deduction guide for overloaded struct.
+template <typename... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+/////////////////////////////////////////////////
+// Match proposal by Nikolai Wuttke            //
+//                                             //
+// https://www.youtube.com/watch?v=CELWr9roNno //
+/////////////////////////////////////////////////
+
+/// Perform variant visiting on overloaded function object handlers
+template <typename Variant, typename... Handlers>
+auto match(Variant&& v, Handlers&&... handlers) {
+  return visit(overloaded{std::forward<Handlers>(handlers)...},
+               std::forward<Variant>(v));
+}
+
 }  // namespace yat
