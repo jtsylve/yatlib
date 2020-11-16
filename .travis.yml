@@ -3,12 +3,28 @@ language: cpp
 jobs:
   include:
     # macOS Xcode
+    - name: Xcode 12.2
+      os: osx
+      osx_image: xcode12.2
+    - name: Xcode 11.6
+      os: osx
+      osx_image: xcode11.6
     - name: Xcode 11.3
       os: osx
       osx_image: xcode11.3
     - name: Xcode 10.3
       os: osx
       osx_image: xcode10.3
+    - name: Xcode 12.2 (macOS 10.12)
+      os: osx
+      osx_image: xcode12.2
+      env:
+        - MACOSX_DEPLOYMENT_TARGET="10.12"
+    - name: Xcode 11.6 (macOS 10.12)
+      os: osx
+      osx_image: xcode11.6
+      env:
+        - MACOSX_DEPLOYMENT_TARGET="10.12"
     - name: Xcode 11.3 (macOS 10.12)
       os: osx
       osx_image: xcode11.3
@@ -145,12 +161,24 @@ jobs:
       addons:
         apt:
           sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
+            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main"
               key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
           packages:
             - clang-11
       env:
         - MATRIX_EVAL="CC=clang-11 && CXX=clang++-11"
+    - name: clang 12
+      os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
+              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+          packages:
+            - clang-12
+      env:
+        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
     # Windows MSVC
     - name: Windows (MSVC)
       os: windows
@@ -162,4 +190,3 @@ script:
   - cmake -DENABLE_TESTING:BOOL=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo .
   - cmake --build .
   - ctest .
-  
