@@ -162,3 +162,4 @@ script:
   - cmake -DENABLE_TESTING:BOOL=TRUE -DCMAKE_BUILD_TYPE=RelWithDebInfo .
   - cmake --build .
   - ctest .
+  
