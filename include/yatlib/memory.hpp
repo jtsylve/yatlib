@@ -77,7 +77,7 @@ constexpr auto to_address(const T& p) noexcept {
   } else {
     return to_address(p.operator->());
   }
-};
+}
 
 #endif  // YAT_INTERNAL_USE_STD_TO_ADDRESS
 

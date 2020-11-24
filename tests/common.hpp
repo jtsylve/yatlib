@@ -15,9 +15,9 @@
  */
 #include <yatlib/features.hpp>
 
-YAT_IGNORE_WARNING_PUSH(4619);
+YAT_IGNORE_MSVC_WARNING_PUSH(4619)
 #include <catch2/catch.hpp>
-YAT_IGNORE_WARNING_POP();
+YAT_IGNORE_MSVC_WARNING_POP()
 
 constexpr int random_seed = 12345;
 
