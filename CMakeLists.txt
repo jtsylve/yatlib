@@ -11,8 +11,6 @@ project(
   DESCRIPTION "Yet Another Template Library for C++"
   HOMEPAGE_URL "https://github.com/jtsylve/yatlib")
 
-option(ENABLE_TESTING "Enable Test Builds" ON)
-
 # the yatlib library
 add_library(${PROJECT_NAME} INTERFACE)
 # add alias so the project can be uses with add_subdirectory
@@ -45,8 +43,7 @@ target_include_directories(
 
 add_subdirectory("thirdparty")
 
-if(ENABLE_TESTING)
-  enable_testing()
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   list(APPEND CMAKE_MODULE_PATH
        "${PROJECT_SOURCE_DIR}/thirdparty/catch2/contrib")
   add_subdirectory("tests")
