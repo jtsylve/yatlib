@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-if(POLICY CMP0077)
-  cmake_policy(SET CMP0077 OLD)
-endif()
-
 project(
   yat
-  VERSION 0.0.0
+  VERSION 1.0.0
   LANGUAGES CXX
   DESCRIPTION "Yet Another Template Library for C++"
   HOMEPAGE_URL "https://github.com/jtsylve/yatlib")
@@ -39,7 +35,11 @@ target_include_directories(
 
 include(GNUInstallDirs)
 
-install(TARGETS yat)
+install(
+  TARGETS yat
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
 install(
   DIRECTORY include/yatlib
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
