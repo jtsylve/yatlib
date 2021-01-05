@@ -126,3 +126,12 @@ T decl_identity(T);
       __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 50000))
   #define YAT_APPLE_CXX17_TYPES_UNAVAILABLE
 #endif
+
+// Always inline
+#if defined(YAT_IS_GCC_COMPATIBLE)
+  #define YAT_ALWAYS_INLINE [[gnu::always_inline]]
+#elif defined(YAT_IS_MSVC)
+  #define YAT_ALWAYS_INLINE __forceinline
+#else
+  #define YAT_ALWAYS_INLINE
+#endif

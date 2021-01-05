@@ -53,5 +53,6 @@ add_subdirectory("thirdparty")
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   list(APPEND CMAKE_MODULE_PATH
        "${PROJECT_SOURCE_DIR}/thirdparty/catch2/contrib")
+  enable_testing()
   add_subdirectory("tests")
 endif()

@@ -148,6 +148,25 @@ constexpr auto to_address(const Ptr& p) noexcept;
 
 template <typename T>
 constexpr T* to_address(T* p) noexcept;
+
+template <typename T>
+class refcnt_ptr;
+
+template <typename T, typename... Args>
+inline refcnt_ptr<T> make_refcnt(Args&&... args);
+
+template <typename T, typename U>
+inline refcnt_ptr<T> static_pointer_cast(const refcnt_ptr<U>& r) noexcept;
+
+template <typename T, typename U>
+inline refcnt_ptr<T> dynamic_pointer_cast(const refcnt_ptr<U>& r) noexcept;
+
+template <typename T, typename U>
+inline refcnt_ptr<T> const_pointer_cast(const refcnt_ptr<U>& r) noexcept;
+
+template <typename T, typename U>
+inline refcnt_ptr<T> reinterpret_pointer_cast(const refcnt_ptr<U>& r) noexcept;
+
 ```
 
 ### yat::to_address
@@ -155,6 +174,23 @@ constexpr T* to_address(T* p) noexcept;
 `yat::to_address` provides an implementation of [std::to_address](https://en.cppreference.com/w/cpp/memory/to_address).  
 
 It obtains the address represented by p without forming a reference to the pointee.
+
+### yat::refcnt_ptr
+
+`yat::refcnt_ptr` provides a light-weight reference counted smart pointer that is similar to std::shared_ptr, but is not thread-safe and lacks many of the bells and whistles.
+
+Specifically, it does not support the following:
+* Thread-safe reference counting
+* Custom Deleters
+* Type-erased pointers
+* Array pointers
+
+There are also a number of support functions provided that match the functionality of the std::shared_ptr support functions:
+* `yat::make_refcnt`
+* `yat::static_pointer_cast`
+* `yat::dynamic_pointer_cast`
+* `yat::const_pointer_cast`
+* `yat::reinterpret_pointer_cast`
 
 ## optional.hpp
 
