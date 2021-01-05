@@ -1272,7 +1272,37 @@ TEST_CASE("swap", "[memory][refcnt_ptr]") {
   }
 }
 
-TEST_CASE("conpairison", "[memory][refcnt_ptr]") {
+TEST_CASE("null comparison", "[memory][refcnt_ptr]") {
+  {
+    yat::refcnt_ptr<int> x;
+
+    REQUIRE(x == nullptr);
+    REQUIRE(nullptr == x);
+    REQUIRE(!(x != nullptr));
+    REQUIRE(!(nullptr != x));
+
+    REQUIRE(!(x < nullptr || x > nullptr));
+    REQUIRE(!(nullptr < x || nullptr > x));
+    REQUIRE((x <= nullptr && x >= nullptr));
+    REQUIRE((nullptr <= x && nullptr >= x));
+  }
+
+  {
+    yat::refcnt_ptr<int> x(new int);
+
+    REQUIRE(x != nullptr);
+    REQUIRE(nullptr != x);
+    REQUIRE(!(x == nullptr));
+    REQUIRE(!(nullptr == x));
+
+    REQUIRE((nullptr < x && x > nullptr));
+    REQUIRE(!(nullptr > x || x < nullptr));
+    REQUIRE((nullptr <= x && x >= nullptr));
+    REQUIRE(!(nullptr >= x || x <= nullptr));
+  }
+}
+
+TEST_CASE("comparison", "[memory][refcnt_ptr]") {
   struct X {
     int dummy;
   };

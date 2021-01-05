@@ -316,6 +316,64 @@ class refcnt_ptr {
                          const refcnt_ptr<U>& rhs) noexcept {
     return lhs._refcnt >= rhs._refcnt;
   }
+
+  //
+  // Comparison with nullptr_t
+  //
+
+  friend bool operator==(const refcnt_ptr& lhs, std::nullptr_t) noexcept {
+    return lhs._value == nullptr;
+  }
+
+  friend bool operator==(std::nullptr_t, const refcnt_ptr& rhs) noexcept {
+    return nullptr == rhs._value;
+  }
+
+  friend bool operator!=(const refcnt_ptr& lhs, std::nullptr_t) noexcept {
+    return lhs._value != nullptr;
+  }
+
+  friend bool operator!=(std::nullptr_t, const refcnt_ptr& rhs) noexcept {
+    return nullptr != rhs._value;
+  }
+
+  friend bool operator<(const refcnt_ptr&, std::nullptr_t) noexcept {
+    // This can never be true
+    return false;
+  }
+
+  friend bool operator<(std::nullptr_t, const refcnt_ptr& rhs) noexcept {
+    return static_cast<const element_type*>(nullptr) < rhs._value;
+  }
+
+  friend bool operator>(const refcnt_ptr& lhs, std::nullptr_t) noexcept {
+    return lhs._value > static_cast<const element_type*>(nullptr);
+  }
+
+  friend bool operator>(std::nullptr_t, const refcnt_ptr&) noexcept {
+    // This can never be true
+    return false;
+  }
+
+  friend bool operator<=(const refcnt_ptr& lhs, std::nullptr_t) noexcept {
+    // Pointer can't be negative so just check for equality
+    return lhs._value == static_cast<const element_type*>(nullptr);
+  }
+
+  friend bool operator<=(std::nullptr_t, const refcnt_ptr&) noexcept {
+    // This is always true
+    return true;
+  }
+
+  friend bool operator>=(const refcnt_ptr&, std::nullptr_t) noexcept {
+    // This is a pointless check
+    return true;
+  }
+
+  friend bool operator>=(std::nullptr_t, const refcnt_ptr& rhs) noexcept {
+    // nullptr can't be greater than, so just check equality
+    return static_cast<const element_type*>(nullptr) == rhs._value;
+  }
 };
 
 /// Constructs an object of type T and wraps it in a yat::refcnt_ptr using
