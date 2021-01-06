@@ -32,6 +32,10 @@
   #define _LIBCPP_AVAILABILITY_THROW_BAD_OPTIONAL_ACCESS
   #define _LIBCPP_AVAILABILITY_BAD_OPTIONAL_ACCESS
 
+  #ifdef _LIBCPP_OPTIONAL
+    #error "This header must be imported prior to any <optional> imports!"
+  #endif
+
   #include <optional>
 
 // Define the bad_optional_access functios that are not in libc++.so on
