@@ -41,6 +41,27 @@ constexpr To bit_cast(const From& from) noexcept;
 
 template <typename T>
 constexpr T byteswap(T value) noexcept;
+
+template<typename T>
+[[nodiscard]] constexpr T rotl(T x, int s) noexcept;
+  
+template<typename T>
+[[nodiscard]] constexpr T rotr(T x, int s) noexcept;
+
+template<typename T>
+constexpr int countl_zero(T x) noexcept;
+  
+template<typename T>
+constexpr int countl_one(T x) noexcept;
+  
+template<typename T>
+constexpr int countr_zero(T x) noexcept;
+  
+template<typename T>
+constexpr int countr_one(T x) noexcept;
+  
+template<typename T>
+constexpr int popcount(T x) noexcept;
 ```
 
 ### yat::endian
@@ -60,6 +81,34 @@ NOTE: On compilers without `__builtin_bitcast` support and no native `std::bitca
 These functions return a endian-swapped value of select scalar types.
 
 NOTE: On MSVC compilers, this function is not `constexpr`
+
+### yat::rotl
+
+`yat::rotl` provides an implementation of [std::rotl](https://en.cppreference.com/w/cpp/numeric/rotl).
+
+### yat::rotr
+
+`yat::rotr` provides an implementation of [std::rotr](https://en.cppreference.com/w/cpp/numeric/rotr).
+
+### yat::countl_zero
+
+`yat::countl_zero` provides an implementation of [std::countl_zero](https://en.cppreference.com/w/cpp/numeric/countl_zero).
+
+### yat::countl_one
+
+`yat::countl_one` provides an implementation of [std::countl_one](https://en.cppreference.com/w/cpp/numeric/countl_one).
+
+### yat::countr_zero
+
+`yat::countr_zero` provides an implementation of [std::countr_zero](https://en.cppreference.com/w/cpp/numeric/countr_zero).
+
+### yat::countr_one
+
+`yat::countr_one` provides an implementation of [std::countr_one](https://en.cppreference.com/w/cpp/numeric/countr_one).
+
+### yat::popcount
+
+`yat::popcount` provides an implementation of [std::popcount](https://en.cppreference.com/w/cpp/numeric/popcount).
 
 ### Macros
 

@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <type_traits>
 
 #include "features.hpp"
@@ -246,7 +247,177 @@ template <typename EnumType>
 
 }  // namespace yat
 
+/////////////////////////////////////////
+// P0553R4 - https://wg21.link/P0553R4 //
+/////////////////////////////////////////
+
+// Check to see if stdlib support is available
+#if defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L
+  #define YAT_INTERNAL_USE_STD_BITOPS
+#endif
+
+namespace yat {
+#ifdef YAT_INTERNAL_USE_STD_BITOPS
+
+using std::countl_one;
+using std::countl_zero;
+using std::countr_one;
+using std::popcount;
+using std::rotl;
+using std::rotr;
+
+#else
+
+/// Computes the result of bitwise left-rotating the value of x by s positions.
+/// This operation is also known as a left circular shift
+template <typename T>
+[[nodiscard]] constexpr auto rotl(T x, int s) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, T> {
+  constexpr auto N = std::numeric_limits<T>::digits;
+  const auto r = s % N;
+
+  if (r == 0) {
+    return x;
+  }
+
+  if (r > 0) {
+    return static_cast<T>(x << r) | static_cast<T>(x >> (N - r));
+  }
+
+  return static_cast<T>(x >> -r) | static_cast<T>(x << (N + r));
+}
+
+/// Computes the result of bitwise right-rotating the value of x by s positions.
+/// This operation is also known as a right circular shift
+template <typename T>
+[[nodiscard]] constexpr auto rotr(T x, int s) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, T> {
+  constexpr auto N = std::numeric_limits<T>::digits;
+  const auto r = s % N;
+
+  if (r == 0) {
+    return x;
+  }
+
+  if (r > 0) {
+    return static_cast<T>(x >> r) | static_cast<T>(x << (N - r));
+  }
+
+  return static_cast<T>(x << -r) | static_cast<T>(x >> (N + r));
+}
+
+/// Returns the number of consecutive 0 bits in the value of x, starting from
+/// the most significant bit ("left").
+template <typename T>
+constexpr auto countl_zero(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if (x == 0) {
+    return nd;
+  }
+
+  if constexpr (const int d = std::numeric_limits<unsigned>::digits; nd <= d) {
+    constexpr int diff = d - nd;
+    return __builtin_clz(x) - diff;
+  }
+
+  if constexpr (const int d = std::numeric_limits<unsigned long>::digits;
+                nd <= d) {
+    constexpr int diff = d - nd;
+    return __builtin_clzl(x) - diff;
+  }
+
+  if constexpr (const int d = std::numeric_limits<unsigned long long>::digits;
+                nd <= d) {
+    constexpr int diff = d - nd;
+    return __builtin_clzll(x) - diff;
+  }
+}
+
+/// Returns the number of consecutive 0 bits in the value of x, starting from
+/// the least significant bit ("right").
+template <typename T>
+constexpr auto countr_zero(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if (x == 0) {
+    return nd;
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned>::digits) {
+    return __builtin_ctz(x);
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned long>::digits) {
+    return __builtin_ctzl(x);
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned long long>::digits) {
+    return __builtin_ctzll(x);
+  }
+}
+
+/// Returns the number of 1 bits in the value of x.
+template <typename T>
+constexpr auto popcount(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if (x == 0) {
+    return 0;
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned>::digits) {
+    return __builtin_popcount(x);
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned long>::digits) {
+    return __builtin_popcountl(x);
+  }
+
+  if constexpr (nd <= std::numeric_limits<unsigned long long>::digits) {
+    return __builtin_popcountll(x);
+  }
+}
+
+/// Returns the number of consecutive 1 bits in the value of x, starting from
+/// the most significant bit ("left").
+template <typename T>
+constexpr auto countl_one(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  if (x == std::numeric_limits<T>::max()) {
+    return std::numeric_limits<T>::digits;
+  }
+
+  return countl_zero(static_cast<T>(~x));
+}
+
+/// Returns the number of consecutive 1 bits in the value of x, starting from
+/// the least significant bit ("right").
+template <typename T>
+constexpr auto countr_one(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  if (x == std::numeric_limits<T>::max()) {
+    return std::numeric_limits<T>::digits;
+  }
+
+  return countr_zero(static_cast<T>(~x));
+}
+
+#endif  // YAT_INTERNAL_USE_STD_BITOPS
+
+}  // namespace yat
+
 // Cleanup internal macros
+#undef YAT_INTERNAL_USE_STD_BITOPS
 #undef YAT_INTERNAL_IS_BIG_ENDIAN
 #undef YAT_INTERNAL_IS_LITTLE_ENDIAN
 #undef YAT_INTERNAL_USE_STD_ENDIAN

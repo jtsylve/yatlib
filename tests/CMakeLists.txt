@@ -11,6 +11,7 @@ add_executable(
   "any_test.cpp"
   "array_test.cpp"
   "bit_cast_test.cpp"
+  "bit_ops_test.cpp"
   "byteswap_test.cpp"
   "common.hpp"
   "endian_test.cpp"
