@@ -24,10 +24,11 @@
 namespace yat {
 
 /// Tells whether we're compiling for a little endian system
-constexpr bool is_little_endian_system = (endian::native == endian::little);
+inline constexpr bool is_little_endian_system =
+    (endian::native == endian::little);
 
 /// Tells whether we're compiling for a big endian system
-constexpr bool is_big_endian_system = (endian::native == endian::big);
+inline constexpr bool is_big_endian_system = (endian::native == endian::big);
 
 /// This type can be specialized so that custom types can be supported by
 /// yat::basic_endian_scalar

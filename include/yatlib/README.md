@@ -118,8 +118,8 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 ## endian.hpp
 
 ```cpp
-constexpr bool is_little_endian_system;
-constexpr bool is_big_endian_system;
+inline constexpr bool is_little_endian_system;
+inline constexpr bool is_big_endian_system;
 
 template <typename T>
 struct endian_byte_swapper;
@@ -259,7 +259,7 @@ template <typename T, typename VariantType>
 using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 
 template <typename T, typename VariantType>
-constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+inline constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
 
 template <typename T, typename... Types>
 struct is_one_of;
@@ -268,13 +268,13 @@ template <typename T, typename... Types>
 using is_one_of_t = typename is_one_of<T, Types...>::type;
 
 template <typename T, typename... Types>
-constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
+inline constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
 
 template <typename T>
 struct is_char_type;
 
 template <typename T>
-constexpr bool is_char_type_v = is_char_type<T>::value;
+inline constexpr bool is_char_type_v = is_char_type<T>::value;
 
 template <typename T>
 using is_char_type_t = typename is_char_type<T>::type;
@@ -286,7 +286,7 @@ template <typename T>
 using is_dereferencable_t = typename is_dereferencable<T>::type;
 
 template <typename T>
-constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
+inline constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 
 template <typename T, typename U>
 struct is_array_convertible;
@@ -295,13 +295,19 @@ template <typename T, typename U>
 using is_array_convertible_t = typename is_array_convertible<T, U>::type;
 
 template <typename T, typename U>
-constexpr bool is_array_convertible_v = is_array_convertible<T, U>::value;
+inline constexpr bool is_array_convertible_v = is_array_convertible<T, U>::value;
 
 template <typename T>
 struct type_identity;
 
 template <typename T>
 using type_identity_t = typename type_identity<T>::type;
+
+template <typename T>
+struct is_scoped_enum;
+
+template <typename T>
+inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
 ```
 
 ### yat::is_variant_member
@@ -339,7 +345,12 @@ using type_identity_t = typename type_identity<T>::type;
 `yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).  
 
 * `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
-* `yat::type_identity_t` gives the type of a given `yat::itype_identity` result
+* `yat::type_identity_t` gives the type of a given `yat::type_identity` result
+
+### yat::is_scoped_enum
+
+* `yat::is_scoped_enum` provides an implementation of [std::is_scoped_enum](https://en.cppreference.com/w/cpp/types/is_scoped_enum).  
+* `yat::is_scoped_enum_v` gives the boolean value of a given `yat::is_scoped_enum` result
 
 ## utility.hpp
 

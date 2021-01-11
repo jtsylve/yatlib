@@ -42,7 +42,8 @@ using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
 
 /// Determines if a given type is a member type of a variant.
 template <typename T, typename VariantType>
-constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+inline constexpr bool is_variant_member_v =
+    is_variant_member<T, VariantType>::value;
 
 /// Determines if T is among a the set of Types
 template <typename T, typename... Types>
@@ -54,7 +55,7 @@ using is_one_of_t = typename is_one_of<T, Types...>::type;
 
 /// Determines if T is among a the set of Types
 template <typename T, typename... Types>
-constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
+inline constexpr bool is_one_of_v = is_one_of<T, Types...>::value;
 
 /// Determines if T is a character type
 template <typename T>
@@ -68,7 +69,7 @@ struct is_char_type<char8_t> : std::true_type {};
 
 /// Determines if T is a character type
 template <typename T>
-constexpr bool is_char_type_v = is_char_type<T>::value;
+inline constexpr bool is_char_type_v = is_char_type<T>::value;
 
 /// Determines if T is a character type
 template <typename T>
@@ -89,7 +90,7 @@ using is_dereferencable_t = typename is_dereferencable<T>::type;
 
 /// Determines if T is dereferencable
 template <typename T>
-constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
+inline constexpr bool is_dereferencable_v = is_dereferencable<T>::value;
 
 /// Determines if an array of T is convertible to an array of U
 template <typename T, typename U>
@@ -101,7 +102,8 @@ using is_array_convertible_t = typename is_array_convertible<T, U>::type;
 
 /// Determines if an array of T is convertible to an array of U
 template <typename T, typename U>
-constexpr bool is_array_convertible_v = is_array_convertible<T, U>::value;
+inline constexpr bool is_array_convertible_v =
+    is_array_convertible<T, U>::value;
 
 }  // namespace yat
 
@@ -149,5 +151,56 @@ using type_identity_t = typename type_identity<T>::type;
 
 #endif  // YAT_INTERNAL_USE_STD_TYPE_IDENTITY
 
+/////////////////////////////////////////
+// P1048R1 - https://wg21.link/P1048R1 //
+/////////////////////////////////////////
+
+// Check to see if stdlib support is available
+#if defined(__cpp_lib_is_scoped_enum) && __cpp_lib_is_scoped_enum >= 202011L
+  #define YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
+#endif
+
+#ifdef YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
+
+namespace yat {
+
+using std::is_scoped_enum;
+using std::is_scoped_enum_v;
+
+}  // namespace yat
+
+#else
+
+namespace yat::detail {
+//
+// Helper types for is_scoped_enum
+//
+
+template <typename T, bool = std::is_enum_v<T>>
+struct is_scoped_enum_helper : std::false_type {};
+
+template <typename T>
+struct is_scoped_enum_helper<T, true>
+    : std::negation<std::is_convertible<T, std::underlying_type_t<T>>> {};
+
+}  // namespace yat::detail
+
+namespace yat {
+
+/// Checks whether T is an scoped enumeration type. Provides the member constant
+/// value which is equal to true, if T is an scoped enumeration type. Otherwise,
+/// value is equal to false.
+template <typename T>
+struct is_scoped_enum : detail::is_scoped_enum_helper<T> {};
+
+/// true if T is an scoped enumeration type, false otherwise
+template <typename T>
+inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
+
+}  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
+
 // Cleanup internal macros
 #undef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
+#undef YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM

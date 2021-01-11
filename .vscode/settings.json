@@ -17,6 +17,7 @@
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
     "files.associations": {
         "__config": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "type_traits": "cpp"
     }
 }

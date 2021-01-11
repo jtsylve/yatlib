@@ -240,3 +240,14 @@ TEST_CASE("type_identity", "[type_traits][is_derefenceable]") {
   STATIC_REQUIRE(test_type_identity<volatile int &(C::*)(int)>());
   STATIC_REQUIRE(test_type_identity<const volatile int &(C::*)(int)>());
 }
+
+TEST_CASE("is_scoped_enum", "[type_traits][is_scoped_enum]") {
+  enum A {};
+  enum class B {};
+  struct C {};
+
+  STATIC_REQUIRE_FALSE(yat::is_scoped_enum_v<A>);
+  STATIC_REQUIRE(yat::is_scoped_enum_v<B>);
+  STATIC_REQUIRE_FALSE(yat::is_scoped_enum_v<C>);
+  STATIC_REQUIRE_FALSE(yat::is_scoped_enum_v<int>);
+}
