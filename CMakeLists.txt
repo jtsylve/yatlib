@@ -50,7 +50,7 @@ install(
 
 add_subdirectory("thirdparty")
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   list(APPEND CMAKE_MODULE_PATH
        "${PROJECT_SOURCE_DIR}/thirdparty/catch2/contrib")
   enable_testing()
