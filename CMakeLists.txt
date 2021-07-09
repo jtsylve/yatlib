@@ -46,13 +46,7 @@ install(
   FILES_MATCHING
   PATTERN *.hpp)
 
-# library dependencies
-
-add_subdirectory("thirdparty")
-
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-  list(APPEND CMAKE_MODULE_PATH
-       "${PROJECT_SOURCE_DIR}/thirdparty/catch2/contrib")
   enable_testing()
   add_subdirectory("tests")
 endif()

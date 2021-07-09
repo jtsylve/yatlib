@@ -1,3 +1,14 @@
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v2.13.1)
+
+FetchContent_MakeAvailable(Catch2)
+
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/contrib)
+
 include(CTest)
 include(Catch)
 
@@ -24,4 +35,5 @@ add_executable(
   "variant_test.cpp"
   "yatlib_test.cpp")
 target_link_libraries(unittests catch_main)
+
 catch_discover_tests(unittests)
