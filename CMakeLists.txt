@@ -15,17 +15,6 @@ target_compile_features(
   yat
   INTERFACE cxx_std_17)
 
-# static code analyzers
-include(cmake/StaticAnalyzers.cmake)
-
-# sanitizer options if supported by compiler
-include(cmake/Sanitizers.cmake)
-enable_sanitizers(yat)
-
-# standard compiler warnings
-include(cmake/CompilerWarnings.cmake)
-set_project_warnings(yat)
-
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
 target_include_directories(
@@ -47,6 +36,17 @@ install(
   PATTERN *.hpp)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  # static code analyzers
+  include(cmake/StaticAnalyzers.cmake)
+
+  # sanitizer options if supported by compiler
+  include(cmake/Sanitizers.cmake)
+  enable_sanitizers(yat)
+
+  # standard compiler warnings
+  include(cmake/CompilerWarnings.cmake)
+  set_project_warnings(yat)
+
   enable_testing()
   add_subdirectory("tests")
 endif()
