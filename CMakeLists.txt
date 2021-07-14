@@ -7,6 +7,9 @@ project(
   DESCRIPTION "Yet Another Template Library for C++"
   HOMEPAGE_URL "https://github.com/jtsylve/yatlib")
 
+# Dependencies
+add_subdirectory(thirdparty)
+
 # the yatlib library
 add_library(yat INTERFACE)
 # add alias so the project can be uses with add_subdirectory
@@ -21,6 +24,8 @@ target_include_directories(
   yat
   INTERFACE $<BUILD_INTERFACE:${yat_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+target_link_libraries(yat INTERFACE ghcFilesystem::ghc_filesystem)
 
 include(GNUInstallDirs)
 

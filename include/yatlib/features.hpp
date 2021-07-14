@@ -127,6 +127,20 @@ T decl_identity(T);
   #define YAT_APPLE_CXX17_TYPES_UNAVAILABLE
 #endif
 
+// macOS 10.15 and iOS 10.13 are required to use the std::filesystem
+// even though the headers exist.
+#if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&             \
+    ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+      __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101500) ||  \
+     (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 130000) || \
+     (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+      __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 130000) ||  \
+     (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+      __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 60000))
+  #define YAT_APPLE_CXX17FS_TYPES_UNAVAILABLE
+#endif
+
 // Always inline
 #if defined(YAT_IS_GCC_COMPATIBLE)
   #define YAT_ALWAYS_INLINE [[gnu::always_inline]]

@@ -181,6 +181,12 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 * `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
 * `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
 
+## filesystem.hpp
+
+Apple disallows the use of std::filesystem before macOS 10.15 because the library support is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<filesystem>` provides a namespace alias to the [ghc::filesystem](https://github.com/gulrak/filesystem) implementation when std::filesystem support isn't available.
+
+NOTE: If your project or its dependencies import the `<filesystem>` header elsewhere, this may fail to work properly.
+
 ## iterator.hpp
 
 ```cpp
