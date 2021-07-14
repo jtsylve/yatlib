@@ -27,23 +27,24 @@
 
 namespace yat {
 
-/// Determines if a given type is a member type of a variant.
+/// Determines if a given type is a alternative type of a given variant.
 template <typename T, typename VariantType>
-struct is_variant_member;
+struct is_variant_alternative;
 
-/// Determines if a given type is a member type of a variant.
+/// Determines if a given type is an alternative type of a given variant.
 template <typename T, typename... Types>
-struct is_variant_member<T, yat::variant<Types...>>
+struct is_variant_alternative<T, yat::variant<Types...>>
     : std::disjunction<std::is_same<T, Types>...> {};
 
-/// Determines if a given type is a member type of a variant.
+/// Determines if a given type is an alternative type of a given variant.
 template <typename T, typename VariantType>
-using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
+using is_variant_alternative_t =
+    typename is_variant_alternative<T, VariantType>::type;
 
-/// Determines if a given type is a member type of a variant.
+/// Determines if a given type is an alternative type of a given variant.
 template <typename T, typename VariantType>
-inline constexpr bool is_variant_member_v =
-    is_variant_member<T, VariantType>::value;
+inline constexpr bool is_variant_alternative_v =
+    is_variant_alternative<T, VariantType>::value;
 
 /// Determines if T is among a the set of Types
 template <typename T, typename... Types>

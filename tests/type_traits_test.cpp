@@ -19,44 +19,46 @@
 
 #include "common.hpp"
 
-TEST_CASE("is_variant_member", "[type_traits][is_variant_member]") {
+TEST_CASE("is_variant_alternative", "[type_traits][is_variant_alternative]") {
   using vtype = yat::variant<yat::monostate, char, int, unsigned int, long,
                              unsigned long long>;
 
-  STATIC_REQUIRE(yat::is_variant_member_v<yat::monostate, vtype>);
-  STATIC_REQUIRE(yat::is_variant_member_v<char, vtype>);
-  STATIC_REQUIRE(yat::is_variant_member_v<int, vtype>);
-  STATIC_REQUIRE(yat::is_variant_member_v<unsigned int, vtype>);
-  STATIC_REQUIRE(yat::is_variant_member_v<long, vtype>);
-  STATIC_REQUIRE(yat::is_variant_member_v<unsigned long long, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<yat::monostate, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<char, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<int, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<unsigned int, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<long, vtype>);
+  STATIC_REQUIRE(yat::is_variant_alternative_v<unsigned long long, vtype>);
 
-  STATIC_REQUIRE_FALSE(yat::is_variant_member_v<float, vtype>);
-  STATIC_REQUIRE_FALSE(yat::is_variant_member_v<double, vtype>);
-  STATIC_REQUIRE_FALSE(yat::is_variant_member_v<long long, vtype>);
-  STATIC_REQUIRE_FALSE(yat::is_variant_member_v<int *, vtype>);
+  STATIC_REQUIRE_FALSE(yat::is_variant_alternative_v<float, vtype>);
+  STATIC_REQUIRE_FALSE(yat::is_variant_alternative_v<double, vtype>);
+  STATIC_REQUIRE_FALSE(yat::is_variant_alternative_v<long long, vtype>);
+  STATIC_REQUIRE_FALSE(yat::is_variant_alternative_v<int *, vtype>);
 
-  STATIC_REQUIRE(std::is_same_v<yat::is_variant_member_t<yat::monostate, vtype>,
+  STATIC_REQUIRE(
+      std::is_same_v<yat::is_variant_alternative_t<yat::monostate, vtype>,
+                     std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<char, vtype>,
+                                std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<int, vtype>,
                                 std::true_type>);
   STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<char, vtype>, std::true_type>);
-  STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<int, vtype>, std::true_type>);
-  STATIC_REQUIRE(std::is_same_v<yat::is_variant_member_t<unsigned int, vtype>,
+      std::is_same_v<yat::is_variant_alternative_t<unsigned int, vtype>,
+                     std::true_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<long, vtype>,
                                 std::true_type>);
   STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<long, vtype>, std::true_type>);
-  STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<unsigned long long, vtype>,
+      std::is_same_v<yat::is_variant_alternative_t<unsigned long long, vtype>,
                      std::true_type>);
 
-  STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<float, vtype>, std::false_type>);
-  STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<double, vtype>, std::false_type>);
-  STATIC_REQUIRE(std::is_same_v<yat::is_variant_member_t<long long, vtype>,
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<float, vtype>,
                                 std::false_type>);
-  STATIC_REQUIRE(
-      std::is_same_v<yat::is_variant_member_t<int *, vtype>, std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<double, vtype>,
+                                std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<long long, vtype>,
+                                std::false_type>);
+  STATIC_REQUIRE(std::is_same_v<yat::is_variant_alternative_t<int *, vtype>,
+                                std::false_type>);
 }
 
 TEST_CASE("is_one_of", "[type_traits][is_one_of]") {

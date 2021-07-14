@@ -253,13 +253,13 @@ NOTE: If your project or its dependencies import the `<optional>` header elsewhe
 
 ```cpp
 template <typename T, typename VariantType>
-struct is_variant_member;
+struct is_variant_alternative;
 
 template <typename T, typename VariantType>
-using is_variant_member_t = typename is_variant_member<T, VariantType>::type;
+using is_variant_alternative_t = typename is_variant_alternative<T, VariantType>::type;
 
 template <typename T, typename VariantType>
-inline constexpr bool is_variant_member_v = is_variant_member<T, VariantType>::value;
+inline constexpr bool is_variant_alternative_v = is_variant_alternative<T, VariantType>::value;
 
 template <typename T, typename... Types>
 struct is_one_of;
@@ -310,11 +310,11 @@ template <typename T>
 inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
 ```
 
-### yat::is_variant_member
+### yat::is_variant_alternative
 
-* `yat::is_variant_member` determines if a given type `T` is a member type of a `VariantType`
-* `yat::is_variant_member_t` gives the type of a given `yat::is_variant_member` result
-* `yat::is_variant_member_v` gives the boolean value of a given `yat::is_variant_member` result
+* `yat::is_variant_alternative` determines if a given type `T` is an alternative type of a `VariantType`
+* `yat::is_variant_alternative_t` gives the type of a given `yat::is_variant_alternative` result
+* `yat::is_variant_alternative_v` gives the boolean value of a given `yat::is_variant_alternative` result
 
 ### yat::is_one_of
 
