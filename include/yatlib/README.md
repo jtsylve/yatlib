@@ -115,6 +115,20 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 * `YAT_HAS_CONSTEXPR_BIT_CAST` is defined when `yat::bit_cast` is `constexpr`
 * `YAT_HAS_CONSTEXPR_BYTESWAP` is defined when `yat::byteswap` is `constexpr`
 
+## concepts.hpp
+
+**These types are only available when compiling with C++20 or above**
+
+```cpp
+template <typename T, typename VariantType>
+concept variant_alternative_type;
+```
+
+### yat::variant_alternative_type
+
+`yat::variant_alternative_type` specifies that a given type is an alternative type of a given variant type.
+
+
 ## endian.hpp
 
 ```cpp
