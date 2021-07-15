@@ -122,12 +122,18 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 ```cpp
 template <typename T, typename VariantType>
 concept variant_alternative_type;
+
+template <typename T>
+concept trivially_copyable;
 ```
 
 ### yat::variant_alternative_type
 
 `yat::variant_alternative_type` specifies that a given type is an alternative type of a given variant type.
 
+### yat::trivially_copyable 
+
+`yat::trivially_copyable` specifies that a givent type is trivially copyable.
 
 ## endian.hpp
 
