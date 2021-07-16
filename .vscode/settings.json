@@ -1,25 +1,3 @@
 {
-    "editor.formatOnSave": true,
-    "c-cpp-flylint.clang.extraArgs": [
-        "-std=c++17",
-        "-Wno-pragma-once-outside-header",
-        "-Wno-c++98-compat-pedantic",
-        "-Wno-unused-macros"
-    ],
-    "c-cpp-flylint.clang.language": "c++",
-    "c-cpp-flylint.clang.includePaths": [
-        "${workspaceFolder}/include"
-    ],
-    "c-cpp-flylint.cppcheck.suppressions": [],
-    "c-cpp-flylint.cppcheck.includePaths": [
-        "${workspaceFolder}/include"
-    ],
-    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-    "files.associations": {
-        "__config": "cpp",
-        "__nullptr": "cpp",
-        "type_traits": "cpp",
-        "version": "cpp",
-        "filesystem": "cpp"
-    }
+    "editor.formatOnSave": true
 }

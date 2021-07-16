@@ -125,6 +125,33 @@ concept variant_alternative_type;
 
 template <typename T>
 concept trivially_copyable;
+
+template <typename T, typename U>
+concept same_as;
+
+template <typename Derived, typename Base>
+concept derived_from;
+
+template <typename From, typename To>
+concept convertible_to;
+
+template <typename T>
+concept integral;
+
+template <typename T>
+concept signed_integral;
+
+template <typename T>
+concept unsigned_integral;
+
+template <typename T>
+concept floating_point;
+
+template <typename T>
+concept destructible;
+
+template <typename T, typename... Args>
+concept constructible_from;
 ```
 
 ### yat::variant_alternative_type
@@ -134,6 +161,44 @@ concept trivially_copyable;
 ### yat::trivially_copyable 
 
 `yat::trivially_copyable` specifies that a givent type is trivially copyable.
+
+### yat::same_as
+
+`yat::same_as` provides an implementation of [std::same_as](https://en.cppreference.com/w/cpp/concepts/same_as).
+
+
+### yat::derived_from
+
+`yat::derived_from` provides an implementation of [std::derived_from](https://en.cppreference.com/w/cpp/concepts/derived_from).
+
+### yat::convertible_to
+
+`yat::convertible_to` provides an implementation of [std::convertible_to](https://en.cppreference.com/w/cpp/concepts/convertible_to).
+
+### yat::integral
+
+`yat::integral` provides an implementation of [std::integral](https://en.cppreference.com/w/cpp/concepts/integral).
+
+### yat::signed_integral
+
+`yat::signed_integral` provides an implementation of [std::signed_integral](https://en.cppreference.com/w/cpp/concepts/signed_integral).
+
+### yat::unsigned_integral
+
+`yat::unsigned_integral` provides an implementation of [std::unsigned_integral](https://en.cppreference.com/w/cpp/concepts/unsigned_integral).
+
+### yat::floating_point
+
+`yat::floating_point` provides an implementation of [std::floating_point](https://en.cppreference.com/w/cpp/concepts/floating_point).
+
+### yat::destructible
+
+`yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).
+
+### yat::contructible_from
+
+`yat::contructible_from` provides an implementation of [std::contructible_from](https://en.cppreference.com/w/cpp/concepts/contructible_from).
+
 
 ## endian.hpp
 

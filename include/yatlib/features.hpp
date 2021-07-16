@@ -19,84 +19,88 @@
 
 // Check for C++20 support
 #if __cplusplus > 201703L
-  #define YAT_SUPPORTS_CPP20
+#define YAT_SUPPORTS_CPP20
+#endif
+
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907
+#define YAT_SUPPORTS_CONCEPTS
 #endif
 
 // Check for consteval support
 #if defined(__cpp_consteval) && __cpp_consteval >= 201811
-  #define YAT_CONSTEVAL consteval
+#define YAT_CONSTEVAL consteval
 #else
-  #define YAT_CONSTEVAL constexpr
+#define YAT_CONSTEVAL constexpr
 #endif
 
 // Compiler type detection
 #if defined(__clang__)
-  #define YAT_IS_CLANG
+#define YAT_IS_CLANG
 #elif defined(__GNUC__) || defined(__GNUG__)
-  #define YAT_IS_GCC
+#define YAT_IS_GCC
 #elif _MSC_VER
-  #define YAT_IS_MSVC
+#define YAT_IS_MSVC
 #else
-  #warning "unsupported compiler"
+#warning "unsupported compiler"
 #endif
 
 #if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
-  #define YAT_IS_GCC_COMPATIBLE
+#define YAT_IS_GCC_COMPATIBLE
 #endif
 
 // Check if compiler has clang/gcc __has_builtin
 #ifdef __has_builtin
-  #define YAT_HAS_BUILTIN(x) __has_builtin(x)
+#define YAT_HAS_BUILTIN(x) __has_builtin(x)
 #else
-  #define YAT_HAS_BUILTIN(x) 0
+#define YAT_HAS_BUILTIN(x) 0
 #endif
 
 // Check if compiler has clang/gcc __has_attribute
 #ifdef __has_attribute
-  #define YAT_HAS_ATTRIBUTE(x) __has_attribute(x)
+#define YAT_HAS_ATTRIBUTE(x) __has_attribute(x)
 #else
-  #define YAT_HAS_ATTRIBUTE(x) 0
+#define YAT_HAS_ATTRIBUTE(x) 0
 #endif
 
 // Add compiler hints that code should be unreachable
 #ifdef YAT_IS_GCC_COMPATIBLE
-  #define YAT_UNREACHABLE()    \
-    do {                       \
-      __builtin_unreachable(); \
-      assert(false);           \
-    } while (0);
+#define YAT_UNREACHABLE()    \
+  do {                       \
+    __builtin_unreachable(); \
+    assert(false);           \
+  } while (0);
 #elif defined(YAT_IS_MSVC)
-  #define YAT_UNREACHABLE() \
-    do {                    \
-      __assume(0);          \
-      assert(false);        \
-    } while (0);
+#define YAT_UNREACHABLE() \
+  do {                    \
+    __assume(0);          \
+    assert(false);        \
+  } while (0);
 #else
-  #define YAT_UNREACHABLE() \
-    do {                    \
-      assert(false);        \
-    } while (0);
+#define YAT_UNREACHABLE() \
+  do {                    \
+    assert(false);        \
+  } while (0);
 #endif
 
 // Add support for ignoring MSVC warnings
 #ifdef YAT_IS_MSVC
-  #define YAT_IGNORE_MSVC_WARNING_PUSH(n) \
-    __pragma(warning(push));              \
-    __pragma(warning(disable : n));
+#define YAT_IGNORE_MSVC_WARNING_PUSH(n) \
+  __pragma(warning(push));              \
+  __pragma(warning(disable : n));
 
-  #define YAT_IGNORE_MSVC_WARNING_POP() __pragma(warning(pop));
+#define YAT_IGNORE_MSVC_WARNING_POP() __pragma(warning(pop));
 #else
-  #define YAT_IGNORE_MSVC_WARNING_PUSH(n)
-  #define YAT_IGNORE_MSVC_WARNING_POP()
+#define YAT_IGNORE_MSVC_WARNING_PUSH(n)
+#define YAT_IGNORE_MSVC_WARNING_POP()
 #endif
 
 // Add pure and const function attribute support
 #ifdef YAT_IS_GCC_COMPATIBLE
-  #define YAT_CONST_FUNCTION [[gnu::const]]
-  #define YAT_PURE_FUNCTION [[gnu::pure]]
+#define YAT_CONST_FUNCTION [[gnu::const]]
+#define YAT_PURE_FUNCTION [[gnu::pure]]
 #else
-  #define YAT_CONST_FUNCTION
-  #define YAT_PURE_FUNCTION
+#define YAT_CONST_FUNCTION
+#define YAT_PURE_FUNCTION
 #endif
 
 // Earlier versions of MSVC have issues with getting decltype of specialized
@@ -107,9 +111,9 @@ namespace yat::internal {
 template <typename T>
 T decl_identity(T);
 }  // namespace yat::internal
-  #define YAT_DECLTYPE(T) decltype(yat::internal::decl_identity(T))
+#define YAT_DECLTYPE(T) decltype(yat::internal::decl_identity(T))
 #else
-  #define YAT_DECLTYPE(T) decltype(T)
+#define YAT_DECLTYPE(T) decltype(T)
 #endif
 
 // macOS 10.13 and iOS 10.11 don't let you use <any>, <optional>, or <variant>
@@ -124,7 +128,7 @@ T decl_identity(T);
       __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 120000) ||  \
      (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
       __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 50000))
-  #define YAT_APPLE_CXX17_TYPES_UNAVAILABLE
+#define YAT_APPLE_CXX17_TYPES_UNAVAILABLE
 #endif
 
 // macOS 10.15 and iOS 10.13 are required to use the std::filesystem
@@ -138,14 +142,14 @@ T decl_identity(T);
       __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 130000) ||  \
      (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
       __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 60000))
-  #define YAT_APPLE_CXX17FS_TYPES_UNAVAILABLE
+#define YAT_APPLE_CXX17FS_TYPES_UNAVAILABLE
 #endif
 
 // Always inline
 #if defined(YAT_IS_GCC_COMPATIBLE)
-  #define YAT_ALWAYS_INLINE [[gnu::always_inline]]
+#define YAT_ALWAYS_INLINE [[gnu::always_inline]]
 #elif defined(YAT_IS_MSVC)
-  #define YAT_ALWAYS_INLINE __forceinline
+#define YAT_ALWAYS_INLINE __forceinline
 #else
-  #define YAT_ALWAYS_INLINE
+#define YAT_ALWAYS_INLINE
 #endif
