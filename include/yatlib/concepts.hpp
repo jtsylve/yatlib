@@ -114,24 +114,6 @@ template <typename T, typename... Args>
 concept constructible_from =
     destructible<T> && std::is_constructible_v<T, Args...>;
 
-}  // namespace yat
-
-#endif  // YAT_INTERNAL_USE_STD_LIB_CONCEPTS
-
-//
-// Custom Concepts
-//
-
-namespace yat {
-
-/// Specifies that a given type is an alternative type of a given variant type
-template <typename T, typename VariantType>
-concept variant_alternative_type = is_variant_alternative_v<T, VariantType>;
-
-/// Specifies that a givent type is trivially copyable
-template <typename T>
-concept trivially_copyable = std::is_trivially_copyable_v<T>;
-
 /// The default_initializable concept checks whether variables of type T can be
 ///
 /// * value-initialized (T() is well-formed);
@@ -165,6 +147,25 @@ concept copy_constructible = move_constructible<T> &&
     constructible_from<T, T&> && convertible_to<T&, T> &&
     constructible_from<T, const T&> && convertible_to<const T&, T> &&
     constructible_from<T, const T> && convertible_to<const T, T>;
+
+}  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_LIB_CONCEPTS
+
+//
+// Custom Concepts
+//
+
+namespace yat {
+
+/// Specifies that a given type is an alternative type of a given variant type
+template <typename T, typename VariantType>
+concept variant_alternative_type = is_variant_alternative_v<T, VariantType>;
+
+/// Specifies that a givent type is trivially copyable
+template <typename T>
+concept trivially_copyable = std::is_trivially_copyable_v<T>;
+
 }  // namespace yat
 
 // Cleanup internal macros
