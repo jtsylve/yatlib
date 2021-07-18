@@ -135,6 +135,9 @@ concept derived_from;
 template <typename From, typename To>
 concept convertible_to;
 
+template <typename T, typename U>
+concept common_reference_with;
+
 template <typename T>
 concept integral;
 
@@ -147,11 +150,29 @@ concept unsigned_integral;
 template <typename T>
 concept floating_point;
 
+template<typename LHS, typename RHS>
+concept assignable_from;
+
+template<typename T, typename U>
+concept swappable_with;
+
+template <typename T>
+concept swappable;
+
 template <typename T>
 concept destructible;
 
 template <typename T, typename... Args>
 concept constructible_from;
+
+template <typename T>
+concept default_initializable;
+
+template <typename T>
+concept move_constructible;
+
+template <typename T>
+concept copy_constructible;
 ```
 
 ### yat::variant_alternative_type
@@ -175,6 +196,10 @@ concept constructible_from;
 
 `yat::convertible_to` provides an implementation of [std::convertible_to](https://en.cppreference.com/w/cpp/concepts/convertible_to).
 
+### yat::common_reference_with
+
+`yat::common_reference_with` provides an implementation of [std::common_reference_with](https://en.cppreference.com/w/cpp/concepts/common_reference_with).
+
 ### yat::integral
 
 `yat::integral` provides an implementation of [std::integral](https://en.cppreference.com/w/cpp/concepts/integral).
@@ -191,6 +216,18 @@ concept constructible_from;
 
 `yat::floating_point` provides an implementation of [std::floating_point](https://en.cppreference.com/w/cpp/concepts/floating_point).
 
+### yat::assignable_from
+
+`yat::assignable_from` provides an implementation of [std::assignable_from](https://en.cppreference.com/w/cpp/concepts/assignable_from).
+
+### yat::swappable
+
+`yat::swappable` provides an implementation of [std::swappable](https://en.cppreference.com/w/cpp/concepts/swappable).
+
+### yat::swappable_with
+
+`yat::swappable_with` provides an implementation of [std::swappable_with](https://en.cppreference.com/w/cpp/concepts/swappable).
+
 ### yat::destructible
 
 `yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).
@@ -198,6 +235,18 @@ concept constructible_from;
 ### yat::constructible_from
 
 `yat::constructible_from` provides an implementation of [std::constructible_from](https://en.cppreference.com/w/cpp/concepts/contructible_from).
+
+### yat::default_initializable
+
+`yat::default_initializable` provides an implementation of [std::default_initializable](https://en.cppreference.com/w/cpp/concepts/default_initializable).
+
+### yat::move_constructible
+
+`yat::move_constructible` provides an implementation of [std::move_constructible](https://en.cppreference.com/w/cpp/concepts/move_constructible).
+
+### yat::copy_constructible
+
+`yat::copy_constructible` provides an implementation of [std::copy_constructible](https://en.cppreference.com/w/cpp/concepts/copy_constructible).
 
 
 ## endian.hpp

@@ -41,6 +41,8 @@
 
 namespace yat {
 
+using std::assignable_from;
+using std::common_reference_with;
 using std::constructible_from;
 using std::convertible_to;
 using std::copy_constructible;
@@ -87,6 +89,15 @@ concept convertible_to = std::is_convertible_v<From, To> &&
   static_cast<To>(f());
 };
 
+/// The concept common_reference_with<T, U> specifies that two types T and U
+/// share a common reference type (as computed by std::common_reference_t) to
+/// which both can be converted.
+template <typename T, typename U>
+concept common_reference_with =
+    std::same_as<common_reference_t<T, U>, common_reference_t<U, T> > &&
+    convertible_to<T, common_reference_t<T, U> > &&
+    convertible_to<U, common_reference_t<T, U> >;
+
 /// The concept integral<T> is satisfied if and only if T is an integral type.
 template <typename T>
 concept integral = std::is_integral_v<T>;
@@ -105,6 +116,42 @@ concept unsigned_integral = integral<T> && !signed_integral<T>;
 /// floating-point type.
 template <typename T>
 concept floating_point = std::is_floating_point_v<T>;
+
+// clang-format off
+
+/// The concept assignable_from<LHS, RHS> specifies that an expression 
+/// of the type and value category specified by RHS can be assigned to 
+/// an lvalue expression whose type is specified by LHS.
+template <typename LHS, typename RHS>
+concept assignable_from =
+    std::is_lvalue_reference_v<LHS> &&
+    common_reference_with<const std::remove_reference_t<LHS>&, const std::remove_reference_t<RHS>&> &&
+    requires(LHS lhs, RHS&& rhs) {
+      { lhs = std::forward<RHS>(rhs) } -> std::same_as<LHS>;
+    };
+
+/// The concept swappable<T> specifies that lvalues of type T are swappable.
+template <typename T>
+concept swappable = requires(T& a, T& b) {
+  std::swap(a, b);
+};
+
+/// The concept swappable_with<T, U> specifies that expressions of the type 
+/// and value category encoded by T and U are swappable with each other. 
+/// swappable_with<T, U> is satisfied only if a call to std::swap(t, u) 
+/// exchanges the value of t and u, that is, given distinct objects t2 equal 
+/// to t and u2 equal to u, after evaluating either ranges::swap(t, u) or 
+/// std::swap(u, t), t2 is equal to u and u2 is equal to t.
+template<typename T, typename U>
+concept swappable_with = common_reference_with<T, U> &&
+  requires(T&& t, U&& u) {
+    std::swap(std::forward<T>(t), std::forward<T>(t));
+    std::swap(std::forward<U>(u), std::forward<U>(u));
+    std::swap(std::forward<T>(t), std::forward<U>(u));
+    std::swap(std::forward<U>(u), std::forward<T>(t));
+  };
+
+// clang-format on
 
 /// The concept destructible specifies the concept of all types whose instances
 /// can safely be destroyed at the end of their lifetime (including reference
