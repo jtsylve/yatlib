@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+//
+// Many of these tests are taken directly from
+// https://github.com/microsoft/STL/blob/1ece8a0352327397997c3f4b649a228c66da3ce1/tests/std/tests/VSO_0000000_type_traits/test.cpp
+//
+
 #include <yatlib/features.hpp>
 #include <yatlib/type_traits.hpp>
 #include <yatlib/variant.hpp>
@@ -343,3 +349,333 @@ TEST_CASE("remove_cvref", "[type_traits][remove_cvref]") {
   STATIC_REQUIRE(test_remove_cvref<volatile int &(C::*)(int)>());
   STATIC_REQUIRE(test_remove_cvref<const volatile int &(C::*)(int)>());
 }
+
+// Test the P0898R3 changes to <type_traits>:
+// * Addition of yat::common_reference and yat::basic_common_reference
+// * New fallback case for common_type
+
+namespace {
+template <class, class = void>
+constexpr bool is_trait = false;
+template <class T>
+constexpr bool is_trait<T, std::void_t<typename T::type>> = true;
+
+namespace detail {
+static constexpr bool permissive() { return false; }
+
+template <class>
+struct DependentBase {
+  static constexpr bool permissive() { return true; }
+};
+
+template <class T>
+struct Derived : DependentBase<T> {
+  static constexpr bool test() { return permissive(); }
+};
+}  // namespace detail
+constexpr bool is_permissive = detail::Derived<int>::test();
+
+struct move_only {
+  move_only() = default;
+  move_only(move_only &&) = default;
+  move_only &operator=(move_only &&) = default;
+};
+
+template <class T>
+struct converts_from {
+  converts_from() = default;
+  constexpr converts_from(T) noexcept {}
+};
+
+template <int>
+struct interconvertible {
+  interconvertible() = default;
+  template <int N>
+  explicit interconvertible(interconvertible<N>) {}
+};
+
+template <class... Ts>
+struct derives_from : Ts... {};
+
+struct simple_base {};
+using simple_derived = derives_from<simple_base>;
+}  // unnamed namespace
+
+template <>
+struct std::common_type<interconvertible<0>, interconvertible<1>> {
+  using type = interconvertible<2>;
+};
+template <>
+struct std::common_type<interconvertible<1>, interconvertible<0>> {
+  using type = interconvertible<2>;
+};
+
+// A slightly simplified variation of std::tuple
+template <class...>
+struct tuple_ish {};
+
+template <class, class, class>
+struct tuple_ish_helper {};
+template <class... Ts, class... Us>
+struct tuple_ish_helper<std::void_t<yat::common_reference_t<Ts, Us>...>,
+                        tuple_ish<Ts...>, tuple_ish<Us...>> {
+  using type = tuple_ish<yat::common_reference_t<Ts, Us>...>;
+};
+
+template <class... Ts, class... Us, template <class> class TQual,
+          template <class> class UQual>
+struct yat::basic_common_reference<tuple_ish<Ts...>, tuple_ish<Us...>, TQual,
+                                   UQual>
+    : tuple_ish_helper<void, tuple_ish<TQual<Ts>...>, tuple_ish<UQual<Us>...>> {
+};
+
+// N4810 [meta.trans.other]/5.1: If sizeof...(T) is zero, there shall be no
+// member type.
+static_assert(!is_trait<yat::common_reference<>>);
+
+// N4810 [meta.trans.other]/5.2: Otherwise, if sizeof...(T) is one, let T0
+// denote the sole type in the pack T. The member typedef type shall denote the
+// same type as T0.
+static_assert(std::is_same_v<yat::common_reference_t<void>, void>);
+static_assert(std::is_same_v<yat::common_reference_t<int>, int>);
+static_assert(std::is_same_v<yat::common_reference_t<int &>, int &>);
+static_assert(std::is_same_v<yat::common_reference_t<int &&>, int &&>);
+static_assert(std::is_same_v<yat::common_reference_t<int const>, int const>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int const &>, int const &>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int const &&>, int const &&>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int volatile[]>, int volatile[]>);
+static_assert(std::is_same_v<yat::common_reference_t<int volatile (&)[]>,
+                             int volatile (&)[]>);
+static_assert(std::is_same_v<yat::common_reference_t<int volatile(&&)[]>,
+                             int volatile(&&)[]>);
+static_assert(std::is_same_v<yat::common_reference_t<void (&)()>, void (&)()>);
+static_assert(std::is_same_v<yat::common_reference_t<void(&&)()>, void(&&)()>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<void() volatile>, void() volatile>);
+static_assert(std::is_same_v<yat::common_reference_t<void() &&>, void() &&>);
+
+// N4810 [meta.trans.other]/5.3.1: If T1 and T2 are reference types and
+// COMMON_REF(T1, T2) is well-formed, then the member typedef type denotes that
+// type.
+static_assert(
+    std::is_same_v<yat::common_reference_t<simple_base &, simple_derived &>,
+                   simple_base &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base &, simple_derived const &>,
+              simple_base const &>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<simple_base &, simple_derived &&>,
+                   simple_base const &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base &, simple_derived const &&>,
+              simple_base const &>);
+
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base const &, simple_derived &>,
+              simple_base const &>);
+static_assert(std::is_same_v<yat::common_reference_t<simple_base const &,
+                                                     simple_derived const &>,
+                             simple_base const &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base const &, simple_derived &&>,
+              simple_base const &>);
+static_assert(std::is_same_v<yat::common_reference_t<simple_base const &,
+                                                     simple_derived const &&>,
+                             simple_base const &>);
+
+static_assert(
+    std::is_same_v<yat::common_reference_t<simple_base &&, simple_derived &>,
+                   simple_base const &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base &&, simple_derived const &>,
+              simple_base const &>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<simple_base &&, simple_derived &&>,
+                   simple_base &&>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base &&, simple_derived const &&>,
+              simple_base const &&>);
+
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base const &&, simple_derived &>,
+              simple_base const &>);
+static_assert(std::is_same_v<yat::common_reference_t<simple_base const &&,
+                                                     simple_derived const &>,
+                             simple_base const &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<simple_base const &&, simple_derived &&>,
+              simple_base const &&>);
+static_assert(std::is_same_v<yat::common_reference_t<simple_base const &&,
+                                                     simple_derived const &&>,
+                             simple_base const &&>);
+
+#ifdef __EDG__
+// When f is the name of a function of type int(), C1XX incorrectly believes
+// that
+//   decltype(false ? f : f)
+// is int() in permissive mode and int(*)() in strict mode (Yes, two different
+// incorrect results). It also correctly believes that
+//   decltype(false ? declval<decltype((f))>() : declval<decltype((f))>())
+// is int(&)(), which is nice because it allows this test case to pass. EDG
+// believes the type of both the above is int() in all modes. I suspect this is
+// intentional bug compatibility with C1XX, so I'm not filing a bug. I _do_
+// assert here that EDG produces the _wrong_ type from yat::common_reference_t,
+// however, so that THIS TEST WILL FAIL IF AND WHEN EDG STARTS BEHAVING
+// CORRECTLY. We can then remove the non-workaround to defend against
+// regression.
+static_assert(
+    !std::is_same_v<yat::common_reference_t<int (&)(), int (&)()>, int (&)()>);
+static_assert(
+    !std::is_same_v<yat::common_reference_t<int(&&)(), int (&)()>, int (&)()>);
+static_assert(
+    !std::is_same_v<yat::common_reference_t<int (&)(), int(&&)()>, int (&)()>);
+static_assert(
+    !std::is_same_v<yat::common_reference_t<int(&&)(), int(&&)()>, int(&&)()>);
+#else   // ^^^ EDG / not EDG vvv
+static_assert(
+    std::is_same_v<yat::common_reference_t<int (&)(), int (&)()>, int (&)()>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int(&&)(), int (&)()>, int (&)()>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int (&)(), int(&&)()>, int (&)()>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int(&&)(), int(&&)()>, int(&&)()>);
+#endif  // __EDG__
+
+static_assert(std::is_same_v<
+              yat::common_reference_t<int const volatile &&, int volatile &&>,
+              int const volatile &&>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int &&, int const &, int volatile &>,
+                   int const volatile &>);
+
+template <class T = int>
+constexpr bool strict_only_common_reference_cases() {
+  if constexpr (!is_permissive) {
+    static_assert(std::is_same_v<yat::common_reference_t<T(&)[10], T(&&)[10]>,
+                                 T const(&)[10]>);
+    static_assert(std::is_same_v<
+                  yat::common_reference_t<T const(&)[10], T volatile(&)[10]>,
+                  T const volatile(&)[10]>);
+  }
+
+  return true;
+}
+static_assert(strict_only_common_reference_cases());
+
+// N4810 [meta.trans.other]/5.3.2: Otherwise, if
+// yat::basic_common_reference<remove_cvref_t<T1>, remove_cvref_t<T2>, XREF(T1),
+// XREF(T2)>::type is well-formed, then the member typedef type denotes that
+// type.
+static_assert(
+    std::is_same_v<yat::common_reference_t<tuple_ish<int, short> const &,
+                                           tuple_ish<int &, short volatile &>>,
+                   tuple_ish<int const &, short const volatile &>>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<tuple_ish<int, short> volatile &,
+                                           tuple_ish<int, short> const &>,
+                   tuple_ish<int, short> const volatile &>);
+
+// N4810 [meta.trans.other]/5.3.3: Otherwise, if COND_RES(T1, T2) is
+// well-formed, then the member typedef type denotes that type.
+static_assert(std::is_same_v<yat::common_reference_t<void, void>, void>);
+static_assert(std::is_same_v<yat::common_reference_t<void const, void>, void>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<void volatile, void>, void>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<void const volatile, void>, void>);
+static_assert(std::is_same_v<yat::common_reference_t<int, short>, int>);
+static_assert(std::is_same_v<yat::common_reference_t<int, short &>, int>);
+static_assert(std::is_same_v<yat::common_reference_t<int &, short &>, int>);
+static_assert(std::is_same_v<yat::common_reference_t<int &, short>, int>);
+
+// tricky reference-to-volatile case
+static_assert(
+    std::is_same_v<yat::common_reference_t<int &&, int volatile &>, int>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int volatile &, int &&>, int>);
+
+static_assert(
+    std::is_same_v<yat::common_reference_t<int (&)[10], int (&)[11]>, int *>);
+
+// https://github.com/ericniebler/stl2/issues/338
+static_assert(
+    std::is_same_v<yat::common_reference_t<int &, converts_from<int &>>,
+                   converts_from<int &>>);
+
+// N4810 [meta.trans.other]/5.3.4: Otherwise, if std::common_type_t<T1, T2> is
+// well-formed, then the member typedef type denotes that type.
+static_assert(
+    std::is_same_v<yat::common_reference_t<interconvertible<0> &,
+                                           interconvertible<1> const &>,
+                   interconvertible<2>>);
+
+static_assert(
+    std::is_same_v<yat::common_reference_t<move_only const &, move_only>,
+                   move_only>);
+static_assert(
+    std::is_same_v<
+        yat::common_reference_t<derives_from<move_only> const &, move_only>,
+        move_only>);
+static_assert(std::is_same_v<yat::common_reference_t<move_only const &,
+                                                     derives_from<move_only>>,
+                             move_only>);
+
+// N4810 [meta.trans.other]/5.3.5: Otherwise, there shall be no member type.
+static_assert(!is_trait<yat::common_reference<tuple_ish<short> volatile &,
+                                              tuple_ish<int, short> const &>>);
+
+static_assert(
+    !is_trait<yat::common_reference<void() volatile, void() volatile>>);
+static_assert(!is_trait<yat::common_reference<void() volatile, int>>);
+static_assert(!is_trait<yat::common_reference<int, void() volatile>>);
+static_assert(!is_trait<yat::common_reference<void() &&, void() &&>>);
+static_assert(!is_trait<yat::common_reference<int *, void() &&>>);
+static_assert(!is_trait<yat::common_reference<void() &&, int (&)()>>);
+static_assert(!is_trait<yat::common_reference<void() volatile, void() &&>>);
+
+// N4810 [meta.trans.other]/5.4: Otherwise, if sizeof...(T) is greater than two,
+// let T1, T2, and Rest, respectively, denote the first, second, and (pack of)
+// remaining types comprising T. Let C be the type yat::common_reference_t<T1,
+// T2>. Then: N4810 [meta.trans.other]/5.4.1: If there is such a type C, the
+// member typedef type shall denote the same type, if any, as
+// yat::common_reference_t<C, Rest...>.
+static_assert(std::is_same_v<yat::common_reference_t<int, int, int>, int>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<int &&, int const &, int volatile &>,
+                   int const volatile &>);
+static_assert(std::is_same_v<
+              yat::common_reference_t<int &&, int const &, float &>, float>);
+
+static_assert(
+    std::is_same_v<yat::common_reference_t<
+                       simple_base &, simple_derived const &, simple_derived &>,
+                   simple_base const &>);
+static_assert(
+    std::is_same_v<yat::common_reference_t<simple_base &, simple_derived &,
+                                           simple_base &, simple_derived &>,
+                   simple_base &>);
+
+// N4810 [meta.trans.other]/5.4.2: Otherwise, there shall be no member type.
+static_assert(!is_trait<yat::common_reference<int, short, int, char *>>);
+
+template <class T>
+struct bad_reference_wrapper {
+  bad_reference_wrapper(T &);
+  bad_reference_wrapper(T &&) = delete;
+  operator T &() const;
+};
+
+// N4810 [meta.trans.other]/3.3.4 (per the proposed resolution of LWG-3205):
+// Otherwise, if
+//   remove_cvref_t<decltype(false ? declval<const D1&>() : declval<const
+//   D2&>())>
+// denotes a type, let C denote that type.
+static_assert(
+    std::is_same_v<std::common_type_t<int, bad_reference_wrapper<int>>, int>);
+static_assert(
+    std::is_same_v<std::common_type_t<bad_reference_wrapper<double>, double>,
+                   double>);

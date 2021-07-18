@@ -243,7 +243,220 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 
 #endif  // YAT_INTERNAL_USE_STD_REMOVE_CVREF
 
+/////////////////////////////////////////
+// P0898R3 - https://wg21.link/P0898R3 //
+/////////////////////////////////////////
+
+#if defined(__cpp_lib_concepts) && __cpp_lib_concepts >= 202002
+#define YAT_INTERNAL_USE_STD_COMMON_REFERENCE
+#endif
+
+#ifdef YAT_INTERNAL_USE_STD_COMMON_REFERENCE
+
+namespace yat {
+
+using std::basic_common_reference;
+using std::common_reference;
+using std::common_reference_t;
+
+}  // namespace yat
+
+#else
+
+namespace yat {
+
+/// The class template basic_common_reference is a customization point that
+/// allows users to influence the result of common_reference for user-defined
+/// types (typically proxy references). The primary template is empty.
+template <typename, typename, template <typename> typename,
+          template <typename> typename>
+struct basic_common_reference {};
+
+/// Determines the common reference type of the types T..., that is, the type to
+/// which all the types in T... can be converted or bound. If such a type exists
+/// (as determined according to the rules below), the member type names that
+/// type. Otherwise, there is no member type. The behavior is undefined if any
+/// of the types in T... is an incomplete type other than (possibly
+/// cv-qualified) void
+template <typename...>
+struct common_reference;
+
+/// The common reference type for all T...
+template <class... _Types>
+using common_reference_t = typename common_reference<_Types...>::type;
+
+// N4810 [meta.trans.other]/5.1: "If sizeof...(T) is zero ..."
+template <>
+struct common_reference<> {};
+
+// N4810 [meta.trans.other]/5.2: "...if sizeof...(T) is one ..."
+template <typename T>
+struct common_reference<T> {
+  using type = T;
+};
+
+}  // namespace yat
+
+namespace yat::detail {
+//
+// Helper types for common_reference
+//
+
+/// [meta.trans.other] 3.3
+/// COPYCV(FROM, TO) be an alias for type TO with the addition of FROM’s
+/// top-level cv-qualifiers [Example: COPYCV(const int, volatile short) is an
+/// alias for const volatile short. —end example]
+template <typename FROM, typename TO>
+struct _copy_cv {
+  using type = TO;
+};
+
+template <typename FROM, typename TO>
+struct _copy_cv<const FROM, TO> {
+  using type = const TO;
+};
+
+template <typename FROM, typename TO>
+struct _copy_cv<volatile FROM, TO> {
+  using type = volatile TO;
+};
+
+template <typename FROM, typename TO>
+struct _copy_cv<const volatile FROM, TO> {
+  using type = const volatile TO;
+};
+
+template <typename FROM, typename TO>
+using copy_cv = typename _copy_cv<FROM, TO>::type;
+
+/// [meta.trans.other] 3.2
+/// XREF(A) denote a unary alias template T such that T<U> denotes the same type
+/// as U with the addition of A’s cv and reference qualifiers, for a
+/// non-reference cv-unqualified type U
+template <typename T>
+struct xref {
+  template <typename U>
+  using type = copy_cv<T, U>;
+};
+
+template <typename T>
+struct xref<T&> {
+  template <typename U>
+  using type = std::add_lvalue_reference_t<copy_cv<T, U>>;
+};
+
+template <typename T>
+struct xref<T&&> {
+  template <typename U>
+  using type = std::add_rvalue_reference_t<copy_cv<T, U>>;
+};
+
+/// [meta.trans.other] 3.4
+/// COND-RES(X, Y) be decltype(false ? declval<X(&)()>()() :
+/// declval<Y(&)()>()())
+template <typename X, typename Y>
+using cond_res =
+    decltype(false ? std::declval<X (&)()>()() : std::declval<Y (&)()>()());
+
+// N4810 [meta.trans.other]/5.3: "...if sizeof...(T) is two..."
+
+// N4810 [meta.trans.other]/5.3.4: "if common_type_t<T1, T2> is well-formed..."
+// N4810 [meta.trans.other]/5.3.5: "Otherwise, there shall be no member type."
+template <typename T1, typename T2, typename = void>
+struct __common_reference : std::common_type<T1, T2> {};
+
+// N4810 [meta.trans.other]/5.3.3: "if COND_RES(T1, T2) is well-formed..."
+template <typename T1, typename T2>
+struct __common_reference<T1, T2, std::void_t<cond_res<T1, T2>>> {
+  using type = cond_res<T1, T2>;
+};
+
+// N4810 [meta.trans.other]/5.3.2: "if basic_common_reference<[...]>::type is
+// well-formed..."
+template <typename T1, typename T2>
+using basic_specialization =
+    typename yat::basic_common_reference<remove_cvref_t<T1>, remove_cvref_t<T2>,
+                                         xref<T1>::template type,
+                                         xref<T2>::template type>::type;
+
+template <typename T1, typename T2, typename = void>
+struct _common_reference : __common_reference<T1, T2> {};
+
+template <typename T1, typename T2>
+struct _common_reference<T1, T2, std::void_t<basic_specialization<T1, T2>>> {
+  using type = basic_specialization<T1, T2>;
+};
+
+// N4810 [meta.trans.other]/5.3.1: "If T1 and T2 are reference types and
+// COMMON_REF(T1, T2) is well-formed..."
+template <typename T1, typename T2, typename = void>
+struct common_reference : _common_reference<T1, T2> {};
+
+template <typename T1, typename T2,
+          typename Result = cond_res<copy_cv<T1, T2>&, copy_cv<T2, T1>&>,
+          std::enable_if_t<std::is_lvalue_reference_v<Result>, int> = 0>
+using ll_common_ref = Result;
+
+template <typename T1, typename T2>
+struct common_reference<T1&, T2&, std::void_t<ll_common_ref<T1, T2>>> {
+  using type = ll_common_ref<T1, T2>;  // "both lvalues" case from N4810
+                                       // [meta.trans.other]/2.5
+};
+
+template <typename T1, typename T2>
+struct common_reference<T1&&, T2&,
+                        std::enable_if_t<std::is_convertible_v<
+                            T1&&, ll_common_ref<const T1, T2>>>> {
+  using type = ll_common_ref<const T1, T2>;  // "rvalue and lvalue" case from
+                                             // N4810 [meta.trans.other]/2.7
+};
+
+template <typename T1, typename T2>
+struct common_reference<T1&, T2&&,
+                        std::enable_if_t<std::is_convertible_v<
+                            T2&&, ll_common_ref<const T2, T1>>>> {
+  using type = ll_common_ref<const T2, T1>;  // "lvalue and rvalue" case from
+                                             // N4810 [meta.trans.other]/2.8
+};
+
+template <typename T1, typename T2>
+using rr_common_ref = std::remove_reference_t<ll_common_ref<T1, T2>>&&;
+
+template <typename T1, typename T2>
+struct common_reference<
+    T1&&, T2&&,
+    std::enable_if_t<std::is_convertible_v<T1&&, rr_common_ref<T1, T2>> &&
+                     std::is_convertible_v<T2&&, rr_common_ref<T1, T2>>>> {
+  using type = rr_common_ref<T1, T2>;  // "both rvalues" case from N4810
+                                       // [meta.trans.other]/2.6
+};
+
+// N4810 [meta.trans.other]/5.4: "if sizeof...(T) is greater than two..."
+template <typename Void, typename T1, typename T2, typename... Rest>
+struct fold_common_reference {};
+
+template <typename T1, typename T2, typename... Rest>
+struct fold_common_reference<std::void_t<common_reference_t<T1, T2>>, T1, T2,
+                             Rest...>
+    : yat::common_reference<common_reference_t<T1, T2>, Rest...> {};
+
+}  // namespace yat::detail
+
+namespace yat {
+
+template <typename T1, typename T2>
+struct common_reference<T1, T2> : detail::common_reference<T1, T2> {};
+
+template <typename T1, typename T2, typename T3, typename... Rest>
+struct common_reference<T1, T2, T3, Rest...>
+    : detail::fold_common_reference<void, T1, T2, T3, Rest...> {};
+
+}  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_COMMON_REFERENCE
+
 // Cleanup internal macros
 #undef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
 #undef YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
 #undef YAT_INTERNAL_USE_STD_REMOVE_CVREF
+#undef YAT_INTERNAL_USE_STD_COMMON_REFERENCE
