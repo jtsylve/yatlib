@@ -117,7 +117,7 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 
 ## concepts.hpp
 
-**These types are only available when compiling with C++20 or above**
+**These types are only available when compiling with C++20 or above with a compiler that supports concepts.**
 
 ```cpp
 template <typename T, typename VariantType>
@@ -195,9 +195,9 @@ concept constructible_from;
 
 `yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).
 
-### yat::contructible_from
+### yat::constructible_from
 
-`yat::contructible_from` provides an implementation of [std::contructible_from](https://en.cppreference.com/w/cpp/concepts/contructible_from).
+`yat::constructible_from` provides an implementation of [std::constructible_from](https://en.cppreference.com/w/cpp/concepts/contructible_from).
 
 
 ## endian.hpp
