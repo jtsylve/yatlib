@@ -17,6 +17,7 @@
 
 #include <cstddef>
 #include <type_traits>
+#include <version>
 
 #include "features.hpp"
 #include "variant.hpp"
@@ -114,7 +115,7 @@ inline constexpr bool is_array_convertible_v =
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_type_identity) && __cpp_lib_type_identity >= 201806L
-  #define YAT_INTERNAL_USE_STD_TYPE_IDENTITY
+#define YAT_INTERNAL_USE_STD_TYPE_IDENTITY
 #endif
 
 #ifdef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
@@ -158,7 +159,7 @@ using type_identity_t = typename type_identity<T>::type;
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_is_scoped_enum) && __cpp_lib_is_scoped_enum >= 202011L
-  #define YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
+#define YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
 #endif
 
 #ifdef YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
@@ -202,6 +203,47 @@ inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
 
 #endif  // YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
 
+/////////////////////////////////////////
+// P0550R2 - https://wg21.link/P0550R2 //
+/////////////////////////////////////////
+
+#if defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711
+#define YAT_INTERNAL_USE_STD_REMOVE_CVREF
+#endif
+
+#ifdef YAT_INTERNAL_USE_STD_REMOVE_CVREF
+
+namespace yat {
+
+using std::remove_cvref;
+using std::remove_cvref_t;
+
+}  // namespace yat
+
+#else
+
+namespace yat {
+
+/// If the type T is a reference type, provides the member typedef type which is
+/// the type referred to by T with its topmost cv-qualifiers removed. Otherwise
+/// type is T with its topmost cv-qualifiers removed.
+///
+/// The behavior of a program that adds specializations for remove_cvref is
+/// undefined.
+template <typename T>
+struct remove_cvref {
+  typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+};
+
+/// Gives the type of a given `yat::remove_cvref` result
+template <typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
+
+}  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_REMOVE_CVREF
+
 // Cleanup internal macros
 #undef YAT_INTERNAL_USE_STD_TYPE_IDENTITY
 #undef YAT_INTERNAL_USE_STD_IS_SCOPED_ENUM
+#undef YAT_INTERNAL_USE_STD_REMOVE_CVREF

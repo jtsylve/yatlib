@@ -16,7 +16,7 @@ add_library(yat INTERFACE)
 add_library(yat::yat ALIAS yat)
 target_compile_features(
   yat
-  INTERFACE cxx_std_20)
+  INTERFACE cxx_std_17)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.

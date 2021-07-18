@@ -205,7 +205,7 @@ constexpr bool test_type_identity() {
 
 class C {};
 
-TEST_CASE("type_identity", "[type_traits][is_derefenceable]") {
+TEST_CASE("type_identity", "[type_traits][type_identity]") {
   STATIC_REQUIRE(test_type_identity<void>());
   STATIC_REQUIRE(test_type_identity<int>());
   STATIC_REQUIRE(test_type_identity<int *>());
@@ -252,4 +252,94 @@ TEST_CASE("is_scoped_enum", "[type_traits][is_scoped_enum]") {
   STATIC_REQUIRE(yat::is_scoped_enum_v<B>);
   STATIC_REQUIRE_FALSE(yat::is_scoped_enum_v<C>);
   STATIC_REQUIRE_FALSE(yat::is_scoped_enum_v<int>);
+}
+
+template <typename T>
+constexpr bool test_remove_cvref() {
+  static_assert(std::is_same_v<T, typename yat::remove_cvref<T>::type>);
+  static_assert(std::is_same_v<T, yat::remove_cvref_t<T>>);
+
+  if constexpr (!std::is_function_v<T>) {
+    static_assert(std::is_same_v<T, typename yat::remove_cvref<const T>::type>);
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<volatile T>::type>);
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<const volatile T>::type>);
+
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const T>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<volatile T>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const volatile T>>);
+  }
+
+  if constexpr (!std::is_void_v<T>) {
+    static_assert(std::is_same_v<T, typename yat::remove_cvref<T &>::type>);
+    static_assert(std::is_same_v<T, typename yat::remove_cvref<T &&>::type>);
+
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<T &>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<T &&>>);
+  }
+
+  if constexpr (!std::is_void_v<T> && !std::is_function_v<T>) {
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<const T &>::type>);
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<volatile T &>::type>);
+    static_assert(
+        std::is_same_v<T,
+                       typename yat::remove_cvref<const volatile T &>::type>);
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<const T &&>::type>);
+    static_assert(
+        std::is_same_v<T, typename yat::remove_cvref<volatile T &&>::type>);
+    static_assert(
+        std::is_same_v<T,
+                       typename yat::remove_cvref<const volatile T &&>::type>);
+
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const T &>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<volatile T &>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const volatile T &>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const T &&>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<volatile T &&>>);
+    static_assert(std::is_same_v<T, yat::remove_cvref_t<const volatile T &&>>);
+  }
+
+  return true;
+}
+
+TEST_CASE("remove_cvref", "[type_traits][remove_cvref]") {
+  STATIC_REQUIRE(test_remove_cvref<void>());
+  STATIC_REQUIRE(test_remove_cvref<int>());
+  STATIC_REQUIRE(test_remove_cvref<int *>());
+  STATIC_REQUIRE(test_remove_cvref<const int *>());
+  STATIC_REQUIRE(test_remove_cvref<volatile int *>());
+  STATIC_REQUIRE(test_remove_cvref<const volatile int *>());
+  STATIC_REQUIRE(test_remove_cvref<int[3]>());
+  STATIC_REQUIRE(test_remove_cvref<int[]>());
+  STATIC_REQUIRE(test_remove_cvref<int(int)>());
+  STATIC_REQUIRE(test_remove_cvref<int &(int)>());
+  STATIC_REQUIRE(test_remove_cvref<const int &(int)>());
+  STATIC_REQUIRE(test_remove_cvref<volatile int &(int)>());
+  STATIC_REQUIRE(test_remove_cvref<const volatile int &(int)>());
+  STATIC_REQUIRE(test_remove_cvref<int(int &)>());
+  STATIC_REQUIRE(test_remove_cvref<int(const int &)>());
+  STATIC_REQUIRE(test_remove_cvref<int(volatile int &)>());
+  STATIC_REQUIRE(test_remove_cvref<int(const volatile int &)>());
+  STATIC_REQUIRE(test_remove_cvref<int C::*>());
+  STATIC_REQUIRE(test_remove_cvref<const int C::*>());
+  STATIC_REQUIRE(test_remove_cvref<volatile int C::*>());
+  STATIC_REQUIRE(test_remove_cvref<const volatile int C::*>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int)>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int &)>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(const int &) const>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(volatile int &) volatile>());
+  STATIC_REQUIRE(
+      test_remove_cvref<int (C::*)(const volatile int &) const volatile>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int) &>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int) const &>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int) &&>());
+  STATIC_REQUIRE(test_remove_cvref<int (C::*)(int) const &&>());
+  STATIC_REQUIRE(test_remove_cvref<int &(C::*)(int)>());
+  STATIC_REQUIRE(test_remove_cvref<const int &(C::*)(int)>());
+  STATIC_REQUIRE(test_remove_cvref<volatile int &(C::*)(int)>());
+  STATIC_REQUIRE(test_remove_cvref<const volatile int &(C::*)(int)>());
 }

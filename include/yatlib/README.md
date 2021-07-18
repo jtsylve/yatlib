@@ -399,6 +399,12 @@ struct is_scoped_enum;
 
 template <typename T>
 inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
+
+template <typename T>
+struct remove_cvref;
+
+template <typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
 ```
 
 ### yat::is_variant_alternative
@@ -442,6 +448,11 @@ inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
 
 * `yat::is_scoped_enum` provides an implementation of [std::is_scoped_enum](https://en.cppreference.com/w/cpp/types/is_scoped_enum).  
 * `yat::is_scoped_enum_v` gives the boolean value of a given `yat::is_scoped_enum` result
+
+### yat::remove_cvref
+
+* `yat::remove_cvref` provides an implementation of [std::remove_cvref](https://en.cppreference.com/w/cpp/types/remove_cvref).  
+* `yat::remove_cvref_t` gives the type of a given `yat::remove_cvref` result
 
 ## utility.hpp
 

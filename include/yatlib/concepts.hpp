@@ -25,6 +25,10 @@
 #include <concepts>
 #endif
 
+/////////////////////////////////////////
+// P0898R3 - https://wg21.link/P0898R3 //
+/////////////////////////////////////////
+
 #if defined(__cpp_lib_concepts) && __cpp_lib_concepts >= 202002
 #define YAT_INTERNAL_USE_STD_LIB_CONCEPTS
 #endif
