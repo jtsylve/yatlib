@@ -126,6 +126,9 @@ concept variant_alternative_type;
 template <typename T>
 concept trivially_copyable;
 
+template <typename T>
+concept char_type;
+
 template <typename T, typename U>
 concept same_as;
 
@@ -182,6 +185,10 @@ concept copy_constructible;
 ### yat::trivially_copyable 
 
 `yat::trivially_copyable` specifies that a givent type is trivially copyable.
+
+### yat::char_type 
+
+`yat::char_type` specifies that a givent type is a character type.
 
 ### yat::same_as
 

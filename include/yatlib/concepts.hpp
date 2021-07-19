@@ -213,9 +213,13 @@ namespace yat {
 template <typename T, typename VariantType>
 concept variant_alternative_type = is_variant_alternative_v<T, VariantType>;
 
-/// Specifies that a givent type is trivially copyable
+/// Specifies that a given type is trivially copyable
 template <typename T>
 concept trivially_copyable = std::is_trivially_copyable_v<T>;
+
+/// Specifies that a given type is a char type
+template <typename T>
+concept char_type = is_char_type_v<T>;
 
 }  // namespace yat
 
