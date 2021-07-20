@@ -321,9 +321,9 @@ filesystem::path copy_with_extension(const filesystem::path &path,
                                      const filesystem::path &ext);
 ```
 
-### yat::filesystem::copy_with_extension
+### yat::copy_with_extension
 
-`yat::filesystem::copy_with_extension` creates a copy of the path, but with a new extension.
+`yat::copy_with_extension` creates a copy of the path, but with a new extension.
 
 ## iterator.hpp
 
