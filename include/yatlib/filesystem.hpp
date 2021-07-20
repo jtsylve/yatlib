@@ -61,4 +61,16 @@ using fstream = ghc::filesystem::fstream;
 
 #endif  // YAT_INTERNAL_USE_STD_FS
 
+namespace yat {
+
+/// Creates a copy of the path, but with a new extension
+inline filesystem::path copy_with_extension(const filesystem::path &path,
+                                            const filesystem::path &ext) {
+  filesystem::path new_path{path};
+  new_path.replace_extension(ext);
+  return new_path;
+}
+
+}  // namespace yat
+
 #undef YAT_INTERNAL_USE_STD_FS

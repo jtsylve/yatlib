@@ -314,6 +314,17 @@ Apple disallows the use of std::filesystem before macOS 10.15 because the librar
 
 NOTE: If your project or its dependencies import the `<filesystem>` header elsewhere, this may fail to work properly.
 
+In addition the following custom features are provided:
+
+```cpp
+filesystem::path copy_with_extension(const filesystem::path &path,
+                                     const filesystem::path &ext);
+```
+
+### yat::filesystem::copy_with_extension
+
+`yat::filesystem::copy_with_extension` creates a copy of the path, but with a new extension.
+
 ## iterator.hpp
 
 ```cpp
