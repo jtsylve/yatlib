@@ -16,7 +16,7 @@
 #pragma once
 
 #if __has_include("bit")
-  #include <bit>
+#include <bit>
 #endif
 
 #include <cstdint>
@@ -33,23 +33,23 @@
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907
-  #define YAT_INTERNAL_USE_STD_ENDIAN
+#define YAT_INTERNAL_USE_STD_ENDIAN
 #endif
 
 // Check endianness of compiler.  Clang and gcc support a __BYTE_ORDER__
 // definition, and all Windows systems are little endian
 #ifdef __BYTE_ORDER__  // Clang and gcc support byteorder
-  #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define YAT_INTERNAL_IS_LITTLE_ENDIAN
-  #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define YAT_INTERNAL_IS_BIG_ENDIAN
-  #else
-    #error "endian type is not supported"
-  #endif
-#elif defined(_WIN32)  // All Windows systems are all little endian
-  #define YAT_INTERNAL_IS_LITTLE_ENDIAN
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define YAT_INTERNAL_IS_LITTLE_ENDIAN
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define YAT_INTERNAL_IS_BIG_ENDIAN
 #else
-  #error "endian detection not supported for this compiler"
+#error "endian type is not supported"
+#endif
+#elif defined(_WIN32)  // All Windows systems are all little endian
+#define YAT_INTERNAL_IS_LITTLE_ENDIAN
+#else
+#error "endian detection not supported for this compiler"
 #endif
 
 namespace yat {
@@ -62,13 +62,13 @@ using std::endian;
 enum class endian {
   little,
   big,
-  #if defined(YAT_INTERNAL_IS_LITTLE_ENDIAN)
+#if defined(YAT_INTERNAL_IS_LITTLE_ENDIAN)
   native = little,
-  #elif defined(YAT_INTERNAL_IS_BIG_ENDIAN)
+#elif defined(YAT_INTERNAL_IS_BIG_ENDIAN)
   native = big,
-  #else
+#else
   native,
-  #endif
+#endif
 };
 
 #endif  // YAT_INTERNAL_USE_STD_ENDIAN
@@ -80,18 +80,18 @@ enum class endian {
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806
-  #define YAT_INTERNAL_USE_STD_BIT_CAST
+#define YAT_INTERNAL_USE_STD_BIT_CAST
 #endif
 
 // Check for __builtin_bit_cast
 #if YAT_HAS_BUILTIN(__builtin_bit_cast)
-  #define YAT_INTERNAL_HAS_BUILTIN_BIT_CAST
+#define YAT_INTERNAL_HAS_BUILTIN_BIT_CAST
 #endif
 
 // Add feature for constexpr bitcast
 #if defined(YAT_INTERNAL_USE_STD_ENDIAN) || \
     defined(YAT_INTERNAL_HAS_BUILTIN_BIT_CAST)
-  #define YAT_HAS_CONSTEXPR_BIT_CAST
+#define YAT_HAS_CONSTEXPR_BIT_CAST
 #endif
 
 namespace yat {
@@ -155,10 +155,10 @@ template <class To, class From>
 
 // MSVC _byteswap functions aren't constexpr
 #ifndef YAT_IS_MSVC
-  #define YAT_HAS_CONSTEXPR_BYTESWAP
-  #define YAT_BYTESWAP_CONSTEXPR constexpr
+#define YAT_HAS_CONSTEXPR_BYTESWAP
+#define YAT_BYTESWAP_CONSTEXPR constexpr
 #else
-  #define YAT_BYTESWAP_CONSTEXPR inline
+#define YAT_BYTESWAP_CONSTEXPR inline
 #endif
 
 namespace yat::detail {
@@ -253,7 +253,7 @@ template <typename EnumType>
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L
-  #define YAT_INTERNAL_USE_STD_BITOPS
+#define YAT_INTERNAL_USE_STD_BITOPS
 #endif
 
 namespace yat {
@@ -262,6 +262,7 @@ namespace yat {
 using std::countl_one;
 using std::countl_zero;
 using std::countr_one;
+using std::countr_zero;
 using std::popcount;
 using std::rotl;
 using std::rotr;
