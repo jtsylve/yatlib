@@ -221,6 +221,12 @@ concept trivially_copyable = std::is_trivially_copyable_v<T>;
 template <typename T>
 concept char_type = is_char_type_v<T>;
 
+/// Specifies that a given type can be indexed using the subscript operator
+template <typename T>
+concept indexable = requires(T& t, size_t i) {
+  t[i];
+};
+
 }  // namespace yat
 
 // Cleanup internal macros

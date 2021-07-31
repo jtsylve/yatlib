@@ -129,6 +129,9 @@ concept trivially_copyable;
 template <typename T>
 concept char_type;
 
+template <typename T>
+concept indexable
+
 template <typename T, typename U>
 concept same_as;
 
@@ -189,6 +192,10 @@ concept copy_constructible;
 ### yat::char_type 
 
 `yat::char_type` specifies that a givent type is a character type.
+
+### yat::indexable
+
+`yat::indexable` specifies that a given type can be indexed using the subscript operator.
 
 ### yat::same_as
 
