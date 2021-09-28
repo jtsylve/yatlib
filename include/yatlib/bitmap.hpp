@@ -62,7 +62,7 @@ class bitmap {
 
   /// Create a bitmap with `n` unset bits
   explicit YAT_BITMAP_CONSTEXPR bitmap(size_t n)
-      : _storage{storage_size(n)}, _count{n} {}
+      : _storage(storage_size(n)), _count{n} {}
 
   /// Access a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
