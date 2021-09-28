@@ -36,7 +36,7 @@ namespace yat {
 /// This is similar to std::vector<bool>, but the layout of the bits in memory
 /// is well defined.
 class bitmap {
-  using storage_type = little_uint64_t;
+  using storage_type = yat::little_uint64_t;
   static constexpr size_t storage_bits =
       std::numeric_limits<storage_type::value_type>::digits;
 
@@ -52,7 +52,9 @@ class bitmap {
   static constexpr size_t bi(size_t n) noexcept { return n % storage_bits; }
 
   /// Calculate the bitmask for an index
-  static constexpr storage_type bm(size_t n) noexcept { return 1ULL << bi(n); }
+  static constexpr storage_type::value_type bm(size_t n) noexcept {
+    return 1ULL << bi(n);
+  }
 
  public:
   /// Create an empty bitmap
@@ -149,9 +151,9 @@ class bitmap_scanner {
   //  Rather than reading one byte at a time, we can use little endian unsigned
   //  integers of any size and the byte reordering will work as expected.
   //
-  using storage_type = little_scalar<uintmax_t>;
+  using storage_type = yat::little_scalar<uintmax_t>;
   static constexpr auto storage_bits =
-      std::numeric_limits<storage_type>::digits;
+      std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculates the needed array size to hold a certain amount of bits
   static constexpr size_t cas(size_t block_count) noexcept {
