@@ -414,6 +414,25 @@ All of the `std` types in the `<optional>` header are aliases into the `yat` nam
 
 NOTE: If your project or its dependencies import the `<optional>` header elsewhere, this may fail to work properly.
 
+## span.hpp
+
+Importing this header instead of `<span>` provides an alias to the [GSL::span](https://github.com/microsoft/GSL/blob/main/include/gsl/span) implementation when std::span support isn't available.
+
+```cpp
+inline constexpr size_t dynamic_extent = numeric_limits<size_t>::max();
+
+template<typename ElementType, size_t Extent = dynamic_extent>
+typename span;
+ 
+template<typename ElementType, size_t Extent>
+span<const byte, Extent == dynamic_extent ? dynamic_extent : sizeof(ElementType) * Extent>
+as_bytes(span<ElementType, Extent> s) noexcept;
+ 
+template<typename ElementType, size_t Extent>
+span<byte, Extent == dynamic_extent ? dynamic_extent : sizeof(ElementType) * Extent>
+as_writable_bytes(span<ElementType, Extent> s) noexcept;
+```
+
 ## type_traits.hpp
 
 ```cpp

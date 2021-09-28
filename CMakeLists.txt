@@ -25,7 +25,7 @@ target_include_directories(
   INTERFACE $<BUILD_INTERFACE:${yat_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(yat INTERFACE ghcFilesystem::ghc_filesystem)
+target_link_libraries(yat INTERFACE ghcFilesystem::ghc_filesystem GSL)
 
 include(GNUInstallDirs)
 

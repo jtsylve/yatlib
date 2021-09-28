@@ -21,6 +21,7 @@
 #include "endian.hpp"
 #include "memory.hpp"
 #include "optional.hpp"
+#include "span.hpp"
 #include "type_traits.hpp"
 #include "utility.hpp"
 #include "variant.hpp"
