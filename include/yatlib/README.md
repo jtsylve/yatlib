@@ -115,6 +115,16 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 * `YAT_HAS_CONSTEXPR_BIT_CAST` is defined when `yat::bit_cast` is `constexpr`
 * `YAT_HAS_CONSTEXPR_BYTESWAP` is defined when `yat::byteswap` is `constexpr`
 
+## bitmap.hpp
+
+```cpp
+class bitmap;
+```
+
+### yat::bitmap
+
+`yat::bitmap` represents a sequence of bits that can be manipulated efficiently.  This is similar to std::vector<bool>, but the layout of the bits in memory is well defined.
+
 ## concepts.hpp
 
 **These types are only available when compiling with C++20 or above with a compiler that supports concepts.**
