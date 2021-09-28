@@ -258,7 +258,7 @@ class bitmap_scanner {
         }
 
         // Adjust the next block for the next scan
-        _next_block += c + 1 - i;
+        _next_block += static_cast<uint64_t>(c) + 1 - i;
 
         // If the last black is within range then return it
         if (const uint64_t next = _next_block - 1; next < _bm->_block_count) {

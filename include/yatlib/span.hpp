@@ -59,9 +59,9 @@ using gsl::as_writable_bytes;
 using gsl::dynamic_extent;
 using gsl::span;
 
-#endif  // YAT_INTERNAL_USE_STD_SPAN
-
 }  // namespace yat
+
+#endif  // YAT_INTERNAL_USE_STD_SPAN
 
 // Cleanup internal macros
 #undef YAT_INTERNAL_USE_STD_SPAN
