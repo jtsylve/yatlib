@@ -26,7 +26,7 @@
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_to_address) && __cpp_lib_to_address >= 201711L
-  #define YAT_INTERNAL_USE_STD_TO_ADDRESS
+#define YAT_INTERNAL_USE_STD_TO_ADDRESS
 #endif
 
 #ifdef YAT_INTERNAL_USE_STD_TO_ADDRESS
@@ -37,7 +37,7 @@ using std::to_address;
 
 #else
 
-  #ifdef YAT_IS_MSVC
+#ifdef YAT_IS_MSVC
 // MSVC's standard library has a std::_Get_first_parameter helper type that
 // doesn't have a specialization for types with type template parameters.  This
 // breaks std::pointer_traits.  This specialization is a workaround.
@@ -45,7 +45,7 @@ template <template <typename, size_t> typename T, typename U, std::size_t N>
 struct std::_Get_first_parameter<T<U, N>> {
   using type = U;
 };
-  #endif
+#endif
 
 namespace yat::detail {
 
@@ -79,7 +79,11 @@ constexpr auto to_address(const T& p) noexcept {
   }
 }
 
+}  // namespace yat
+
 #endif  // YAT_INTERNAL_USE_STD_TO_ADDRESS
+
+namespace yat {
 
 /// A light-weight reference counted smart pointer that is similar to
 /// std::shared_ptr, but is not thread-safe and lacks many of the bells and
