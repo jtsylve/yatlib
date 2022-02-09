@@ -25,7 +25,7 @@
 // Inspired by
 // https://github.com/abseil/abseil-cpp/blob/master/absl/base/internal/endian_test.cc
 
-const int num_random_values = 1000000;
+const int num_random_values = 100000;
 
 template <typename T>
 static void endian_test(const std::vector<T>& values_to_test) {

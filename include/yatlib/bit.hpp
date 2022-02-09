@@ -27,6 +27,11 @@
 #include "features.hpp"
 #include "utility.hpp"
 
+#ifdef YAT_IS_MSVC
+#include <intrin.h>
+#include <stdlib.h>
+#endif
+
 /////////////////////////////////////////
 // P0463R1 - https://wg21.link/P0463R1 //
 /////////////////////////////////////////
@@ -307,6 +312,117 @@ template <typename T>
   return static_cast<T>(x << -r) | static_cast<T>(x >> (N + r));
 }
 
+#ifdef YAT_IS_MSVC
+
+/// Returns the number of consecutive 0 bits in the value of x, starting from
+/// the most significant bit ("left").
+template <typename T>
+inline auto countl_zero(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if (x == 0) {
+    return nd;
+  }
+
+  unsigned long result = 0;
+
+  if constexpr (nd <= std::numeric_limits<unsigned>::digits) {
+    if (!_BitScanReverse(&result, x)) {
+      return nd;
+    }
+  } else {
+
+#ifdef _M_IX86
+    const unsigned int high = x >> 32;
+    if (_BitScanReverse(&result, high)) {
+      return static_cast<int>(31 - result);
+    }
+
+    const auto low = static_cast<unsigned int>(x);
+    if (!_BitScanReverse(&result, low)) {
+      return nd;
+    }
+#else   // ^^^ _M_IX86 / !_M_IX86 vvv
+    if (!_BitScanReverse64(&result, x)) {
+      return nd;
+    }
+#endif  // _M_IX86
+  }
+
+  return nd - 1 - result;
+}
+
+/// Returns the number of consecutive 0 bits in the value of x, starting from
+/// the least significant bit ("right").
+template <typename T>
+inline auto countr_zero(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if (x == 0) {
+    return nd;
+  }
+
+  if constexpr (nd < std::numeric_limits<unsigned>::digits) {
+    // Cast the smaller type to an unsigned 32-bit but the extended bits need to
+    // be set to 1s
+    constexpr unsigned mask = std::numeric_limits<unsigned>::max() >> nd << nd;
+    return _tzcnt_u32(static_cast<unsigned>(x) | mask);
+  }
+
+  else if constexpr (nd == std::numeric_limits<unsigned>::digits) {
+    return _tzcnt_u32(x);
+  }
+
+  else {
+#ifdef _M_IX86
+    const auto low = static_cast<unsigned int>(x);
+
+    if (low == 0) {
+      const unsigned int high = x >> 32;
+      return static_cast<int>(32 + _tzcnt_u32(high));
+    }
+
+    return static_cast<int>(_tzcnt_u32(low));
+#else   // ^^^ _M_IX86 / !_M_IX86 vvv
+    return static_cast<int>(_TZCNT_U64(x));
+#endif  // _M_IX86
+  }
+}
+
+/// Returns the number of 1 bits in the value of x.
+template <typename T>
+inline auto popcount(T x) noexcept
+    -> std::enable_if_t<std::is_unsigned_v<T>, int> {
+  constexpr int nd = std::numeric_limits<T>::digits;
+  static_assert(nd <= std::numeric_limits<unsigned long long>::digits,
+                "unsupported bit size");
+
+  if constexpr (nd <= std::numeric_limits<unsigned short>::digits) {
+    return __popcnt16(x);
+  }
+
+  else if constexpr (nd <= std::numeric_limits<unsigned>::digits) {
+    return __popcnt(x);
+  }
+
+  else {
+#ifdef _M_IX86
+    return static_cast<int>(__popcnt(x >> 32) +
+                            __popcnt(static_cast<unsigned int>(x)));
+#else   // ^^^ _M_IX86 / !_M_IX86 vvv
+    return static_cast<int>(__popcnt64(x));
+#endif  // _M_IX86
+  }
+}
+
+#else  // !YAT_IS_MSVC
+
 /// Returns the number of consecutive 0 bits in the value of x, starting from
 /// the most significant bit ("left").
 template <typename T>
@@ -388,6 +504,8 @@ constexpr auto popcount(T x) noexcept
     return __builtin_popcountll(x);
   }
 }
+
+#endif  // !YAT_IS_MSVC
 
 /// Returns the number of consecutive 1 bits in the value of x, starting from
 /// the most significant bit ("left").

@@ -94,9 +94,9 @@ concept convertible_to = std::is_convertible_v<From, To> &&
 /// which both can be converted.
 template <typename T, typename U>
 concept common_reference_with =
-    std::same_as<common_reference_t<T, U>, common_reference_t<U, T> > &&
-    convertible_to<T, common_reference_t<T, U> > &&
-    convertible_to<U, common_reference_t<T, U> >;
+    std::same_as<std::common_reference_t<T, U>, std::common_reference_t<U, T> > &&
+    convertible_to<T, std::common_reference_t<T, U> > &&
+    convertible_to<U, std::common_reference_t<T, U> >;
 
 /// The concept integral<T> is satisfied if and only if T is an integral type.
 template <typename T>

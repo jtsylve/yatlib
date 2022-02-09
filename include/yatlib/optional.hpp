@@ -23,6 +23,9 @@
 // to disable the macros that prevent the use of std::optional on those systems.
 
 #ifdef YAT_APPLE_CXX17_TYPES_UNAVAILABLE
+  #if __has_include("__availability")
+  #include <__availability>
+  #endif
   #include <__config>
 
   // Kill the compile error by redefining attribute macros to empty

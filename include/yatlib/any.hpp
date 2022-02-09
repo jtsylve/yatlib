@@ -17,12 +17,15 @@
 
 #include "features.hpp"
 
-// Apple disallows the use of std::optional before macOS 10.14 because the
-// bad_optional_access implementation is compiled into libc++.so and is not
+// Apple disallows the use of std::any before macOS 10.13 because the
+// bad_any_cast implementation is compiled into libc++.so and is not
 // available on those systems.  We provide an inline implementation and attempt
-// to disable the macros that prevent the use of std::optional on those systems.
+// to disable the macros that prevent the use of std::any on those systems.
 
 #ifdef YAT_APPLE_CXX17_TYPES_UNAVAILABLE
+  #if __has_include("__availability")
+  #include <__availability>
+  #endif
   #include <__config>
 
   // Kill the compile error by redefining attribute macros to empty

@@ -24,8 +24,6 @@
 // https://github.com/boostorg/smart_ptr/blob/develop/test/shared_ptr_test.cpp
 
 TEST_CASE("default constructor", "[memory][refcnt_ptr]") {
-  class incomplete;
-
   yat::refcnt_ptr<int> pi;
   REQUIRE((pi ? false : true));
   REQUIRE(!pi);
@@ -40,12 +38,6 @@ TEST_CASE("default constructor", "[memory][refcnt_ptr]") {
   REQUIRE(pv.get() == 0);
   REQUIRE(pv.use_count() == 0);
 #endif
-
-  yat::refcnt_ptr<incomplete> px;
-  REQUIRE((px ? false : true));
-  REQUIRE(!px);
-  REQUIRE(px.get() == 0);
-  REQUIRE(px.use_count() == 0);
 }
 
 namespace constructor {
@@ -335,8 +327,6 @@ TEST_CASE("pointer constructor", "[memory][refcnt_ptr]") {
 
 namespace assignment {
 
-struct incomplete;
-
 struct A {
   int dummy;
 };
@@ -374,7 +364,7 @@ TEST_CASE("copy assignment", "[memory][refcnt_ptr]") {
   using namespace assignment;
 
   {
-    yat::refcnt_ptr<incomplete> p1;
+    yat::refcnt_ptr<A> p1;
 
     p1 = p1;
 
@@ -383,7 +373,7 @@ TEST_CASE("copy assignment", "[memory][refcnt_ptr]") {
     REQUIRE(!p1);
     REQUIRE(p1.get() == 0);
 
-    yat::refcnt_ptr<incomplete> p2;
+    yat::refcnt_ptr<A> p2;
 
     p1 = p2;
 
@@ -392,7 +382,7 @@ TEST_CASE("copy assignment", "[memory][refcnt_ptr]") {
     REQUIRE(!p1);
     REQUIRE(p1.get() == 0);
 
-    yat::refcnt_ptr<incomplete> p3(p1);
+    yat::refcnt_ptr<A> p3(p1);
 
     p1 = p3;
 
@@ -508,7 +498,7 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
   using namespace assignment;
 
   {
-    yat::refcnt_ptr<incomplete> p1;
+    yat::refcnt_ptr<A> p1;
 
     p1 = std::move(p1);
 
@@ -517,7 +507,7 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
     REQUIRE(!p1);
     REQUIRE(p1.get() == 0);
 
-    yat::refcnt_ptr<incomplete> p2;
+    yat::refcnt_ptr<A> p2;
 
     p1 = std::move(p2);
 
@@ -526,7 +516,7 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
     REQUIRE(!p1);
     REQUIRE(p1.get() == 0);
 
-    yat::refcnt_ptr<incomplete> p3(p1);
+    yat::refcnt_ptr<A> p3(p1);
 
     p1 = std::move(p3);
 
@@ -646,7 +636,7 @@ TEST_CASE("conversion assignment", "[memory][refcnt_ptr]") {
   {
     yat::refcnt_ptr<void> p1;
 
-    yat::refcnt_ptr<incomplete> p2;
+    yat::refcnt_ptr<A> p2;
 
     p1 = p2;
 
@@ -728,12 +718,6 @@ TEST_CASE("conversion assignment", "[memory][refcnt_ptr]") {
 
 namespace reset {
 
-class incomplete;
-
-incomplete *p0 = 0;
-
-void deleter(incomplete *) {}
-
 struct X {
   static long instances;
 
@@ -779,27 +763,6 @@ TEST_CASE("plain reset", "[memory][refcnt_ptr]") {
     REQUIRE(pi.get() == 0);
     REQUIRE(pi.use_count() == 0);
   }
-
-  {
-    yat::refcnt_ptr<incomplete> px;
-    px.reset();
-    REQUIRE((px ? false : true));
-    REQUIRE(!px);
-    REQUIRE(px.get() == 0);
-    REQUIRE(px.use_count() == 0);
-  }
-
-// refcnt_ptr doesn't support custom deleters
-#if 0
-  {
-    yat::refcnt_ptr<incomplete> px(p0, deleter);
-    px.reset();
-    REQUIRE((px ? false : true));
-    REQUIRE(!px);
-    REQUIRE(px.get() == 0);
-    REQUIRE(px.use_count() == 0);
-  }
-#endif
 
   {
     yat::refcnt_ptr<X> px;
@@ -1142,7 +1105,7 @@ void TEST_CASE("deleted reset", "[memory][refcnt_ptr]") {
   }
 
   {
-    yat::refcnt_ptr<incomplete> px;
+    yat::refcnt_ptr<A> px;
 
     px.reset(p0, deleter2);
     REQUIRE(px ? false : true);
@@ -1522,7 +1485,7 @@ TEST_CASE("static cast", "[memory][refcnt_ptr]") {
 }
 
 TEST_CASE("const cast", "[memory][refcnt_ptr]") {
-  struct X;
+  struct X {};
 
   // refcnt_ptr does not currently support type-erased pointers
 #if 0

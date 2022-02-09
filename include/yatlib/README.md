@@ -513,15 +513,6 @@ struct remove_cvref;
 
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
-
-template<typename... T>
-struct common_reference;
-
-template<typename... T>
-using common_reference_t = typename common_reference<T...>::type;
-
-template<typename T, typename U, template<typename> typename TQual, template<typename> typename UQual>
-struct basic_common_reference{};
 ```
 
 ### yat::is_variant_alternative
@@ -570,12 +561,6 @@ struct basic_common_reference{};
 
 * `yat::remove_cvref` provides an implementation of [std::remove_cvref](https://en.cppreference.com/w/cpp/types/remove_cvref).  
 * `yat::remove_cvref_t` gives the type of a given `yat::remove_cvref` result
-
-### yat::common_reference
-
-* `yat::common_reference` provides an implementation of [std::common_reference](https://en.cppreference.com/w/cpp/types/common_reference).  
-* `yat::common_reference_t` gives the type of a given `yat::common_reference` result
-* `yat::basic_common_reference` is a customization point that allows users to influence the result of common_reference for user-defined types (typically proxy references). The primary template is empty.
 
 ## utility.hpp
 

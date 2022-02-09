@@ -281,44 +281,39 @@ class refcnt_ptr {
   template <typename>
   friend class refcnt_ptr;
 
+ public:
   //
   // Comparison operators
   //
 
   template <typename U>
-  friend bool operator==(const refcnt_ptr& lhs,
-                         const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt == rhs._refcnt;
+  bool operator==(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt == rhs._refcnt;
   }
 
   template <typename U>
-  friend bool operator!=(const refcnt_ptr& lhs,
-                         const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt != rhs._refcnt;
+  bool operator!=(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt != rhs._refcnt;
   }
 
   template <typename U>
-  friend bool operator<(const refcnt_ptr& lhs,
-                        const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt < rhs._refcnt;
+  bool operator<(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt < rhs._refcnt;
   }
 
   template <typename U>
-  friend bool operator>(const refcnt_ptr& lhs,
-                        const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt > rhs._refcnt;
+  bool operator>(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt > rhs._refcnt;
   }
 
   template <typename U>
-  friend bool operator<=(const refcnt_ptr& lhs,
-                         const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt <= rhs._refcnt;
+  bool operator<=(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt <= rhs._refcnt;
   }
 
   template <typename U>
-  friend bool operator>=(const refcnt_ptr& lhs,
-                         const refcnt_ptr<U>& rhs) noexcept {
-    return lhs._refcnt >= rhs._refcnt;
+  bool operator>=(const refcnt_ptr<U>& rhs) const noexcept {
+    return _refcnt >= rhs._refcnt;
   }
 
   //

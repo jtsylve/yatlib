@@ -3,43 +3,27 @@ language: cpp
 jobs:
   include:
     # macOS Xcode
-    - name: Xcode 12.2
+    - name: Xcode 13.2
       os: osx
-      osx_image: xcode12.2
-    - name: Xcode 11.6
-      os: osx
-      osx_image: xcode11.6
-    - name: Xcode 11.3
-      os: osx
-      osx_image: xcode11.3
+      osx_image: xcode13.2
     - name: Xcode 10.3
       os: osx
       osx_image: xcode10.3
-    - name: Xcode 12.2 (macOS 10.12)
-      os: osx
-      osx_image: xcode12.2
-      env:
-        - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - name: Xcode 11.6 (macOS 10.12)
-      os: osx
-      osx_image: xcode11.6
-      env:
-        - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - name: Xcode 11.3 (macOS 10.12)
-      os: osx
-      osx_image: xcode11.3
-      env:
-        - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - name: XCode 10.3 (macOS 10.12)
+    - name: Xcode 10.3 (targeting macOS 10.12)
       os: osx
       osx_image: xcode10.3
+      env:
+        - MACOSX_DEPLOYMENT_TARGET="10.12"
+    - name: Xcode 13.2 (targeting macOS 10.12)
+      os: osx
+      osx_image: xcode13.2
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
 
     # Linux gcc
     - name: gcc 7
       os: linux
-      dist: bionic
+      dist: focal
       addons:
         apt:
           sources:
@@ -48,39 +32,17 @@ jobs:
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-    - name: gcc 8
+    - name: gcc 11
       os: linux
-      dist: bionic
+      dist: focal
       addons:
         apt:
           sources:
             - sourceline: “ppa:ubuntu-toolchain-r/test”
           packages:
-            - g++-8
+            - g++-11
       env:
-        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-    - name: gcc 9
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: “ppa:ubuntu-toolchain-r/test”
-          packages:
-            - g++-9
-      env:
-        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
-    - name: gcc 10
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: “ppa:ubuntu-toolchain-r/test”
-          packages:
-            - g++-10
-      env:
-        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
+        - MATRIX_EVAL="CC=gcc-11 && CXX=g++-11"
 
     # Linux clang
     - name: clang 5
@@ -91,102 +53,41 @@ jobs:
           sources:
             - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-5.0 main"
               key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+            - sourceline: 'deb https://apt.kitware.com/ubuntu/ bionic main'
+              key_url: 'https://apt.kitware.com/keys/kitware-archive-latest.asc'
           packages:
             - clang-5.0
+            - cmake
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-    - name: clang 6
+        - MATRIX_EVAL="PATH=/usr/bin:$PATH && CC=clang-5.0 && CXX=clang++-5.0"
+    - name: clang 13
       os: linux
       dist: bionic
       addons:
         apt:
           sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main"
+            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-13 main"
               key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+            - sourceline: 'deb https://apt.kitware.com/ubuntu/ bionic main'
+              key_url: 'https://apt.kitware.com/keys/kitware-archive-latest.asc'
           packages:
-            - clang-6.0
+            - clang-13
+            - cmake
       env:
-        - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
-    - name: clang 7
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-7
-      env:
-        - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
-    - name: clang 8
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-8 main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-8
-      env:
-        - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
-    - name: clang 9
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-9
-      env:
-        - MATRIX_EVAL="CC=clang-9 && CXX=clang++-9"
-    - name: clang 10
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-10
-      env:
-        - MATRIX_EVAL="CC=clang-10 && CXX=clang++-10"
-    - name: clang 11
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-11
-      env:
-        - MATRIX_EVAL="CC=clang-11 && CXX=clang++-11"
-    - name: clang 12
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
-              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-          packages:
-            - clang-12
-      env:
-        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
+        - MATRIX_EVAL="PATH=/usr/bin:$PATH && CC=clang-13 && CXX=clang++-13"
+  
     # Windows MSVC
-    - name: Windows (MSVC)
+    - name: Windows (MSVC 2017)
       os: windows
+      script:
+        - cmake -G "Visual Studio 15 2017" .
+        - cmake --build .
+        - ctest .
 
 before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo .
+  - cmake .
   - cmake --build .
   - ctest .
