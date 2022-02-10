@@ -156,9 +156,6 @@ concept derived_from;
 template <typename From, typename To>
 concept convertible_to;
 
-template <typename T, typename U>
-concept common_reference_with;
-
 template <typename T>
 concept integral;
 
@@ -170,12 +167,6 @@ concept unsigned_integral;
 
 template <typename T>
 concept floating_point;
-
-template<typename LHS, typename RHS>
-concept assignable_from;
-
-template<typename T, typename U>
-concept swappable_with;
 
 template <typename T>
 concept swappable;
@@ -225,10 +216,6 @@ concept copy_constructible;
 
 `yat::convertible_to` provides an implementation of [std::convertible_to](https://en.cppreference.com/w/cpp/concepts/convertible_to).
 
-### yat::common_reference_with
-
-`yat::common_reference_with` provides an implementation of [std::common_reference_with](https://en.cppreference.com/w/cpp/concepts/common_reference_with).
-
 ### yat::integral
 
 `yat::integral` provides an implementation of [std::integral](https://en.cppreference.com/w/cpp/concepts/integral).
@@ -245,10 +232,6 @@ concept copy_constructible;
 
 `yat::floating_point` provides an implementation of [std::floating_point](https://en.cppreference.com/w/cpp/concepts/floating_point).
 
-### yat::assignable_from
-
-`yat::assignable_from` provides an implementation of [std::assignable_from](https://en.cppreference.com/w/cpp/concepts/assignable_from).
-
 ### yat::swappable
 
 `yat::swappable` provides an implementation of [std::swappable](https://en.cppreference.com/w/cpp/concepts/swappable).
@@ -259,11 +242,7 @@ concept copy_constructible;
 
 ### yat::destructible
 
-`yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).
-
-### yat::constructible_from
-
-`yat::constructible_from` provides an implementation of [std::constructible_from](https://en.cppreference.com/w/cpp/concepts/contructible_from).
+`yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).q
 
 ### yat::default_initializable
 

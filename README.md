@@ -1,4 +1,4 @@
-# YATLib [![Build Status](https://travis-ci.com/jtsylve/yatlib.svg?branch=master)](https://travis-ci.com/jtsylve/yatlib)
+# YATLib [![Build Status](https://app.travis-ci.com/jtsylve/yatlib.svg?branch=master)](https://app.travis-ci.com/github/jtsylve/yatlib)
 Yet Another Template Library for C++
 
 The goals of this project are to provide a centralized library to hold the various general-purpose types that I've used across my projects as well as to provide implementations of library features from C++20 and beyond as well as a select few proposals that have not yet made it into standards.
