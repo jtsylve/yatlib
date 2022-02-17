@@ -154,10 +154,9 @@ class refcnt_ptr {
   ///
   /// After the construction, *this contains a copy of the previous state of
   /// other, other is empty and its stored pointer is null.
-  refcnt_ptr(refcnt_ptr&& other) noexcept {
-    std::swap(_value, other._value);
-    std::swap(_refcnt, other._refcnt);
-  }
+  refcnt_ptr(refcnt_ptr&& other) noexcept
+      : _value{std::exchange(other._value, nullptr)},
+        _refcnt{std::exchange(other._refcnt, nullptr)} {}
 
   /// Move-assigns a shared_ptr from rhs. After the assignment, *this contains a
   /// copy of the previous state of rhs, and rhs is empty.
@@ -179,10 +178,9 @@ class refcnt_ptr {
   /// not convertible to T*.
   template <typename Y,
             typename = std::enable_if_t<std::is_convertible_v<Y*, T*>>>
-  refcnt_ptr(refcnt_ptr<Y>&& other) noexcept {
-    std::swap(_value, other._value);
-    std::swap(_refcnt, other._refcnt);
-  }
+  refcnt_ptr(refcnt_ptr<Y>&& other) noexcept
+      : _value{std::exchange(other._value, nullptr)},
+        _refcnt{std::exchange(other._refcnt, nullptr)} {}
 
   /// The aliasing constructor: constructs a refcnt_ptr which shares ownership
   /// information with the initial value of r, but holds an unrelated and

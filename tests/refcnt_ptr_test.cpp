@@ -331,6 +331,8 @@ struct A {
   int dummy;
 };
 
+struct B : A {};
+
 struct X {
   static long instances;
 
@@ -507,7 +509,7 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
     REQUIRE(!p1);
     REQUIRE(p1.get() == 0);
 
-    yat::refcnt_ptr<A> p2;
+    yat::refcnt_ptr<B> p2;
 
     p1 = std::move(p2);
 
