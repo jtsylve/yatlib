@@ -111,7 +111,7 @@ class refcnt_ptr {
   /// Y* must be convertible to T*.
   template <typename Y,
             typename = std::enable_if_t<std::is_convertible_v<Y*, T*>>>
-  explicit refcnt_ptr(Y* ptr) : _value{ptr}, _refcnt{new uint_fast32_t(1)} {}
+  explicit refcnt_ptr(Y* ptr) noexcept : _value{ptr}, _refcnt{new size_t(1)} {}
 
   /// Constructs a refcnt_ptr which shares ownership of the object managed by
   /// other.
@@ -254,7 +254,7 @@ class refcnt_ptr {
   /// managing the current object.
   ///
   /// If there is no managed object, ​0​ is returned
-  uint_fast32_t use_count() const noexcept {
+  size_t use_count() const noexcept {
     if (_refcnt != nullptr) {
       return *_refcnt;
     }
@@ -270,11 +270,11 @@ class refcnt_ptr {
   explicit operator bool() const noexcept { return _value != nullptr; }
 
  private:
-  refcnt_ptr(T* value, uint_fast32_t* refcnt) noexcept
+  refcnt_ptr(T* value, size_t* refcnt) noexcept
       : _value{value}, _refcnt{refcnt} {}
 
   T* _value{};
-  uint_fast32_t* _refcnt{};
+  size_t* _refcnt{};
 
   template <typename>
   friend class refcnt_ptr;
@@ -377,7 +377,8 @@ class refcnt_ptr {
 /// args
 /// as the parameter list for the constructor of T.
 template <typename T, typename... Args>
-inline refcnt_ptr<T> make_refcnt(Args&&... args) {
+inline refcnt_ptr<T> make_refcnt(Args&&... args) noexcept(
+    std::is_nothrow_constructible_v<T, Args...>) {
   return refcnt_ptr<T>{new T(std::forward<Args>(args)...)};
 }
 
