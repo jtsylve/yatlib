@@ -111,7 +111,7 @@ class refcnt_ptr {
   /// Y* must be convertible to T*.
   template <typename Y,
             typename = std::enable_if_t<std::is_convertible_v<Y*, T*>>>
-  explicit refcnt_ptr(Y* ptr) noexcept : _value{ptr}, _refcnt{new size_t(1)} {}
+  explicit refcnt_ptr(Y* ptr) : _value{ptr}, _refcnt{new size_t(1)} {}
 
   /// Constructs a refcnt_ptr which shares ownership of the object managed by
   /// other.
@@ -377,8 +377,7 @@ class refcnt_ptr {
 /// args
 /// as the parameter list for the constructor of T.
 template <typename T, typename... Args>
-inline refcnt_ptr<T> make_refcnt(Args&&... args) noexcept(
-    std::is_nothrow_constructible_v<T, Args...>) {
+inline refcnt_ptr<T> make_refcnt(Args&&... args) {
   return refcnt_ptr<T>{new T(std::forward<Args>(args)...)};
 }
 
