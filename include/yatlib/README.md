@@ -257,6 +257,29 @@ concept copy_constructible;
 `yat::copy_constructible` provides an implementation of [std::copy_constructible](https://en.cppreference.com/w/cpp/concepts/copy_constructible).
 
 
+## cstring_view.hpp
+
+```cpp
+struct null_terminated_t;
+
+template <typename CharT, typename CharTypes = std::char_types<CharT>>
+basic_cstring_view;
+
+using cstring_view = basic_cstring_view<char>;
+using u8cstring_view = basic_cstring_view<char8_t>; // Available only in C++20
+using u16cstring_view = basic_cstring_view<char16_t>;
+using u32cstring_view = basic_cstring_view<char32_t>;
+using wcstring_view = basic_cstring_view<wchar_t>;
+```
+
+### yat::null_terminated_t
+
+`yat::null_terminated_t` is a tag s used to specify that a string view with size is null during cstring_view construction.
+
+### yat::basic_cstring_view
+
+`yat::basic_cstring_view` is a special type of [std::basic_string_view](https://en.cppreference.com/w/cpp/string/basic_string_view) that guarentees that strings are null-terminated.  These are more compatible with C libraries.
+
 ## endian.hpp
 
 ```cpp
