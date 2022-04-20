@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <string_view>
 
 #include "features.hpp"
@@ -46,6 +47,10 @@ struct basic_cstring_view : public std::basic_string_view<CharT, Traits> {
                                const string_view_type& sv) noexcept
       : string_view_type(sv) {}
 
+  /// Constructs a view from a std::string.
+  basic_cstring_view(const std::string& string)
+      : string_view_type(string.data(), string.size()) {}
+
   /// Creates a null-terminated subview starting at position pos
   [[nodiscard]] constexpr basic_cstring_view substr(size_type pos) const {
     return {null_terminated_t{}, this->data() + pos, this->size() - pos};
@@ -56,6 +61,11 @@ struct basic_cstring_view : public std::basic_string_view<CharT, Traits> {
   [[nodiscard]] constexpr string_view_type substr(size_type pos,
                                                   size_type count) const {
     return string_view_type::substr(pos, count);
+  }
+
+  /// Copies the data in the cstring view into a std::string
+  [[nodiscard]] std::basic_string<CharT, Traits> string() const {
+    return {this->data(), this->size()};
   }
 
   /// Returns access to the null-terminated string.
