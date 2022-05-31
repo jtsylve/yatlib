@@ -22,13 +22,6 @@
 #include "endian.hpp"
 #include "span.hpp"
 
-// Test for constexpr vectors
-#if defined(__cpp_lib_constexpr_vector) && __cpp_lib_constexpr_vector >= 201907L
-#define YAT_BITMAP_CONSTEXPR constexpr
-#else
-#define YAT_BITMAP_CONSTEXPR
-#endif
-
 namespace yat {
 
 /// `bitmap` represents a sequence of bits that can be manipulated efficiently.
@@ -58,28 +51,25 @@ class bitmap {
 
  public:
   /// Create an empty bitmap
-  YAT_BITMAP_CONSTEXPR bitmap() noexcept = default;
+  bitmap() noexcept = default;
 
   /// Create a bitmap with `n` unset bits
-  explicit YAT_BITMAP_CONSTEXPR bitmap(size_t n)
-      : _storage(storage_size(n)), _count{n} {}
+  explicit bitmap(size_t n) : _storage(storage_size(n)), _count{n} {}
 
   /// Access a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  YAT_BITMAP_CONSTEXPR bool operator[](size_t n) const {
-    return (_storage[si(n)] | bm(n)) != 0;
-  }
+  bool operator[](size_t n) const { return (_storage[si(n)] | bm(n)) != 0; }
 
   /// Set a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  YAT_BITMAP_CONSTEXPR void set(size_t n) {
+  void set(size_t n) {
     auto& val = _storage[si(n)];
     val = val | bm(n);
   }
 
   /// Set a range of bits.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  YAT_BITMAP_CONSTEXPR void set(size_t start, size_t count) {
+  void set(size_t start, size_t count) {
     while (count > 0) {
       if (bi(start) == 0 && count >= storage_bits) {
         // We're dealing the the entire element, so set all the bits
@@ -99,14 +89,14 @@ class bitmap {
 
   /// Clear a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  YAT_BITMAP_CONSTEXPR void clear(size_t n) noexcept {
+  void clear(size_t n) noexcept {
     auto& val = _storage[si(n)];
     val = val & ~bm(n);
   }
 
   /// Clear a range of bits.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  YAT_BITMAP_CONSTEXPR void clear(size_t start, size_t count) {
+  void clear(size_t start, size_t count) {
     while (count > 0) {
       if (bi(start) == 0 && count >= storage_bits) {
         // We're dealing the the entire element, so clear all the bits
@@ -127,7 +117,7 @@ class bitmap {
   constexpr size_t count() const noexcept { return _count; }
 
   /// Resize the bitset
-  YAT_BITMAP_CONSTEXPR void resize(size_t n) {
+  void resize(size_t n) {
     _storage.resize(storage_size(n));
     _count = n;
   }
