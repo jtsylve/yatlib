@@ -41,6 +41,7 @@
 
 namespace yat {
 
+using std::constructible_from;
 using std::convertible_to;
 using std::copy_constructible;
 using std::default_initializable;
@@ -51,6 +52,7 @@ using std::integral;
 using std::move_constructible;
 using std::same_as;
 using std::signed_integral;
+using std::swappable;
 using std::unsigned_integral;
 
 }  // namespace yat
