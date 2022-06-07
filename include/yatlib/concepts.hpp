@@ -191,6 +191,10 @@ concept indexable = requires(T& t, size_t i) {
   t[i];
 };
 
+/// Specificies that a given type is a specialization of a templated type
+template <typename T, template <typename...> typename TT>
+concept specializes = is_specialization_of_v<T, TT>;
+
 }  // namespace yat
 
 // Cleanup internal macros

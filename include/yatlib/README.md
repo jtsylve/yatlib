@@ -145,7 +145,10 @@ template <typename T>
 concept char_type;
 
 template <typename T>
-concept indexable
+concept indexable;
+
+template <typename T, template <typename...> typename TT>
+concept specializes;
 
 template <typename T, typename U>
 concept same_as;
@@ -202,6 +205,10 @@ concept copy_constructible;
 ### yat::indexable
 
 `yat::indexable` specifies that a given type can be indexed using the subscript operator.
+
+### yat::specializes
+
+`yat::specializes` specifies that a given type is a specialization of a given templated type.
 
 ### yat::same_as
 
@@ -515,6 +522,16 @@ struct remove_cvref;
 
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
+
+
+template <typename T, template <typename...> typename TT>
+struct is_specialization_of;
+
+template <typename T, template <typename...> typename TT>
+using is_specialization_of_t = typename is_specialization_of<T, TT>::type;
+
+template <typename T, template <typename...> typename TT>
+inline constexpr bool is_specialization_of_v = is_specialization_of<T, TT>::value;
 ```
 
 ### yat::is_variant_alternative
@@ -563,6 +580,12 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 
 * `yat::remove_cvref` provides an implementation of [std::remove_cvref](https://en.cppreference.com/w/cpp/types/remove_cvref).  
 * `yat::remove_cvref_t` gives the type of a given `yat::remove_cvref` result
+
+### yat::is_specialization_of
+
+* `yat::is_specialization_of` determines if a given type `T` is a specialization of a templated type `TT`
+* `yat::is_specialization_of_t` gives the type of a given `yat::is_specialization_of` result
+* `yat::is_specialization_of_v` gives the boolean value of a given `yat::is_specialization_of` result
 
 ## utility.hpp
 

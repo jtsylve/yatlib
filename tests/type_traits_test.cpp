@@ -349,3 +349,19 @@ TEST_CASE("remove_cvref", "[type_traits][remove_cvref]") {
   STATIC_REQUIRE(test_remove_cvref<volatile int &(C::*)(int)>());
   STATIC_REQUIRE(test_remove_cvref<const volatile int &(C::*)(int)>());
 }
+
+template <typename T, typename... Args>
+struct TT {};
+
+template <typename T>
+struct T2 {};
+
+TEST_CASE("is_specialization_of", "[type_traits][is_specialization_of]") {
+  STATIC_REQUIRE(yat::is_specialization_of<TT<int>, TT>::value);
+  STATIC_REQUIRE(yat::is_specialization_of_v<TT<int>, TT>);
+  STATIC_REQUIRE(
+      std::is_same_v<yat::is_specialization_of_t<TT<int>, TT>, std::true_type>);
+
+  STATIC_REQUIRE(yat::is_specialization_of_v<TT<int, TT<int>>, TT>);
+  STATIC_REQUIRE_FALSE(yat::is_specialization_of_v<TT<int>, T2>);
+}
