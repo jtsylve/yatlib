@@ -21,10 +21,6 @@
 #include "features.hpp"
 #include "variant.hpp"
 
-/////////////////////////////////////////////////////////////
-// Determine if a given type is a member of a std::variant //
-/////////////////////////////////////////////////////////////
-
 namespace yat {
 
 /// Determines if a given type is a alternative type of a given variant.
@@ -105,6 +101,23 @@ using is_array_convertible_t = typename is_array_convertible<T, U>::type;
 template <typename T, typename U>
 inline constexpr bool is_array_convertible_v =
     is_array_convertible<T, U>::value;
+
+/// Determines if a type specializes a templated type
+template <typename T, template <typename...> typename TT>
+struct is_specialization_of : std::false_type {};
+
+/// Determines if a type specializes a templated type
+template <template <typename...> typename T, typename... Args>
+struct is_specialization_of<T<Args...>, T> : std::true_type {};
+
+/// Determines if a type specializes a templated type
+template <typename T, template <typename...> typename TT>
+using is_specialization_of_t = typename is_specialization_of<T, TT>::type;
+
+/// Determines if a type specializes a templated type
+template <typename T, template <typename...> typename TT>
+inline constexpr bool is_specialization_of_v =
+    is_specialization_of<T, TT>::value;
 
 }  // namespace yat
 
