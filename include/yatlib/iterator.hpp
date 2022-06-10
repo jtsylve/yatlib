@@ -25,7 +25,7 @@
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
-  #define YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
+#define YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
 #endif
 
 #ifdef YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
@@ -48,26 +48,27 @@ using object_ptr_t = T *;
 
 // Tells if an object has a predefined difference_type
 template <typename, typename = void>
-constexpr bool has_difference_type_v = false;
+inline constexpr bool has_difference_type_v = false;
 
 template <typename T>
-constexpr bool
+inline constexpr bool
     has_difference_type_v<T, std::void_t<typename T::difference_type> > = true;
 
 // Tells if we can infer a difference type based on the difference operator
 template <typename T, typename = void>
-constexpr bool has_difference_operator_v = false;
+inline constexpr bool has_difference_operator_v = false;
 
 template <typename T>
-constexpr bool has_difference_operator_v<
+inline constexpr bool has_difference_operator_v<
     T, std::void_t<decltype(std::declval<T const &>() -
                             std::declval<T const &>())> > = true;
 
 // Defines difference_result type based off of difference operator
 template <typename T,
           typename = std::enable_if_t<has_difference_operator_v<T> > >
-using difference_result_t = std::make_signed_t<decltype(
-    std::declval<T const &>() - std::declval<T const &>())>;
+using difference_result_t =
+    std::make_signed_t<decltype(std::declval<T const &>() -
+                                std::declval<T const &>())>;
 
 // V1 types are types that have a difference_type defined
 template <typename, typename = void>

@@ -368,8 +368,6 @@ TEST_CASE("copy assignment", "[memory][refcnt_ptr]") {
   {
     yat::refcnt_ptr<A> p1;
 
-    p1 = p1;
-
     REQUIRE(p1 == p1);
     REQUIRE((p1 ? false : true));
     REQUIRE(!p1);
@@ -444,8 +442,6 @@ TEST_CASE("copy assignment", "[memory][refcnt_ptr]") {
   {
     yat::refcnt_ptr<X> p1;
 
-    p1 = p1;
-
     REQUIRE(p1 == p1);
     REQUIRE((p1 ? false : true));
     REQUIRE(!p1);
@@ -502,8 +498,6 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
   {
     yat::refcnt_ptr<A> p1;
 
-    p1 = std::move(p1);
-
     REQUIRE(p1 == p1);
     REQUIRE((p1 ? false : true));
     REQUIRE(!p1);
@@ -532,8 +526,6 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
 #if 0
   {
     yat::refcnt_ptr<void> p1;
-
-    p1 = std::move(p1);
 
     REQUIRE(p1 == p1);
     REQUIRE((p1 ? false : true));
@@ -576,8 +568,6 @@ TEST_CASE("move assignment", "[memory][refcnt_ptr]") {
 
   {
     yat::refcnt_ptr<X> p1;
-
-    p1 = std::move(p1);
 
     REQUIRE(p1 == p1);
     REQUIRE((p1 ? false : true));

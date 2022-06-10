@@ -53,7 +53,7 @@ template <typename, typename = void>
 constexpr bool has_pt_to_address_v = false;
 
 template <typename T>
-constexpr bool has_pt_to_address_v<
+inline constexpr bool has_pt_to_address_v<
     T, std::void_t<decltype(std::pointer_traits<T>::to_address)>> = true;
 
 }  // namespace yat::detail
@@ -204,9 +204,7 @@ class refcnt_ptr {
       delete _refcnt;
 
       if constexpr (std::is_destructible_v<T>) {
-        if (_value != nullptr) {
-          delete _value;
-        }
+        delete _value;
       }
     }
   }
@@ -413,6 +411,7 @@ inline refcnt_ptr<T> dynamic_pointer_cast(const refcnt_ptr<U>& r) noexcept {
 /// performed by dynamic_pointer_cast returns a null pointer.
 template <typename T, typename U>
 inline refcnt_ptr<T> const_pointer_cast(const refcnt_ptr<U>& r) noexcept {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
   return {r, const_cast<T*>(r.get())};
 }
 
@@ -425,35 +424,25 @@ inline refcnt_ptr<T> const_pointer_cast(const refcnt_ptr<U>& r) noexcept {
 /// performed by dynamic_pointer_cast returns a null pointer.
 template <typename T, typename U>
 inline refcnt_ptr<T> reinterpret_pointer_cast(const refcnt_ptr<U>& r) noexcept {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   return {r, reinterpret_cast<T*>(r.get())};
 }
 
 }  // namespace yat
 
 //
-// Overloads
+// Specializations
 //
-namespace std {
-
-/// Specializes the std::swap algorithm for yat::refcnt_ptr.
-///
-/// Swaps the contents of lhs and rhs by calling lhs.swap(rhs).
-template <typename T>
-void swap(yat::refcnt_ptr<T>& lhs, yat::refcnt_ptr<T>& rhs) noexcept {
-  return lhs.swap(rhs);
-}
 
 /// The template specialization of std::hash for yat::refcnt_ptr<T> allows users
 /// to obtain hashes of objects of type yat::refcnt_ptr<T>.
 template <typename T>
-class hash<yat::refcnt_ptr<T>> {
+class std::hash<yat::refcnt_ptr<T>> {
  public:
   size_t operator()(const yat::refcnt_ptr<T>& ptr) const {
     return hash<decltype(ptr.get())>(ptr.get());
   }
 };
-
-}  // namespace std
 
 // Cleanup internal macros
 #undef YAT_INTERNAL_USE_STD_TO_ADDRESS

@@ -36,3 +36,6 @@ build
 
 # VSCode config
 .vscode
+
+# CMake User
+CMakeUserPresets.json

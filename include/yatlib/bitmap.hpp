@@ -30,22 +30,22 @@ namespace yat {
 /// is well defined.
 class bitmap {
   using storage_type = yat::little_uint64_t;
-  static constexpr size_t storage_bits =
+  static constexpr uint64_t storage_bits =
       std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculate the number of storage ints we need to store n bits
-  static constexpr size_t storage_size(size_t n) noexcept {
+  static constexpr uint64_t storage_size(uint64_t n) noexcept {
     return (n + storage_bits - 1) / storage_bits;
   }
 
   /// Calculate the storage index
-  static constexpr size_t si(size_t n) noexcept { return n / storage_bits; }
+  static constexpr uint64_t si(uint64_t n) noexcept { return n / storage_bits; }
 
   /// Calculate the bit index
-  static constexpr size_t bi(size_t n) noexcept { return n % storage_bits; }
+  static constexpr uint64_t bi(uint64_t n) noexcept { return n % storage_bits; }
 
   /// Calculate the bitmask for an index
-  static constexpr storage_type::value_type bm(size_t n) noexcept {
+  static constexpr storage_type::value_type bm(uint64_t n) noexcept {
     return 1ULL << bi(n);
   }
 
@@ -54,22 +54,22 @@ class bitmap {
   bitmap() noexcept = default;
 
   /// Create a bitmap with `n` unset bits
-  explicit bitmap(size_t n) : _storage(storage_size(n)), _count{n} {}
+  explicit bitmap(uint64_t n) : _storage(storage_size(n)), _count{n} {}
 
   /// Access a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  bool operator[](size_t n) const { return (_storage[si(n)] | bm(n)) != 0; }
+  bool operator[](uint64_t n) const { return (_storage[si(n)] | bm(n)) != 0; }
 
   /// Set a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  void set(size_t n) {
+  void set(uint64_t n) {
     auto& val = _storage[si(n)];
     val = val | bm(n);
   }
 
   /// Set a range of bits.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  void set(size_t start, size_t count) {
+  void set(uint64_t start, uint64_t count) {
     while (count > 0) {
       if (bi(start) == 0 && count >= storage_bits) {
         // We're dealing the the entire element, so set all the bits
@@ -89,14 +89,14 @@ class bitmap {
 
   /// Clear a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  void clear(size_t n) noexcept {
+  void clear(uint64_t n) noexcept {
     auto& val = _storage[si(n)];
     val = val & ~bm(n);
   }
 
   /// Clear a range of bits.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  void clear(size_t start, size_t count) {
+  void clear(uint64_t start, uint64_t count) {
     while (count > 0) {
       if (bi(start) == 0 && count >= storage_bits) {
         // We're dealing the the entire element, so clear all the bits
@@ -114,17 +114,17 @@ class bitmap {
   }
 
   /// Return the count of bits in the set
-  constexpr size_t count() const noexcept { return _count; }
+  constexpr uint64_t count() const noexcept { return _count; }
 
   /// Resize the bitset
-  void resize(size_t n) {
+  void resize(uint64_t n) {
     _storage.resize(storage_size(n));
     _count = n;
   }
 
  private:
   std::vector<storage_type> _storage{};  ///< Underlying bit storage
-  size_t _count{};                       ///< Number of bits in bitset
+  uint64_t _count{};                     ///< Number of bits in bitset
 
   friend class bitmap_scanner;
 };
@@ -146,7 +146,7 @@ class bitmap_scanner {
       std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculates the needed array size to hold a certain amount of bits
-  static constexpr size_t cas(size_t block_count) noexcept {
+  static constexpr uint64_t cas(uint64_t block_count) noexcept {
     return (block_count + storage_bits - 1) / storage_bits;
   }
 
@@ -155,8 +155,8 @@ class bitmap_scanner {
    public:
     using iterator_category = std::input_iterator_tag;
     using value_type = struct {
-      size_t start;  /// start of the range
-      size_t count;  /// number of elements in the range
+      uint64_t start;  /// start of the range
+      uint64_t count;  /// number of elements in the range
     };
     using difference_type = void;  // No meaningful way of taking difference
     using pointer = const value_type*;
@@ -330,8 +330,8 @@ class bitmap_scanner {
   [[nodiscard]] explicit operator bool() const noexcept { return is_valid(); }
 
  private:
-  bool _scan_set{};       ///< True if scanning for ranges of set bits
-  size_t _block_count{};  ///< The number of bits that we're scanning for
+  bool _scan_set{};         ///< True if scanning for ranges of set bits
+  uint64_t _block_count{};  ///< The number of bits that we're scanning for
   yat::span<const storage_type> _bits{};  ///< The view into the data
 };
 
