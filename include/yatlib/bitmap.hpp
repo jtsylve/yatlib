@@ -51,7 +51,7 @@ class bitmap {
 
  public:
   /// Create an empty bitmap
-  bitmap() noexcept = default;
+  bitmap() noexcept {};  // clang 5 had a bug when using "= default" here
 
   /// Create a bitmap with `n` unset bits
   explicit bitmap(uint64_t n) : _storage(storage_size(n)), _count{n} {}
