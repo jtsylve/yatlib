@@ -163,7 +163,8 @@ class bitmap_scanner {
     using reference = const value_type&;
 
     /// Construct an empty iterator (this will compare with end())
-    constexpr iterator() noexcept = default;
+    constexpr iterator() noexcept {};  // clang 5 had a bug when using
+                                       // "= default" here
 
     /// Construct an iterator from a chunk bitmap
     explicit iterator(const bitmap_scanner* bm)
