@@ -146,8 +146,8 @@ class bitmap_scanner {
       std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculates the needed array size to hold a certain amount of bits
-  static constexpr uint64_t cas(uint64_t block_count) noexcept {
-    return (block_count + storage_bits - 1) / storage_bits;
+  static constexpr size_t cas(uint64_t block_count) noexcept {
+    return static_cast<size_t>((block_count + storage_bits - 1) / storage_bits);
   }
 
   /// An iterator for bitmap_scanner that iterates through the scanned ranges

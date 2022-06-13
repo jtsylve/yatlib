@@ -56,6 +56,8 @@ static void endian_test(const std::vector<T>& values_to_test) {
 }
 
 TEST_CASE("endian_scalar", "[endian][endian_scalar]") {
+  STATIC_REQUIRE(std::is_standard_layout_v<yat::big_uint64_t>);
+
   // Test swapping all integers
   endian_test(generate_all_values<int8_t>());
   endian_test(generate_all_values<uint8_t>());
