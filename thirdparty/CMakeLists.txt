@@ -2,12 +2,12 @@ include(FetchContent)
 
 FetchContent_Declare(ghc
       GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-      GIT_TAG        "1d3d5f5d7d86e16592d293d9e72fdb7e44aef51f" # v1.5.8
+      GIT_TAG        "cd6805e94dd5d6346be1b75a54cdc27787319dd2" # v1.5.12
 )
 FetchContent_MakeAvailable(ghc)
 
 FetchContent_Declare(GSL
       GIT_REPOSITORY https://github.com/microsoft/GSL.git
-      GIT_TAG        "0f6dbc9e2915ef5c16830f3fa3565738de2a9230" # v3.1.0
+      GIT_TAG        "a3534567187d2edc428efd3f13466ff75fe5805c" # v4.0.0
 )
 FetchContent_MakeAvailable(GSL)
