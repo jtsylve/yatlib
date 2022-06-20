@@ -358,25 +358,7 @@ filesystem::path copy_with_extension(const filesystem::path &path,
 
 ## iterator.hpp
 
-```cpp
-template <typename T>
-struct incrementable_traits;
-
-template <typename T, typename = std::enable_if_t<is_dereferencable_v<T> > >
-using iter_reference_t = decltype(*std::declval<T&>());
-```
-
-### yat::incrementable_traits
-
-`yat::incrementable_traits` provides an implementation of [std::incrementable_traits](https://en.cppreference.com/w/cpp/iterator/incrementable_traits).
-
-It computes the associated difference type of the type `T`, if any. Users may specialize `yat::incrementable_traits` for a program-defined type.
-
-### yat::iter_reference_t
-
-`yat::iter_reference_t` provides an implementation of [std::iter_reference_t](https://en.cppreference.com/w/cpp/iterator/iter_t).  
-
-It computes the reference type of T..
+Importing this header instead of `<iterator>` provides aliases to the [range-v3](https://github.com/ericniebler/range-v3) iterator type_traits and concepts defined in the c++20 ranges library.  This falls back to standard library support, when available.
 
 ## memory.hpp
 

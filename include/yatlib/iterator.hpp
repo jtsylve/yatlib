@@ -17,6 +17,7 @@
 
 #include <iterator>
 
+#include "features.hpp"
 #include "type_traits.hpp"
 
 /////////////////////////////////////////
@@ -25,96 +26,118 @@
 
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
-#define YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
+#define YAT_INTERNAL_USE_STD_LIB_RANGES
 #endif
 
-#ifdef YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
+#ifdef YAT_INTERNAL_USE_STD_LIB_RANGES
 
 namespace yat {
-using std::incrementable_traits;
+
+using std::iter_common_reference_t;
+using std::iter_difference_t;
 using std::iter_reference_t;
+using std::iter_rvalue_reference_t;
+using std::iter_value_t;
+
+// Specialize these in the ::std namespace
+#define YAT_ITER_SPEC_NAMESPACE ::std
+
+using std::disable_sized_sentinel;
+using std::incrementable_traits;
+using std::indirectly_readable_traits;
+
+#ifdef YAT_SUPPORTS_CONCEPTS
+
+using std::bidirectional_iterator;
+using std::contiguous_iterator;
+using std::forward_iterator;
+using std::incrementable;
+using std::indirect_relation;
+using std::indirect_result_t;
+using std::indirect_strict_weak_order;
+using std::indirect_unary_predicate;
+using std::indirectly_comparable;
+using std::indirectly_copyable;
+using std::indirectly_copyable_storable;
+using std::indirectly_movable;
+using std::indirectly_movable_storable;
+using std::indirectly_readable;
+using std::indirectly_regular_unary_invocable;
+using std::indirectly_swappable;
+using std::indirectly_unary_invocable;
+using std::indirectly_writable;
+using std::input_iterator;
+using std::input_or_output_iterator;
+using std::mergeable;
+using std::output_iterator;
+using std::permutable;
+using std::projected;
+using std::random_access_iterator;
+using std::sentinel_for;
+using std::sized_sentinel_for;
+using std::sortable;
+using std::weakly_incrementable;
+
+#endif
+
 }  // namespace yat
 
-#else
+#else  // !YAT_INTERNAL_USE_STD_LIB_RANGES
 
-namespace yat::detail {
-
-// Since we don't have access to concepts, we have to get clever with templates
-// to handle the incremental_traits specializations
-
-// Enables pointer type specialization, but only for object pointers
-template <typename T, typename = std::enable_if_t<std::is_object_v<T> > >
-using object_ptr_t = T *;
-
-// Tells if an object has a predefined difference_type
-template <typename, typename = void>
-inline constexpr bool has_difference_type_v = false;
-
-template <typename T>
-inline constexpr bool
-    has_difference_type_v<T, std::void_t<typename T::difference_type> > = true;
-
-// Tells if we can infer a difference type based on the difference operator
-template <typename T, typename = void>
-inline constexpr bool has_difference_operator_v = false;
-
-template <typename T>
-inline constexpr bool has_difference_operator_v<
-    T, std::void_t<decltype(std::declval<T const &>() -
-                            std::declval<T const &>())> > = true;
-
-// Defines difference_result type based off of difference operator
-template <typename T,
-          typename = std::enable_if_t<has_difference_operator_v<T> > >
-using difference_result_t =
-    std::make_signed_t<decltype(std::declval<T const &>() -
-                                std::declval<T const &>())>;
-
-// V1 types are types that have a difference_type defined
-template <typename, typename = void>
-struct incrementable_traits_v1 {};
-
-template <typename T>
-struct incrementable_traits_v1<T, std::void_t<typename T::difference_type> > {
-  using difference_type = typename T::difference_type;
-};
-
-// V2 types do not have difference_types defined
-template <typename, typename = void>
-struct incrementable_traits_v2 {};
-
-template <typename T>
-struct incrementable_traits_v2<T, std::void_t<difference_result_t<T> > > {
-  using difference_type = difference_result_t<T>;
-};
-
-}  // namespace yat::detail
+#include <range/v3/iterator.hpp>
 
 namespace yat {
 
-/// Computes the associated difference type of the type, if any. Users may
-/// specialize incrementable_traits for a program-defined type.
-template <typename T>
-struct incrementable_traits
-    : std::conditional_t<detail::has_difference_type_v<T>,
-                         detail::incrementable_traits_v1<T>,
-                         detail::incrementable_traits_v2<T> > {};
+using ::ranges::cpp20::iter_common_reference_t;
+using ::ranges::cpp20::iter_difference_t;
+using ::ranges::cpp20::iter_reference_t;
+using ::ranges::cpp20::iter_rvalue_reference_t;
+using ::ranges::cpp20::iter_value_t;
 
-template <typename T>
-struct incrementable_traits<detail::object_ptr_t<T> > {
-  using difference_type = std::ptrdiff_t;
-};
+// Specialize these in the ::ranges namespace
+#define YAT_ITER_SPEC_NAMESPACE ::ranges
 
-template <typename T>
-struct incrementable_traits<const T> : incrementable_traits<T> {};
+using ::ranges::cpp20::disable_sized_sentinel;
+using ::ranges::cpp20::incrementable_traits;
+using ::ranges::cpp20::indirectly_readable_traits;
 
-/// Computes the reference type of T.
-template <typename T, typename = std::enable_if_t<is_dereferencable_v<T> > >
-using iter_reference_t = decltype(*std::declval<T &>());
+#ifdef YAT_SUPPORTS_CONCEPTS
+
+using ::ranges::cpp20::bidirectional_iterator;
+using ::ranges::cpp20::contiguous_iterator;
+using ::ranges::cpp20::forward_iterator;
+using ::ranges::cpp20::incrementable;
+using ::ranges::cpp20::indirect_relation;
+using ::ranges::cpp20::indirect_result_t;
+using ::ranges::cpp20::indirect_strict_weak_order;
+using ::ranges::cpp20::indirect_unary_predicate;
+using ::ranges::cpp20::indirectly_comparable;
+using ::ranges::cpp20::indirectly_copyable;
+using ::ranges::cpp20::indirectly_copyable_storable;
+using ::ranges::cpp20::indirectly_movable;
+using ::ranges::cpp20::indirectly_movable_storable;
+using ::ranges::cpp20::indirectly_readable;
+using ::ranges::cpp20::indirectly_regular_unary_invocable;
+using ::ranges::cpp20::indirectly_swappable;
+using ::ranges::cpp20::indirectly_unary_invocable;
+using ::ranges::cpp20::indirectly_writable;
+using ::ranges::cpp20::input_iterator;
+using ::ranges::cpp20::input_or_output_iterator;
+using ::ranges::cpp20::mergeable;
+using ::ranges::cpp20::output_iterator;
+using ::ranges::cpp20::permutable;
+using ::ranges::cpp20::projected;
+using ::ranges::cpp20::random_access_iterator;
+using ::ranges::cpp20::sentinel_for;
+using ::ranges::cpp20::sized_sentinel_for;
+using ::ranges::cpp20::sortable;
+using ::ranges::cpp20::weakly_incrementable;
+
+#endif
 
 }  // namespace yat
 
-#endif  // YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
+#endif  // !YAT_INTERNAL_USE_STD_LIB_RANGES
 
 // Cleanup internal macros
-#undef YAT_INTERNAL_USE_STD_ITER_REFERENCE_T
+#undef YAT_INTERNAL_USE_STD_LIB_RANGES

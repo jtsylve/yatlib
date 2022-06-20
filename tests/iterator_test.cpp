@@ -32,7 +32,7 @@ struct A {};
 struct B {};
 
 template <>
-struct yat::incrementable_traits<B> {
+struct YAT_ITER_SPEC_NAMESPACE::incrementable_traits<B> {
   using difference_type = float;
 };
 
