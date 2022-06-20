@@ -21,7 +21,7 @@
 
 #include "type_traits.hpp"
 
-#if __has_include("concepts")
+#if YAT_SUPPORTS_CPP20 && __has_include("concepts")
 #include <concepts>
 #endif
 

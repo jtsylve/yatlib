@@ -2,7 +2,7 @@
 
 #include "features.hpp"
 
-#if __has_include("ranges")
+#if YAT_SUPPORTS_CPP20 && __has_include("ranges")
 #include <ranges>
 #endif
 
