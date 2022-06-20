@@ -16,4 +16,4 @@ This project requires a compiler with decent C++17 support.  While other compile
 * gcc 7 or later
 * clang 5 or later
 * Xcode 10.3 or later (targeting macOS 10.12 or later)
-* MSVC 19.16 or later
+* MSVC 2019 or later
