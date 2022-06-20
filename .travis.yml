@@ -89,6 +89,14 @@ jobs:
         - cmake -G "Visual Studio 16 2019" .
         - cmake --build .
         - ctest .
+    - name: Windows (MSVC 2022)
+      os: windows
+      install:
+        - choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+      script:
+        - cmake -G "Visual Studio 17 2022" .
+        - cmake --build .
+        - ctest .
 
 before_install:
   - eval "${MATRIX_EVAL}"
