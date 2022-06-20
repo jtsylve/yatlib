@@ -2,7 +2,7 @@
 
 #include "features.hpp"
 
-#if YAT_SUPPORTS_CPP20 && __has_include("ranges")
+#if defined(YAT_SUPPORTS_CPP20) && __has_include("ranges")
 #include <ranges>
 #endif
 
@@ -22,6 +22,7 @@ using namespace ::std::ranges;
 #else  // !YAT_INTERNAL_USE_STD_LIB_RANGES
 
 #include <range/v3/range.hpp>
+#include <range/v3/view.hpp>
 
 namespace yat::ranges {
 

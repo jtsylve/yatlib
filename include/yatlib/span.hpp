@@ -17,7 +17,7 @@
 
 #include "features.hpp"
 
-#if YAT_SUPPORTS_CPP20 && __has_include("span")
+#if defined(YAT_SUPPORTS_CPP20) && __has_include("span")
 #include <span>
 #endif
 

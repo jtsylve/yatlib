@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(GSL)
 
 FetchContent_Declare(rangev3
       GIT_REPOSITORY https://github.com/ericniebler/range-v3
-      GIT_TAG        "4989f3e9ff2efee1852942bb9328ef121369ba02" # v0.11.0
+      GIT_TAG        "0fa54d7de5dc00655e38a08e87cda61f7aa6d5b9"
 )
 
 set(RANGES_BUILD_CALENDAR_EXAMPLE OFF CACHE BOOL "")
