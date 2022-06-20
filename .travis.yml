@@ -92,6 +92,7 @@ jobs:
     - name: Windows (MSVC 2022)
       os: windows
       install:
+        - choco upgrade cmake
         - choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
       script:
         - cmake -G "Visual Studio 17 2022" .
