@@ -81,10 +81,12 @@ jobs:
         - MATRIX_EVAL="PATH=/usr/bin:$PATH && CC=clang-13 && CXX=clang++-13"
   
     # Windows MSVC
-    - name: Windows (MSVC 2017)
+    - name: Windows (MSVC 2019)
       os: windows
+      install:
+        - choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
       script:
-        - cmake -G "Visual Studio 15 2017" .
+        - cmake -G "Visual Studio 16 2019" .
         - cmake --build .
         - ctest .
 

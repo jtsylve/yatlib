@@ -15,7 +15,9 @@
  */
 #pragma once
 
-#if __has_include("bit")
+#include "features.hpp"
+
+#if YAT_SUPPORTS_CPP20 && __has_include("bit")
 #include <bit>
 #endif
 
@@ -24,7 +26,6 @@
 #include <limits>
 #include <type_traits>
 
-#include "features.hpp"
 #include "utility.hpp"
 
 #ifdef YAT_IS_MSVC
@@ -390,7 +391,7 @@ inline auto countr_zero(T x) noexcept
 
     return static_cast<int>(_tzcnt_u32(low));
 #else   // ^^^ _M_IX86 / !_M_IX86 vvv
-    return static_cast<int>(_TZCNT_U64(x));
+    return static_cast<int>(_tzcnt_u64(x));
 #endif  // _M_IX86
   }
 }

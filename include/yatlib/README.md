@@ -438,6 +438,10 @@ All of the `std` types in the `<optional>` header are aliases into the `yat` nam
 
 NOTE: If your project or its dependencies import the `<optional>` header elsewhere, this may fail to work properly.
 
+## ranges.hpp
+
+Importing this header instead of `<ranges>` provides an alias to the [range-v3](https://github.com/ericniebler/range-v3) implementation of the c++20 ranges library.  The `yat::ranges` namespace will fall back to `std::ranges` if the standard library support's it.
+
 ## span.hpp
 
 Importing this header instead of `<span>` provides an alias to the [GSL::span](https://github.com/microsoft/GSL/blob/main/include/gsl/span) implementation when std::span support isn't available.
