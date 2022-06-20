@@ -7,6 +7,9 @@ project(
   DESCRIPTION "Yet Another Template Library for C++"
   HOMEPAGE_URL "https://github.com/jtsylve/yatlib")
 
+set (CMAKE_CXX_STANDARD 17 CACHE STRING "C++ Standard Library Verson")
+set (CMAKE_CXX_STANDARD_REQUIRED true)
+
 # Dependencies
 add_subdirectory(thirdparty)
 
@@ -14,9 +17,6 @@ add_subdirectory(thirdparty)
 add_library(yat INTERFACE)
 # add alias so the project can be uses with add_subdirectory
 add_library(yat::yat ALIAS yat)
-target_compile_features(
-  yat
-  INTERFACE cxx_std_17)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
@@ -25,7 +25,12 @@ target_include_directories(
   INTERFACE $<BUILD_INTERFACE:${yat_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(yat INTERFACE ghcFilesystem::ghc_filesystem GSL)
+target_link_libraries(yat 
+  INTERFACE 
+  ghcFilesystem::ghc_filesystem 
+  GSL
+  range-v3::range-v3
+)
 
 include(GNUInstallDirs)
 

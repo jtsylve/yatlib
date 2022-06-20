@@ -56,7 +56,9 @@
 #endif
 
 // Check if compiler has clang/gcc __has_attribute
-#ifdef __has_attribute
+#if defined(__has_cpp_attribute)
+#define YAT_HAS_ATTRIBUTE(x) __has_cpp_attribute(x)
+#elif defined(__has_attribute)
 #define YAT_HAS_ATTRIBUTE(x) __has_attribute(x)
 #else
 #define YAT_HAS_ATTRIBUTE(x) 0
@@ -152,4 +154,13 @@ T decl_identity(T);
 #define YAT_ALWAYS_INLINE __forceinline
 #else
 #define YAT_ALWAYS_INLINE
+#endif
+
+// no_unique_address
+#if YAT_HAS_ATTRIBUTE(no_unique_address)
+#define YAT_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#elif YAT_HAS_ATTRIBUTE(msvc::no_unique_address)
+#define YAT_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#else
+#define YAT_NO_UNIQUE_ADDRESS
 #endif
