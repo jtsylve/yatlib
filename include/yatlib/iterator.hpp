@@ -40,7 +40,7 @@ using std::iter_rvalue_reference_t;
 using std::iter_value_t;
 
 // Specialize these in the ::std namespace
-#define YAT_ITER_SPEC_NAMESPACE ::std
+#define YAT_ITER_SPEC_NAMESPACE std
 
 using std::disable_sized_sentinel;
 using std::incrementable_traits;
@@ -95,7 +95,7 @@ using ::ranges::cpp20::iter_rvalue_reference_t;
 using ::ranges::cpp20::iter_value_t;
 
 // Specialize these in the ::ranges namespace
-#define YAT_ITER_SPEC_NAMESPACE ::ranges
+#define YAT_ITER_SPEC_NAMESPACE ranges
 
 using ::ranges::cpp20::disable_sized_sentinel;
 using ::ranges::cpp20::incrementable_traits;
