@@ -134,6 +134,10 @@ class bitmap_scanner;
 
 **These types are only available when compiling with C++20 or above with a compiler that supports concepts.**
 
+This header provides implementations of the C++20 standard concepts library, and falls back to the standard concepts, if they're available.
+
+In addition, it provides some additional custom concepts:
+
 ```cpp
 template <typename T, typename VariantType>
 concept variant_alternative_type;
@@ -149,45 +153,6 @@ concept indexable;
 
 template <typename T, template <typename...> typename TT>
 concept specializes;
-
-template <typename T, typename U>
-concept same_as;
-
-template <typename Derived, typename Base>
-concept derived_from;
-
-template <typename From, typename To>
-concept convertible_to;
-
-template <typename T>
-concept integral;
-
-template <typename T>
-concept signed_integral;
-
-template <typename T>
-concept unsigned_integral;
-
-template <typename T>
-concept floating_point;
-
-template <typename T>
-concept swappable;
-
-template <typename T>
-concept destructible;
-
-template <typename T, typename... Args>
-concept constructible_from;
-
-template <typename T>
-concept default_initializable;
-
-template <typename T>
-concept move_constructible;
-
-template <typename T>
-concept copy_constructible;
 ```
 
 ### yat::variant_alternative_type
@@ -209,60 +174,6 @@ concept copy_constructible;
 ### yat::specializes
 
 `yat::specializes` specifies that a given type is a specialization of a given templated type.
-
-### yat::same_as
-
-`yat::same_as` provides an implementation of [std::same_as](https://en.cppreference.com/w/cpp/concepts/same_as).
-
-
-### yat::derived_from
-
-`yat::derived_from` provides an implementation of [std::derived_from](https://en.cppreference.com/w/cpp/concepts/derived_from).
-
-### yat::convertible_to
-
-`yat::convertible_to` provides an implementation of [std::convertible_to](https://en.cppreference.com/w/cpp/concepts/convertible_to).
-
-### yat::integral
-
-`yat::integral` provides an implementation of [std::integral](https://en.cppreference.com/w/cpp/concepts/integral).
-
-### yat::signed_integral
-
-`yat::signed_integral` provides an implementation of [std::signed_integral](https://en.cppreference.com/w/cpp/concepts/signed_integral).
-
-### yat::unsigned_integral
-
-`yat::unsigned_integral` provides an implementation of [std::unsigned_integral](https://en.cppreference.com/w/cpp/concepts/unsigned_integral).
-
-### yat::floating_point
-
-`yat::floating_point` provides an implementation of [std::floating_point](https://en.cppreference.com/w/cpp/concepts/floating_point).
-
-### yat::swappable
-
-`yat::swappable` provides an implementation of [std::swappable](https://en.cppreference.com/w/cpp/concepts/swappable).
-
-### yat::swappable_with
-
-`yat::swappable_with` provides an implementation of [std::swappable_with](https://en.cppreference.com/w/cpp/concepts/swappable).
-
-### yat::destructible
-
-`yat::destructible` provides an implementation of [std::destructible](https://en.cppreference.com/w/cpp/concepts/destructible).q
-
-### yat::default_initializable
-
-`yat::default_initializable` provides an implementation of [std::default_initializable](https://en.cppreference.com/w/cpp/concepts/default_initializable).
-
-### yat::move_constructible
-
-`yat::move_constructible` provides an implementation of [std::move_constructible](https://en.cppreference.com/w/cpp/concepts/move_constructible).
-
-### yat::copy_constructible
-
-`yat::copy_constructible` provides an implementation of [std::copy_constructible](https://en.cppreference.com/w/cpp/concepts/copy_constructible).
-
 
 ## cstring_view.hpp
 
