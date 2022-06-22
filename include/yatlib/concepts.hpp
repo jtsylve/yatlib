@@ -41,6 +41,12 @@
 
 namespace yat {
 
+//
+// core language concepts
+//
+using std::assignable_from;
+using std::common_reference_with;
+using std::common_with;
 using std::constructible_from;
 using std::convertible_to;
 using std::copy_constructible;
@@ -53,81 +59,95 @@ using std::move_constructible;
 using std::same_as;
 using std::signed_integral;
 using std::swappable;
+using std::swappable_with;
 using std::unsigned_integral;
+
+//
+// comparison concepts
+//
+using std::equality_comparable;
+using std::equality_comparable_with;
+using std::totally_ordered;
+using std::totally_ordered_with;
+
+//
+// Object concepts
+//
+using std::copyable;
+using std::movable;
+using std::regular;
+using std::semiregular;
+
+//
+// Callable concepts
+//
+using std::equivalence_relation;
+using std::invocable;
+using std::predicate;
+using std::regular_invocable;
+using std::relation;
+using std::strict_weak_order;
 
 }  // namespace yat
 
 #else  // YAT_INTERNAL_USE_STD_LIB_CONCEPTS
 
+#include <concepts/concepts.hpp>
+
 namespace yat {
 
-/// The concept same_as<T, U> is satisfied if and only if T and U denote the
-/// same type.
-///
-/// std::same_as<T, U> subsumes std::same_as<U, T> and vice versa.
-template <typename T, typename U>
-concept same_as = std::is_same_v<T, U> && std::is_same_v<U, T>;
+//
+// core language concepts
+//
+using ::concepts::assignable_from;
+using ::concepts::common_reference_with;
+using ::concepts::common_with;
+using ::concepts::constructible_from;
+using ::concepts::convertible_to;
+using ::concepts::copy_constructible;
+using ::concepts::derived_from;
+using ::concepts::destructible;
+using ::concepts::integral;
+using ::concepts::move_constructible;
+using ::concepts::same_as;
+using ::concepts::signed_integral;
+using ::concepts::swappable;
+using ::concepts::swappable_with;
+using ::concepts::unsigned_integral;
 
-/// The concept derived_from<Derived, Base> is satisfied if and only if Base is
-/// a class type that is either Derived or a public and unambiguous base of
-/// Derived, ignoring cv-qualifiers.
-///
-/// Note that this behaviour is different to std::is_base_of when Base is a
-/// private or protected base of Derived.
-template <typename Derived, typename Base>
-concept derived_from = std::is_base_of_v<Base, Derived> &&
-    std::is_convertible_v<const volatile Derived*, const volatile Base*>;
+//
+// comparison concepts
+//
+using ::concepts::equality_comparable;
+using ::concepts::equality_comparable_with;
+using ::concepts::totally_ordered;
+using ::concepts::totally_ordered_with;
 
-/// The concept convertible_to<From, To> specifies that an expression of the
-/// same type and value category as those of std::declval<From>() can be
-/// implicitly and explicitly converted to the type To, and the two forms of
-/// conversion are equivalent.
-template <typename From, typename To>
-concept convertible_to = std::is_convertible_v<From, To> &&
-    requires(std::add_rvalue_reference_t<From> (&f)()) {
-  static_cast<To>(f());
-};
+//
+// Object concepts
+//
+using ::concepts::copyable;
+using ::concepts::movable;
+using ::concepts::regular;
+using ::concepts::semiregular;
 
-/// The concept integral<T> is satisfied if and only if T is an integral type.
-template <typename T>
-concept integral = std::is_integral_v<T>;
+//
+// Callable concepts
+//
+using ::ranges::cpp20::invocable;
+using ::ranges::cpp20::predicate;
+using ::ranges::cpp20::regular_invocable;
+using ::ranges::cpp20::relation;
+using ::ranges::cpp20::strict_weak_order;
 
-/// The concept signed_integral<T> is satisfied if and only if T is an integral
-/// type and std::is_signed_v<T> is true.
-template <typename T>
-concept signed_integral = integral<T> && std::is_signed_v<T>;
-
-/// The concept unsigned_integral<T> is satisfied if and only if T is an
-/// integral type and std::is_signed_v<T> is false.
-template <typename T>
-concept unsigned_integral = integral<T> && !signed_integral<T>;
+//
+// Missing concepts from the ranges implementation
+//
 
 /// The concept floating_point<T> is satisfied if and only if T is a
 /// floating-point type.
 template <typename T>
 concept floating_point = std::is_floating_point_v<T>;
-
-// clang-format off
-
-/// The concept swappable<T> specifies that lvalues of type T are swappable.
-template <typename T>
-concept swappable = requires(T& a, T& b) {
-  std::swap(a, b);
-};
-
-// clang-format on
-
-/// The concept destructible specifies the concept of all types whose instances
-/// can safely be destroyed at the end of their lifetime (including reference
-/// types).
-template <typename T>
-concept destructible = std::is_nothrow_destructible_v<T>;
-
-/// The constructible_from concept specifies that a variable of type T can be
-/// initialized with the given set of argument types Args....
-template <typename T, typename... Args>
-concept constructible_from =
-    destructible<T> && std::is_constructible_v<T, Args...>;
 
 /// The default_initializable concept checks whether variables of type T can be
 ///
@@ -145,23 +165,10 @@ concept default_initializable = constructible_from<T> && requires {
   ::new (static_cast<void*>(nullptr)) T;
 };
 
-/// The concept move_constructible is satisfied if T is a reference type, or if
-/// it is an object type where an object of that type can be constructed from an
-/// rvalue of that type in both direct- and copy-initialization contexts, with
-/// the usual semantics.
-template <typename T>
-concept move_constructible = constructible_from<T, T> && convertible_to<T, T>;
-
-/// The concept copy_constructible is satisfied if T is an lvalue reference
-/// type, or if it is a move_constructible object type where an object of that
-/// type can constructed from a (possibly const) lvalue or const rvalue of that
-/// type in both direct- and copy-initialization contexts with the usual
-/// semantics (a copy is constructed with the source unchanged).
-template <typename T>
-concept copy_constructible = move_constructible<T> &&
-    constructible_from<T, T&> && convertible_to<T&, T> &&
-    constructible_from<T, const T&> && convertible_to<const T&, T> &&
-    constructible_from<T, const T> && convertible_to<const T, T>;
+/// The concept equivalence_relation<R, T, U> specifies that the relation R
+/// imposes an equivalence relation on its arguments.
+template <typename R, typename T, typename U>
+concept equivalence_relation = relation<R, T, U>;
 
 }  // namespace yat
 
