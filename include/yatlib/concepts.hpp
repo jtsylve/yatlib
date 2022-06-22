@@ -93,6 +93,7 @@ using std::strict_weak_order;
 #else  // YAT_INTERNAL_USE_STD_LIB_CONCEPTS
 
 #include <concepts/concepts.hpp>
+#include <range/v3/functional/concepts.hpp>
 
 namespace yat {
 
