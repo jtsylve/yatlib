@@ -33,16 +33,26 @@
 
 namespace yat {
 
+using std::indirect_result_t;
+using std::projected;
+
 using std::iter_common_reference_t;
 using std::iter_difference_t;
 using std::iter_reference_t;
 using std::iter_rvalue_reference_t;
 using std::iter_value_t;
 
+using std::common_iterator;
+using std::counted_iterator;
+using std::default_sentinel;
+using std::default_sentinel_t;
+using std::move_sentinel;
+using std::unreachable_sentinel;
+using std::unreachable_sentinel_t;
+
 // Specialize these in the ::std namespace
 #define YAT_ITER_SPEC_NAMESPACE std
 
-using std::disable_sized_sentinel;
 using std::incrementable_traits;
 using std::indirectly_readable_traits;
 
@@ -52,7 +62,6 @@ using std::bidirectional_iterator;
 using std::contiguous_iterator;
 using std::forward_iterator;
 using std::incrementable;
-using std::indirect_relation;
 using std::indirect_result_t;
 using std::indirect_strict_weak_order;
 using std::indirect_unary_predicate;
@@ -88,16 +97,26 @@ using std::weakly_incrementable;
 
 namespace yat {
 
+using ::ranges::cpp20::indirect_result_t;
+using ::ranges::cpp20::projected;
+
 using ::ranges::cpp20::iter_common_reference_t;
 using ::ranges::cpp20::iter_difference_t;
 using ::ranges::cpp20::iter_reference_t;
 using ::ranges::cpp20::iter_rvalue_reference_t;
 using ::ranges::cpp20::iter_value_t;
 
+using ::ranges::cpp20::common_iterator;
+using ::ranges::cpp20::counted_iterator;
+using ::ranges::cpp20::default_sentinel;
+using ::ranges::cpp20::default_sentinel_t;
+using ::ranges::cpp20::move_sentinel;
+inline constexpr auto unreachable_sentinel = ::ranges::cpp20::unreachable;
+using ::ranges::cpp20::unreachable_sentinel_t;
+
 // Specialize these in the ::ranges namespace
 #define YAT_ITER_SPEC_NAMESPACE ranges
 
-using ::ranges::cpp20::disable_sized_sentinel;
 using ::ranges::cpp20::incrementable_traits;
 using ::ranges::cpp20::indirectly_readable_traits;
 
@@ -107,7 +126,6 @@ using ::ranges::cpp20::bidirectional_iterator;
 using ::ranges::cpp20::contiguous_iterator;
 using ::ranges::cpp20::forward_iterator;
 using ::ranges::cpp20::incrementable;
-using ::ranges::cpp20::indirect_relation;
 using ::ranges::cpp20::indirect_result_t;
 using ::ranges::cpp20::indirect_strict_weak_order;
 using ::ranges::cpp20::indirect_unary_predicate;
