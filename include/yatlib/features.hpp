@@ -164,3 +164,10 @@ T decl_identity(T);
 #else
 #define YAT_NO_UNIQUE_ADDRESS
 #endif
+
+// Used
+#if defined(YAT_IS_GCC_COMPATIBLE)
+#define YAT_USED [[gnu::used]]
+#else
+#define YAT_USED
+#endif
