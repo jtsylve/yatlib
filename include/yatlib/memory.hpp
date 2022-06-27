@@ -202,10 +202,7 @@ class refcnt_ptr {
   YAT_ALWAYS_INLINE ~refcnt_ptr() {
     if (_refcnt != nullptr && --(*_refcnt) == 0) {
       delete _refcnt;
-
-      if constexpr (std::is_destructible_v<T>) {
-        delete _value;
-      }
+      delete _value;
     }
   }
 
@@ -239,11 +236,7 @@ class refcnt_ptr {
   element_type* get() const noexcept { return _value; }
 
   /// The result of dereferencing the stored pointer, i.e., *get()
-  auto& operator*() const noexcept {
-    if constexpr (!std::is_same_v<T, void>) {
-      return *_value;
-    }
-  }
+  element_type& operator*() const noexcept { return *_value; }
 
   /// The stored pointer, i.e., get()
   element_type* operator->() const noexcept { return _value; }
