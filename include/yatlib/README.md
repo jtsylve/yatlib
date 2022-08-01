@@ -1,12 +1,12 @@
 # YATLib - Features
 
-This document describes the features available in YATLib.  It is organized by header.  When `std` versions of implementations are available, implementations in the `yat` namespace are simply aliases to their `std` counterpart.
+This document describes the features available in YATLib. It is organized by header. When `std` versions of implementations are available, implementations in the `yat` namespace are simply aliases to their `std` counterpart.
 
 ## any.hpp
 
-Apple disallows the use of std::any before macOS 10.14 because the `std::bad_any_cast` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<any>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::any` on those systems.
+Apple disallows the use of std::any before macOS 10.14 because the `std::bad_any_cast` implementation is compiled into `libc++.so` and is not available on those systems. Importing this header instead of `<any>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::any` on those systems.
 
-All of the `std` types in the `<any>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
+All of the `std` types in the `<any>` header are aliases into the `yat` namespace. This helps ensure that you've included the right header.
 
 NOTE: If your project or its dependencies import the `<any>` header elsewhere, this may fail to work properly.
 
@@ -44,22 +44,22 @@ constexpr T byteswap(T value) noexcept;
 
 template<typename T>
 [[nodiscard]] constexpr T rotl(T x, int s) noexcept;
-  
+
 template<typename T>
 [[nodiscard]] constexpr T rotr(T x, int s) noexcept;
 
 template<typename T>
 constexpr int countl_zero(T x) noexcept;
-  
+
 template<typename T>
 constexpr int countl_one(T x) noexcept;
-  
+
 template<typename T>
 constexpr int countr_zero(T x) noexcept;
-  
+
 template<typename T>
 constexpr int countr_one(T x) noexcept;
-  
+
 template<typename T>
 constexpr int popcount(T x) noexcept;
 ```
@@ -76,7 +76,7 @@ NOTE: On compilers without `__builtin_bitcast` support and no native `std::bitca
 
 ### yat::byteswap
 
-`yat::byteswap` provides an implementation of the proposed `std::byteswap` from [P1272R3](https://wg21.link/P1272R2) that swaps the bytes of integral types.  It also defines a specialization to support swapping of enumeration types, which will be the subject of a [future proposal](https://twitter.com/slurpsmadrips/status/1237915884573741057).  
+`yat::byteswap` provides an implementation of the proposed `std::byteswap` from [P1272R3](https://wg21.link/P1272R2) that swaps the bytes of integral types. It also defines a specialization to support swapping of enumeration types, which will be the subject of a [future proposal](https://twitter.com/slurpsmadrips/status/1237915884573741057).
 
 These functions return a endian-swapped value of select scalar types.
 
@@ -112,8 +112,8 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 
 ### Macros
 
-* `YAT_HAS_CONSTEXPR_BIT_CAST` is defined when `yat::bit_cast` is `constexpr`
-* `YAT_HAS_CONSTEXPR_BYTESWAP` is defined when `yat::byteswap` is `constexpr`
+- `YAT_HAS_CONSTEXPR_BIT_CAST` is defined when `yat::bit_cast` is `constexpr`
+- `YAT_HAS_CONSTEXPR_BYTESWAP` is defined when `yat::byteswap` is `constexpr`
 
 ## bitmap.hpp
 
@@ -124,7 +124,7 @@ class bitmap_scanner;
 
 ### yat::bitmap
 
-`yat::bitmap` represents a sequence of bits that can be manipulated efficiently.  This is similar to std::vector<bool>, but the layout of the bits in memory is well defined.
+`yat::bitmap` represents a sequence of bits that can be manipulated efficiently. This is similar to std::vector<bool>, but the layout of the bits in memory is well defined.
 
 ### yat::bitmap_scanner
 
@@ -159,11 +159,11 @@ concept specializes;
 
 `yat::variant_alternative_type` specifies that a given type is an alternative type of a given variant type.
 
-### yat::trivially_copyable 
+### yat::trivially_copyable
 
 `yat::trivially_copyable` specifies that a givent type is trivially copyable.
 
-### yat::char_type 
+### yat::char_type
 
 `yat::char_type` specifies that a givent type is a character type.
 
@@ -196,7 +196,7 @@ using wcstring_view = basic_cstring_view<wchar_t>;
 
 ### yat::basic_cstring_view
 
-`yat::basic_cstring_view` is a special type of [std::basic_string_view](https://en.cppreference.com/w/cpp/string/basic_string_view) that guarentees that strings are null-terminated.  These are more compatible with C libraries.
+`yat::basic_cstring_view` is a special type of [std::basic_string_view](https://en.cppreference.com/w/cpp/string/basic_string_view) that guarentees that strings are null-terminated. These are more compatible with C libraries.
 
 ## endian.hpp
 
@@ -242,17 +242,17 @@ using little_uintptr_t = little_scalar<uintptr_t>;
 
 ### Constants
 
-* `yat::is_little_endian_system` tells whether code is being compiled for a little endian system.
-* `yat::is_big_endian_system` tells whether code is being compiled for a big endian system.
+- `yat::is_little_endian_system` tells whether code is being compiled for a little endian system.
+- `yat::is_big_endian_system` tells whether code is being compiled for a big endian system.
 
 ### Endian Scalar Types
 
-* `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory.  Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
-* `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`.  The default implementation supports all types supported by `yat::byteswap`.
+- `yat::basic_endian_scalar` provides support for reading and writing possibly non-native endian types from/to disk or memory. Currently these types do not support arithmetic operations, as misuse of these could cause performance issues.
+- `yat::endian_byte_swapper` can be specialized so that custom types can be supported by `yat::basic_endian_scalar`. The default implementation supports all types supported by `yat::byteswap`.
 
 ## filesystem.hpp
 
-Apple disallows the use of std::filesystem before macOS 10.15 because the library support is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<filesystem>` provides a namespace alias to the [ghc::filesystem](https://github.com/gulrak/filesystem) implementation when std::filesystem support isn't available.
+Apple disallows the use of std::filesystem before macOS 10.15 because the library support is compiled into `libc++.so` and is not available on those systems. Importing this header instead of `<filesystem>` provides a namespace alias to the [ghc::filesystem](https://github.com/gulrak/filesystem) implementation when std::filesystem support isn't available.
 
 NOTE: If your project or its dependencies import the `<filesystem>` header elsewhere, this may fail to work properly.
 
@@ -269,7 +269,7 @@ filesystem::path copy_with_extension(const filesystem::path &path,
 
 ## iterator.hpp
 
-Importing this header instead of `<iterator>` provides aliases to the [range-v3](https://github.com/ericniebler/range-v3) iterator type_traits and concepts defined in the c++20 ranges library.  This falls back to standard library support, when available.
+Importing this header instead of `<iterator>` provides aliases to the [range-v3](https://github.com/ericniebler/range-v3) iterator type_traits and concepts defined in the c++20 ranges library. This falls back to standard library support, when available.
 
 ## memory.hpp
 
@@ -302,7 +302,7 @@ inline refcnt_ptr<T> reinterpret_pointer_cast(const refcnt_ptr<U>& r) noexcept;
 
 ### yat::to_address
 
-`yat::to_address` provides an implementation of [std::to_address](https://en.cppreference.com/w/cpp/memory/to_address).  
+`yat::to_address` provides an implementation of [std::to_address](https://en.cppreference.com/w/cpp/memory/to_address).
 
 It obtains the address represented by p without forming a reference to the pointee.
 
@@ -311,29 +311,46 @@ It obtains the address represented by p without forming a reference to the point
 `yat::refcnt_ptr` provides a light-weight reference counted smart pointer that is similar to std::shared_ptr, but is not thread-safe and lacks many of the bells and whistles.
 
 Specifically, it does not support the following:
-* Thread-safe reference counting
-* Custom Deleters
-* Type-erased pointers
-* Array pointers
+
+- Thread-safe reference counting
+- Custom Deleters
+- Type-erased pointers
+- Array pointers
 
 There are also a number of support functions provided that match the functionality of the std::shared_ptr support functions:
-* `yat::make_refcnt`
-* `yat::static_pointer_cast`
-* `yat::dynamic_pointer_cast`
-* `yat::const_pointer_cast`
-* `yat::reinterpret_pointer_cast`
+
+- `yat::make_refcnt`
+- `yat::static_pointer_cast`
+- `yat::dynamic_pointer_cast`
+- `yat::const_pointer_cast`
+- `yat::reinterpret_pointer_cast`
 
 ## optional.hpp
 
-Apple disallows the use of std::optional before macOS 10.14 because the `std::bad_optional_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<optional>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::optional` on those systems.
+Apple disallows the use of std::optional before macOS 10.14 because the `std::bad_optional_access` implementation is compiled into `libc++.so` and is not available on those systems. Importing this header instead of `<optional>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::optional` on those systems.
 
-All of the `std` types in the `<optional>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
+All of the `std` types in the `<optional>` header are aliases into the `yat` namespace. This helps ensure that you've included the right header.
 
 NOTE: If your project or its dependencies import the `<optional>` header elsewhere, this may fail to work properly.
 
 ## ranges.hpp
 
-Importing this header instead of `<ranges>` provides an alias to the [range-v3](https://github.com/ericniebler/range-v3) implementation of the c++20 ranges library.  The `yat::ranges` namespace will fall back to `std::ranges` if the standard library support's it.
+Importing this header instead of `<ranges>` provides an alias to the [range-v3](https://github.com/ericniebler/range-v3) implementation of the c++20 ranges library. The `yat::ranges` namespace will fall back to `std::ranges` if the standard library support's it.
+
+```cpp
+namespace yat::ranges {
+
+template<ranges::input_range... Views>
+  requires (ranges::view<Views> && ...) && (sizeof...(Views) > 0)
+class zip_view;
+
+} // yat::ranges
+```
+
+### yat::ranges::zip_view
+
+- `yat::ranges::zip_view` provides an implementation of [std::ranges::zip_view](https://en.cppreference.com/w/cpp/ranges/zip_view)
+- `yat::ranges::views::zip` provides an immplementaion of [std::ranges::views::zip_view](https://en.cppreference.com/w/cpp/ranges/zip_view)
 
 ## span.hpp
 
@@ -344,11 +361,11 @@ inline constexpr size_t dynamic_extent = numeric_limits<size_t>::max();
 
 template<typename ElementType, size_t Extent = dynamic_extent>
 typename span;
- 
+
 template<typename ElementType, size_t Extent>
 span<const byte, Extent == dynamic_extent ? dynamic_extent : sizeof(ElementType) * Extent>
 as_bytes(span<ElementType, Extent> s) noexcept;
- 
+
 template<typename ElementType, size_t Extent>
 span<byte, Extent == dynamic_extent ? dynamic_extent : sizeof(ElementType) * Extent>
 as_writable_bytes(span<ElementType, Extent> s) noexcept;
@@ -433,56 +450,56 @@ inline constexpr bool is_specialization_of_v = is_specialization_of<T, TT>::valu
 
 ### yat::is_variant_alternative
 
-* `yat::is_variant_alternative` determines if a given type `T` is an alternative type of a `VariantType`
-* `yat::is_variant_alternative_t` gives the type of a given `yat::is_variant_alternative` result
-* `yat::is_variant_alternative_v` gives the boolean value of a given `yat::is_variant_alternative` result
+- `yat::is_variant_alternative` determines if a given type `T` is an alternative type of a `VariantType`
+- `yat::is_variant_alternative_t` gives the type of a given `yat::is_variant_alternative` result
+- `yat::is_variant_alternative_v` gives the boolean value of a given `yat::is_variant_alternative` result
 
 ### yat::is_one_of
 
-* `yat::is_one_of` determines if a given type `T` is the same as any one of the given set of `Types`
-* `yat::is_one_of_t` gives the type of a given `yat::is_one_of` result
-* `yat::is_one_of_v` gives the boolean value of a given `yat::is_one_of` result
+- `yat::is_one_of` determines if a given type `T` is the same as any one of the given set of `Types`
+- `yat::is_one_of_t` gives the type of a given `yat::is_one_of` result
+- `yat::is_one_of_v` gives the boolean value of a given `yat::is_one_of` result
 
 ### yat::is_char_type
 
-* `yat::is_char_type` determines if a given type `T` is a character type
-* `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
-* `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
+- `yat::is_char_type` determines if a given type `T` is a character type
+- `yat::is_char_type_t` gives the type of a given `yat::is_char_type` result
+- `yat::is_char_type_v` gives the boolean value of a given `yat::is_char_type` result
 
 ### yat::is_dereferencable
 
-* `yat::is_dereferencable` determines if a given type `T` is dereferencable
-* `yat::is_dereferencable_t` gives the type of a given `yat::is_dereferencable` result
-* `yat::is_dereferencable_v` gives the boolean value of a given `yat::is_dereferencable` result
+- `yat::is_dereferencable` determines if a given type `T` is dereferencable
+- `yat::is_dereferencable_t` gives the type of a given `yat::is_dereferencable` result
+- `yat::is_dereferencable_v` gives the boolean value of a given `yat::is_dereferencable` result
 
 ### yat::is_array_convertible
 
-* `yat::is_array_convertible` determines if a given array of type `T` is a convertible to an array of type `U`
-* `yat::is_array_convertible_t` gives the type of a given `yat::is_array_convertible` result
-* `yat::is_array_convertible_v` gives the boolean value of a given `yat::is_array_convertible` result
+- `yat::is_array_convertible` determines if a given array of type `T` is a convertible to an array of type `U`
+- `yat::is_array_convertible_t` gives the type of a given `yat::is_array_convertible` result
+- `yat::is_array_convertible_v` gives the boolean value of a given `yat::is_array_convertible` result
 
 ### yat::type_identity
 
-`yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).  
+`yat::type_identity` provides an implementation of [std::type_identity](https://en.cppreference.com/w/cpp/types/type_identity).
 
-* `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
-* `yat::type_identity_t` gives the type of a given `yat::type_identity` result
+- `yat::type_identity` Provides the member typedef type that names `T` (i.e., the identity transformation).
+- `yat::type_identity_t` gives the type of a given `yat::type_identity` result
 
 ### yat::is_scoped_enum
 
-* `yat::is_scoped_enum` provides an implementation of [std::is_scoped_enum](https://en.cppreference.com/w/cpp/types/is_scoped_enum).  
-* `yat::is_scoped_enum_v` gives the boolean value of a given `yat::is_scoped_enum` result
+- `yat::is_scoped_enum` provides an implementation of [std::is_scoped_enum](https://en.cppreference.com/w/cpp/types/is_scoped_enum).
+- `yat::is_scoped_enum_v` gives the boolean value of a given `yat::is_scoped_enum` result
 
 ### yat::remove_cvref
 
-* `yat::remove_cvref` provides an implementation of [std::remove_cvref](https://en.cppreference.com/w/cpp/types/remove_cvref).  
-* `yat::remove_cvref_t` gives the type of a given `yat::remove_cvref` result
+- `yat::remove_cvref` provides an implementation of [std::remove_cvref](https://en.cppreference.com/w/cpp/types/remove_cvref).
+- `yat::remove_cvref_t` gives the type of a given `yat::remove_cvref` result
 
 ### yat::is_specialization_of
 
-* `yat::is_specialization_of` determines if a given type `T` is a specialization of a templated type `TT`
-* `yat::is_specialization_of_t` gives the type of a given `yat::is_specialization_of` result
-* `yat::is_specialization_of_v` gives the boolean value of a given `yat::is_specialization_of` result
+- `yat::is_specialization_of` determines if a given type `T` is a specialization of a templated type `TT`
+- `yat::is_specialization_of_t` gives the type of a given `yat::is_specialization_of` result
+- `yat::is_specialization_of_v` gives the boolean value of a given `yat::is_specialization_of` result
 
 ## utility.hpp
 
@@ -493,7 +510,7 @@ constexpr std::underlying_type_t<T> to_underlying(T value) noexcept;
 
 ### yat::to_underlying
 
-`yat::to_underlying` provides an implementation of the proposed `std::to_underlying` from [P1682R0](https://wg21.link/P1682R0).  
+`yat::to_underlying` provides an implementation of the proposed `std::to_underlying` from [P1682R0](https://wg21.link/P1682R0).
 
 It converts an enumeration to its underlying type.
 
@@ -509,7 +526,7 @@ auto match(Variant&& v, Handlers&&... handlers);
 
 ### yat::overloaded
 
-`yat::overloaded` allows the overloading of lamdas and other function objects.  This is useful for matching on variants and lambdas
+`yat::overloaded` allows the overloading of lamdas and other function objects. This is useful for matching on variants and lambdas
 
 ### yat::match
 
@@ -517,8 +534,8 @@ auto match(Variant&& v, Handlers&&... handlers);
 
 ### Apple macOS Support
 
-Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access` implementation is compiled into `libc++.so` and is not available on those systems.  Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
+Apple disallows the use of std::variant before macOS 10.14 because the `std::bad_variant_access` implementation is compiled into `libc++.so` and is not available on those systems. Importing this header instead of `<variant>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::variant` on those systems.
 
-All of the `std` types in the `<variant>` header are aliases into the `yat` namespace.  This helps ensure that you've included the right header.
+All of the `std` types in the `<variant>` header are aliases into the `yat` namespace. This helps ensure that you've included the right header.
 
 NOTE: If your project or its dependencies import the `<variant>` header elsewhere, this may fail to work properly.
