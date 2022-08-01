@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#ifdef _LIBCPP_FILESYSTEM
+#if defined(_LIBCPP_FILESYSTEM) && !defined(__clang_analyzer__)
 #error "This header must be imported prior to any <filesystem> imports!"
 #endif
 

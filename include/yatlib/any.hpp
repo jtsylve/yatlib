@@ -23,23 +23,23 @@
 // to disable the macros that prevent the use of std::any on those systems.
 
 #ifdef YAT_APPLE_CXX17_TYPES_UNAVAILABLE
-  #if __has_include("__availability")
-  #include <__availability>
-  #endif
-  #include <__config>
+#if __has_include("__availability")
+#include <__availability>
+#endif
+#include <__config>
 
-  // Kill the compile error by redefining attribute macros to empty
-  #undef _LIBCPP_AVAILABILITY_THROW_BAD_ANY_CAST
-  #undef _LIBCPP_AVAILABILITY_BAD_ANY_CAST
+// Kill the compile error by redefining attribute macros to empty
+#undef _LIBCPP_AVAILABILITY_THROW_BAD_ANY_CAST
+#undef _LIBCPP_AVAILABILITY_BAD_ANY_CAST
 
-  #define _LIBCPP_AVAILABILITY_THROW_BAD_ANY_CAST
-  #define _LIBCPP_AVAILABILITY_BAD_ANY_CAST
+#define _LIBCPP_AVAILABILITY_THROW_BAD_ANY_CAST
+#define _LIBCPP_AVAILABILITY_BAD_ANY_CAST
 
-  #ifdef _LIBCPP_ANY
-    #error "This header must be imported prior to any <any> imports!"
-  #endif
+#if defined(_LIBCPP_ANY) && !defined(__clang_analyzer__)
+#error "This header must be imported prior to any <any> imports!"
+#endif
 
-  #include <any>
+#include <any>
 
 // Define the bad_any_cast functios that are not in libc++.so on
 // older versions of macOS
@@ -48,7 +48,7 @@ inline const char* std::bad_any_cast::what() const _NOEXCEPT {
   return "bad any cast";
 }
 #else
-  #include <any>
+#include <any>
 #endif  // YAT_APPLE_CXX17_TYPES_UNAVAILABLE
 
 namespace yat {

@@ -23,23 +23,23 @@
 // to disable the macros that prevent the use of std::variant on those systems.
 
 #ifdef YAT_APPLE_CXX17_TYPES_UNAVAILABLE
-  #if __has_include("__availability")
-  #include <__availability>
-  #endif
-  #include <__config>
+#if __has_include("__availability")
+#include <__availability>
+#endif
+#include <__config>
 
-  // Kill the compile error by redefining attribute macros to empty
-  #undef _LIBCPP_AVAILABILITY_THROW_BAD_VARIANT_ACCESS
-  #undef _LIBCPP_AVAILABILITY_BAD_VARIANT_ACCESS
+// Kill the compile error by redefining attribute macros to empty
+#undef _LIBCPP_AVAILABILITY_THROW_BAD_VARIANT_ACCESS
+#undef _LIBCPP_AVAILABILITY_BAD_VARIANT_ACCESS
 
-  #define _LIBCPP_AVAILABILITY_THROW_BAD_VARIANT_ACCESS
-  #define _LIBCPP_AVAILABILITY_BAD_VARIANT_ACCESS
+#define _LIBCPP_AVAILABILITY_THROW_BAD_VARIANT_ACCESS
+#define _LIBCPP_AVAILABILITY_BAD_VARIANT_ACCESS
 
-  #ifdef _LIBCPP_VARIANT
-    #error "This header must be imported prior to any <variant> imports!"
-  #endif
+#if defined(_LIBCPP_VARIANT) && !defined(__clang_analyzer__)
+#error "This header must be imported prior to any <variant> imports!"
+#endif
 
-  #include <variant>
+#include <variant>
 
 // Define the bad_variant_access::what() function that is not in libc++.so on
 // older versions of macOS
@@ -47,7 +47,7 @@ inline const char* std::bad_variant_access::what() const _NOEXCEPT {
   return "bad_variant_access";
 }
 #else
-  #include <variant>
+#include <variant>
 #endif  // YAT_APPLE_CXX17_TYPES_UNAVAILABLE
 
 namespace yat {
