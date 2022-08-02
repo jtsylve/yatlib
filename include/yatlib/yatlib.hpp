@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include "algorithm.hpp"
 #include "any.hpp"
 #include "array.hpp"
 #include "bit.hpp"

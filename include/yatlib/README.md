@@ -2,6 +2,10 @@
 
 This document describes the features available in YATLib. It is organized by header. When `std` versions of implementations are available, implementations in the `yat` namespace are simply aliases to their `std` counterpart.
 
+## algorithm.hpp
+
+Importing this header instead of `<algorithm>` provides aliases to the [range-v3](https://github.com/ericniebler/range-v3) range algorithms defined in the c++20 ranges library. This falls back to standard library support, when available.
+
 ## any.hpp
 
 Apple disallows the use of std::any before macOS 10.14 because the `std::bad_any_cast` implementation is compiled into `libc++.so` and is not available on those systems. Importing this header instead of `<any>` provide an inline implementation and attempts to disable the macros that prevent the use of `std::any` on those systems.
