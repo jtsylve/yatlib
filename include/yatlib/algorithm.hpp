@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(YAT_SUPPORTS_CPP20) && __has_include("ranges")
+#include <ranges>
+#endif
+
 #include <algorithm>
 
 // Check to see if stdlib support is available

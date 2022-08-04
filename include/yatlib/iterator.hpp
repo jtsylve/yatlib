@@ -24,6 +24,10 @@
 // P1464R1 - https://wg21.link/P1464R1 //
 /////////////////////////////////////////
 
+#if defined(YAT_SUPPORTS_CPP20) && __has_include("ranges")
+#include <ranges>
+#endif
+
 // Check to see if stdlib support is available
 #if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
 #define YAT_INTERNAL_USE_STD_LIB_RANGES
