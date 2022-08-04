@@ -7,7 +7,7 @@
 #endif
 
 // Check to see if stdlib support is available
-#if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 202202L
+#if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
 #define YAT_INTERNAL_USE_STD_LIB_RANGES
 #endif
 
@@ -17,13 +17,13 @@ namespace yat::ranges {
 
 using namespace ::std::ranges;
 
-namespace views {
-
-using namespace ::std::ranges::views;
-
-}  // namespace views
-
 }  // namespace yat::ranges
+
+namespace yat::views {
+
+using namespace ::std::views;
+
+}  // namespace yat::views
 
 #else  // !YAT_INTERNAL_USE_STD_LIB_RANGES
 
@@ -34,13 +34,13 @@ namespace yat::ranges {
 
 using namespace ::ranges::cpp20;
 
-namespace views {
+}  // namespace yat::ranges
+
+namespace yat::views {
 
 using namespace ::ranges::cpp20::views;
 
-}  // namespace views
-
-}  // namespace yat::ranges
+}  // namespace yat::views
 
 #endif  // !YAT_INTERNAL_USE_STD_LIB_RANGES
 
@@ -53,24 +53,20 @@ using namespace ::ranges::cpp20::views;
 
 #ifndef YAT_INTERNAL_USE_STD_LIB_RANGES_ZIP
 
+#include <range/v3/view.hpp>
+
 namespace yat::ranges {
 
 using ::ranges::zip_view;
 
-namespace views {
+}  // namespace yat::ranges
+
+namespace yat::views {
 
 using ::ranges::views::zip;
 
-}  // namespace views
-
-}  // namespace yat::ranges
+}  // namespace yat::views
 
 #endif  // !YAT_INTERNAL_USE_STD_LIB_RANGES_ZIP
 
 #undef YAT_INTERNAL_USE_STD_LIB_RANGES_ZIP
-
-namespace yat {
-
-namespace views = yat::ranges::views;
-
-}  // namespace yat
