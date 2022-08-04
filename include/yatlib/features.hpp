@@ -17,8 +17,25 @@
 
 #include <cassert>
 
+// Compiler type detection
+#if defined(__clang__)
+#define YAT_IS_CLANG
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define YAT_IS_GCC
+#elif _MSC_VER
+#define YAT_IS_MSVC
+#else
+#warning "unsupported compiler"
+#endif
+
+#ifdef YAT_IS_MVSC
+#define YAT_CPPVER _MSVC_LANG
+#else
+#define YAT_CPPVER __cplusplus
+#endif
+
 // Check for C++20 support
-#if __cplusplus > 201703L
+#if YAT_CPPVER > 201703L
 #define YAT_SUPPORTS_CPP20
 #endif
 
@@ -31,17 +48,6 @@
 #define YAT_CONSTEVAL consteval
 #else
 #define YAT_CONSTEVAL constexpr
-#endif
-
-// Compiler type detection
-#if defined(__clang__)
-#define YAT_IS_CLANG
-#elif defined(__GNUC__) || defined(__GNUG__)
-#define YAT_IS_GCC
-#elif _MSC_VER
-#define YAT_IS_MSVC
-#else
-#warning "unsupported compiler"
 #endif
 
 #if defined(YAT_IS_CLANG) || defined(YAT_IS_GCC)
