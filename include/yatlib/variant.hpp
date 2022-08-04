@@ -35,10 +35,6 @@
 #define _LIBCPP_AVAILABILITY_THROW_BAD_VARIANT_ACCESS
 #define _LIBCPP_AVAILABILITY_BAD_VARIANT_ACCESS
 
-#if defined(_LIBCPP_VARIANT) && !defined(__clang_analyzer__)
-#error "This header must be imported prior to any <variant> imports!"
-#endif
-
 #include <variant>
 
 // Define the bad_variant_access::what() function that is not in libc++.so on

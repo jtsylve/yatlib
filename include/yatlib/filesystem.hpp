@@ -15,10 +15,6 @@
  */
 #pragma once
 
-#if defined(_LIBCPP_FILESYSTEM) && !defined(__clang_analyzer__)
-#error "This header must be imported prior to any <filesystem> imports!"
-#endif
-
 #include "features.hpp"
 
 #if __has_include("filesystem") && !defined(YAT_APPLE_CXX17FS_TYPES_UNAVAILABLE)
