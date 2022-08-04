@@ -28,7 +28,7 @@
 #warning "unsupported compiler"
 #endif
 
-#ifdef YAT_IS_MVSC
+#ifdef _MSVC_LANG
 #define YAT_CPPVER _MSVC_LANG
 #else
 #define YAT_CPPVER __cplusplus
