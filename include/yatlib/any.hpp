@@ -35,10 +35,6 @@
 #define _LIBCPP_AVAILABILITY_THROW_BAD_ANY_CAST
 #define _LIBCPP_AVAILABILITY_BAD_ANY_CAST
 
-#if defined(_LIBCPP_ANY) && !defined(__clang_analyzer__)
-#error "This header must be imported prior to any <any> imports!"
-#endif
-
 #include <any>
 
 // Define the bad_any_cast functios that are not in libc++.so on
