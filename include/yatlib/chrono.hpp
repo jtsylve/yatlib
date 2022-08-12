@@ -14,6 +14,12 @@ using namespace std::chrono;
 
 }  // namespace yat::chrono
 
+namespace yat::literals {
+inline namespace chrono_literals {
+using namespace std::literals::chrono_literals;
+}  // namespace chrono_literals
+}  // namespace yat::literals
+
 #ifdef YAT_INTERNAL_USE_STD_CHRONO
 
 namespace yat::chrono {
@@ -86,7 +92,15 @@ using date::December;
 
 namespace yat::literals {
 inline namespace chrono_literals {
-using namespace date::literals;
+
+inline constexpr auto operator""d(unsigned long long d) noexcept {
+  return date::literals::operator""_d(d);
+}
+
+inline constexpr auto operator""y(unsigned long long y) noexcept {
+  return date::literals::operator""_y(y);
+}
+
 }  // namespace chrono_literals
 }  // namespace yat::literals
 
