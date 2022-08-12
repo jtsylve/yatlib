@@ -7,7 +7,7 @@ project(
   DESCRIPTION "Yet Another Template Library for C++"
   HOMEPAGE_URL "https://github.com/jtsylve/yatlib")
 
-set (CMAKE_CXX_STANDARD 23 CACHE STRING "C++ Standard Library Verson")
+set (CMAKE_CXX_STANDARD 20 CACHE STRING "C++ Standard Library Verson")
 set (CMAKE_CXX_STANDARD_REQUIRED false CACHE BOOL "C++ Standard Library Version is a hard requirement")
 
 # Dependencies
