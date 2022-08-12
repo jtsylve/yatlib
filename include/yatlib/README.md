@@ -134,6 +134,10 @@ class bitmap_scanner;
 
 `yat::bitmap_scanner` is used to scan bitmaps for ranges of set or unset bits. It assumes that bitmaps are stored as an array of bytes that count bits from LSB->MSB and is also compatible with `yat::bitmap`.
 
+## chrono.hpp
+
+This header provides C++20 calendar and timezone library, and falls back to the standard library support, if available.
+
 ## concepts.hpp
 
 **These types are only available when compiling with C++20 or above with a compiler that supports concepts.**

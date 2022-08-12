@@ -49,6 +49,13 @@ if (YATLIB_REQUIRES_RANGEV3)
   )
 endif()
 
+if (YATLIB_REQUIRES_DATE)
+  target_link_libraries(yat 
+    INTERFACE 
+    date::date-tz
+  )
+endif()
+
 include(GNUInstallDirs)
 
 install(

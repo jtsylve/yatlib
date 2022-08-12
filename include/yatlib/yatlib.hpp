@@ -20,6 +20,7 @@
 #include "array.hpp"
 #include "bit.hpp"
 #include "bitmap.hpp"
+#include "chrono.hpp"
 #include "concepts.hpp"
 #include "cstring_view.hpp"
 #include "endian.hpp"
