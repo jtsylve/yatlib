@@ -95,7 +95,7 @@ enum class endian {
 #endif
 
 // Add feature for constexpr bitcast
-#if defined(YAT_INTERNAL_USE_STD_ENDIAN) || \
+#if defined(YAT_INTERNAL_USE_STD_BIT_CAST) || \
     defined(YAT_INTERNAL_HAS_BUILTIN_BIT_CAST)
 #define YAT_HAS_CONSTEXPR_BIT_CAST
 #endif
