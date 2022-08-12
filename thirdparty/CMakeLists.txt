@@ -1,4 +1,19 @@
+include(CheckCXXSourceCompiles)
 include(FetchContent) 
+
+check_cxx_source_compiles(
+      "
+      #include <filesystem>
+      static_assert(__cpp_lib_filesystem >= 201703);
+
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_FILESYSTEM
+)
+
+if (NOT YATLIB_HAS_STDLIB_FILESYSTEM)
 
 FetchContent_Declare(ghc
       GIT_REPOSITORY https://github.com/gulrak/filesystem.git
@@ -6,12 +21,76 @@ FetchContent_Declare(ghc
 )
 FetchContent_MakeAvailable(ghc)
 
+set(YATLIB_REQUIRES_GHC true PARENT_SCOPE)
+
+endif()
+
+check_cxx_source_compiles(
+      "
+      #include <span>
+      static_assert(__cpp_lib_span >= 202002L);
+
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_SPAN
+)
+
+if (NOT YATLIB_HAS_STDLIB_SPAN)
+
 FetchContent_Declare(GSL
       GIT_REPOSITORY https://github.com/microsoft/GSL.git
       GIT_TAG        "a3534567187d2edc428efd3f13466ff75fe5805c" # v4.0.0
 )
 FetchContent_MakeAvailable(GSL)
 
+set(YATLIB_REQUIRES_GSL true PARENT_SCOPE)
+
+endif()
+
+check_cxx_source_compiles(
+      "
+      #include <ranges>
+      static_assert(__cpp_lib_ranges >= 201911L);
+
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_RANGES
+)
+
+check_cxx_source_compiles(
+      "
+      #include <ranges>
+      static_assert(__cpp_lib_ranges_zip >= 202110L);
+
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_RANGES_ZIP
+)
+
+check_cxx_source_compiles(
+      "
+      #if defined(__cpp_concepts) && __cpp_concepts >= 201907L
+      #include <concepts>
+      static_assert(__cpp_lib_concepts >= 202002L);
+      #endif
+
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_CONCEPTS
+)
+
+
+if (NOT (YATLIB_HAS_STDLIB_RANGES AND
+         YATLIB_HAS_STDLIB_RANGES_ZIP AND    
+         YATLIB_HAS_STDLIB_CONCEPTS))
 FetchContent_Declare(rangev3
       GIT_REPOSITORY https://github.com/ericniebler/range-v3
       GIT_TAG        "0fa54d7de5dc00655e38a08e87cda61f7aa6d5b9"
@@ -27,3 +106,7 @@ set(RANGE_V3_TESTS OFF CACHE BOOL "")
 set(RANGE_V3_DOCS OFF CACHE BOOL "")
 
 FetchContent_MakeAvailable(rangev3)
+
+set(YATLIB_REQUIRES_RANGEV3 true PARENT_SCOPE)
+
+endif()
