@@ -128,6 +128,7 @@ T decl_identity(T);
 // even though the headers exist and are publicly noted to work.
 // This check is borrowed from abseil.
 #if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&             \
+    !defined(_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS) &&   \
     ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
       __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) ||  \
      (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
@@ -142,6 +143,7 @@ T decl_identity(T);
 // macOS 10.15 and iOS 10.13 are required to use the std::filesystem
 // even though the headers exist.
 #if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&             \
+    !defined(_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS) &&   \
     ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
       __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101500) ||  \
      (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
