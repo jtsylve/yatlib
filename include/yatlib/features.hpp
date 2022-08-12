@@ -39,6 +39,10 @@
 #define YAT_SUPPORTS_CPP20
 #endif
 
+#if defined(__cpp_char8_t) && __cpp_char8_t >= 201811L
+#define YAT_SUPPORTS_CHAR8_T
+#endif
+
 #if defined(__cpp_concepts) && __cpp_concepts >= 201907
 #define YAT_SUPPORTS_CONCEPTS
 #endif

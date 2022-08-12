@@ -188,7 +188,7 @@ template <typename CharT, typename CharTypes = std::char_types<CharT>>
 basic_cstring_view;
 
 using cstring_view = basic_cstring_view<char>;
-using u8cstring_view = basic_cstring_view<char8_t>; // Available only in C++20
+using u8cstring_view = basic_cstring_view<char8_t>; // Available only when C++20 char8_t is available
 using u16cstring_view = basic_cstring_view<char16_t>;
 using u32cstring_view = basic_cstring_view<char32_t>;
 using wcstring_view = basic_cstring_view<wchar_t>;
