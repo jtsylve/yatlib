@@ -132,6 +132,7 @@ FetchContent_Declare(date
 )
 
 set(BUILD_TZ_LIB ON CACHE BOOL "")
+set(MANUAL_TZ_DB ON CACHE BOOL "")
 
 FetchContent_MakeAvailable(date)
 
