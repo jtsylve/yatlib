@@ -7,6 +7,7 @@ check_cxx_source_compiles(
       static_assert(__cpp_lib_filesystem >= 201703);
 
       int main() {
+        std::filesystem::path p{};
         return 0;
       }
       " 

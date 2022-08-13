@@ -79,7 +79,7 @@ using u16cstring_view = basic_cstring_view<char16_t>;
 using u32cstring_view = basic_cstring_view<char32_t>;
 using wcstring_view = basic_cstring_view<wchar_t>;
 
-#ifdef YAT_SUPPORTS_CPP20
+#ifdef YAT_SUPPORTS_CHAR8_T
 using u8cstring_view = basic_cstring_view<char8_t>;
 #endif
 

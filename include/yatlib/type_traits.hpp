@@ -59,10 +59,10 @@ template <typename T>
 struct is_char_type : is_one_of<std::decay_t<T>, char, signed char,
                                 unsigned char, wchar_t, char16_t, char32_t> {};
 
-#ifdef YAT_SUPPORTS_CPP20
+#ifdef YAT_SUPPORTS_CHAR8_T
 template <>
 struct is_char_type<char8_t> : std::true_type {};
-#endif  // YAT_SUPPORTS_CPP20
+#endif
 
 /// Determines if T is a character type
 template <typename T>
