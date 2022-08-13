@@ -169,6 +169,7 @@ inline namespace chrono_literals {
 #ifdef YAT_IS_GCC_COMPATIBLE
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wliteral-suffix"
+#pragma GCC diagnostic ignored "-Wuser-defined-literals"
 #endif
 
 inline constexpr auto operator""d(unsigned long long d) noexcept {
