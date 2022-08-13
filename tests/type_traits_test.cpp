@@ -102,7 +102,7 @@ TEST_CASE("is_char_type", "[type_traits][is_char_type]") {
   STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char16_t>, std::true_type>);
   STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char32_t>, std::true_type>);
 
-#ifdef YAT_SUPPORTS_CPP20
+#ifdef YAT_SUPPORTS_CHAR8_T
   STATIC_REQUIRE(std::is_same_v<yat::is_char_type_t<char8_t>, std::true_type>);
 #endif
 
@@ -115,7 +115,7 @@ TEST_CASE("is_char_type", "[type_traits][is_char_type]") {
   STATIC_REQUIRE(yat::is_char_type_v<char16_t>);
   STATIC_REQUIRE(yat::is_char_type_v<char32_t>);
 
-#ifdef YAT_SUPPORTS_CPP20
+#ifdef YAT_SUPPORTS_CHAR8_T
   STATIC_REQUIRE(yat::is_char_type_v<char8_t>);
 #endif
 
