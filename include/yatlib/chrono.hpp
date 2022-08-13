@@ -10,17 +10,22 @@
 #define YAT_INTERNAL_USE_STD_CHRONO
 #endif
 
-namespace yat::chrono {
-
-using namespace std::chrono;
-
-}  // namespace yat::chrono
-
 namespace yat::literals {
 inline namespace chrono_literals {
-using namespace std::literals::chrono_literals;
+
+using ::std::literals::chrono_literals::operator"" h;
+using ::std::literals::chrono_literals::operator"" min;
+using ::std::literals::chrono_literals::operator"" s;
+using ::std::literals::chrono_literals::operator"" ms;
+using ::std::literals::chrono_literals::operator"" us;
+using ::std::literals::chrono_literals::operator"" ns;
+
 }  // namespace chrono_literals
 }  // namespace yat::literals
+
+namespace yat::chrono {
+using namespace ::std::chrono;
+}  // namespace yat::chrono
 
 #ifdef YAT_INTERNAL_USE_STD_CHRONO
 
@@ -53,7 +58,10 @@ using ::std::chrono::December;
 
 namespace yat::literals {
 inline namespace chrono_literals {
-using namespace std::literals::chrono_literals;
+
+using ::std::literals::chrono_literals::operator"" d;
+using ::std::literals::chrono_literals::operator"" y;
+
 }  // namespace chrono_literals
 }  // namespace yat::literals
 
