@@ -111,3 +111,31 @@ FetchContent_MakeAvailable(rangev3)
 set(YATLIB_REQUIRES_RANGEV3 true PARENT_SCOPE)
 
 endif()
+
+check_cxx_source_compiles(
+      "
+      #include <chrono>
+      static_assert(__cpp_lib_chrono >= 201907L);
+     
+      int main() {
+        return 0;
+      }
+      " 
+      YATLIB_HAS_STDLIB_CHRONO
+)
+
+if (NOT YATLIB_HAS_STDLIB_CHRONO)
+
+FetchContent_Declare(date
+      GIT_REPOSITORY https://github.com/HowardHinnant/date.git
+      GIT_TAG        "e6f4aed4d11d4e50687e9aa8630c7f0db7d31dba"
+)
+
+set(BUILD_TZ_LIB ON CACHE BOOL "")
+set(MANUAL_TZ_DB ON CACHE BOOL "")
+
+FetchContent_MakeAvailable(date)
+
+set(YATLIB_REQUIRES_DATE true PARENT_SCOPE)
+
+endif()
