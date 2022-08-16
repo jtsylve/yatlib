@@ -7,9 +7,9 @@ branches:
 jobs:
   include:
     # macOS Xcode
-    - name: Xcode 13.4
+    - name: Xcode 13.2
       os: osx
-      osx_image: xcode13.4
+      osx_image: xcode13.2
     - name: Xcode 10.3
       os: osx
       osx_image: xcode10.3
@@ -18,9 +18,9 @@ jobs:
       osx_image: xcode10.3
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
-    - name: Xcode 13.4 (targeting macOS 10.12)
+    - name: Xcode 13.2 (targeting macOS 10.12)
       os: osx
-      osx_image: xcode13.4
+      osx_image: xcode13.2
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
 
