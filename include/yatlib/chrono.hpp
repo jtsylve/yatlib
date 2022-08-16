@@ -4,9 +4,7 @@
 
 #include "features.hpp"
 
-#if !defined(__cpp_lib_chrono) || __cpp_lib_chrono < 201611L
-#error "C++17 std::chrono support is required, but not found"
-#elif __cpp_lib_chrono >= 201907
+#if defined(__cpp_lib_chrono) && __cpp_lib_chrono >= 201907
 #define YAT_INTERNAL_USE_STD_CHRONO
 #endif
 
