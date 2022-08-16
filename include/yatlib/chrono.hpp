@@ -186,11 +186,11 @@ inline namespace chrono_literals {
 
 #endif
 
-inline constexpr auto operator""d(unsigned long long d) noexcept {
+inline constexpr auto operator"" d(unsigned long long d) noexcept {
   return date::literals::operator""_d(d);
 }
 
-inline constexpr auto operator""y(unsigned long long y) noexcept {
+inline constexpr auto operator"" y(unsigned long long y) noexcept {
   return date::literals::operator""_y(y);
 }
 
