@@ -66,13 +66,13 @@ jobs:
         - MATRIX_EVAL="PATH=/usr/bin:$PATH && CC=clang-5.0 && CXX=clang++-5.0"
     - name: clang 14
       os: linux
-      dist: bionic
+      dist: jammy
       addons:
         apt:
           sources:
-            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-14 main"
+            - sourceline: "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-14 main"
               key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-            - sourceline: "deb https://apt.kitware.com/ubuntu/ bionic main"
+            - sourceline: "deb https://apt.kitware.com/ubuntu/ jammy main"
               key_url: "https://apt.kitware.com/keys/kitware-archive-latest.asc"
           packages:
             - clang-14
