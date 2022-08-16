@@ -176,8 +176,14 @@ inline namespace chrono_literals {
 
 #ifdef YAT_IS_GCC_COMPATIBLE
 #pragma GCC diagnostic push
+
+// GCC and Clang use different warning flags for the same issue
+#if defined(YAT_IS_GCC)
 #pragma GCC diagnostic ignored "-Wliteral-suffix"
+#elif defined(YAT_IS_CLANG)
 #pragma GCC diagnostic ignored "-Wuser-defined-literals"
+#endif
+
 #endif
 
 inline constexpr auto operator""d(unsigned long long d) noexcept {
