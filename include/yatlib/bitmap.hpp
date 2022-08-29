@@ -58,7 +58,7 @@ class bitmap {
 
   /// Access a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  bool operator[](uint64_t n) const { return (_storage[si(n)] | bm(n)) != 0; }
+  bool operator[](uint64_t n) const { return (_storage[si(n)] & bm(n)) != 0; }
 
   /// Set a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
