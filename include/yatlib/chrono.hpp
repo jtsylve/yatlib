@@ -4,6 +4,17 @@
 
 #include "features.hpp"
 
+// GCC and Clang use different warning flags for the same issue
+#if defined(YAT_IS_GCC)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wliteral-suffix"
+#elif defined(YAT_IS_CLANG)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuser-defined-literals"
+#else
+YAT_IGNORE_MSVC_WARNING_PUSH(4455)
+#endif
+
 #if defined(__cpp_lib_chrono) && __cpp_lib_chrono >= 201907
 #define YAT_INTERNAL_USE_STD_CHRONO
 #endif
@@ -172,18 +183,6 @@ using ::date::December;
 namespace yat::literals {
 inline namespace chrono_literals {
 
-#ifdef YAT_IS_GCC_COMPATIBLE
-#pragma GCC diagnostic push
-
-// GCC and Clang use different warning flags for the same issue
-#if defined(YAT_IS_GCC)
-#pragma GCC diagnostic ignored "-Wliteral-suffix"
-#elif defined(YAT_IS_CLANG)
-#pragma GCC diagnostic ignored "-Wuser-defined-literals"
-#endif
-
-#endif
-
 inline constexpr auto operator"" d(unsigned long long d) noexcept {
   return date::literals::operator""_d(d);
 }
@@ -192,13 +191,15 @@ inline constexpr auto operator"" y(unsigned long long y) noexcept {
   return date::literals::operator""_y(y);
 }
 
-#ifdef YAT_IS_GCC_COMPATIBLE
-#pragma GCC diagnostic pop
-#endif
-
 }  // namespace chrono_literals
 }  // namespace yat::literals
 
 #endif  // !YAT_INTERNAL_USE_STD_CHRONO
 
 #undef YAT_INTERNAL_USE_STD_CHRONO
+
+#ifdef YAT_IS_GCC_COMPATIBLE
+#pragma GCC diagnostic pop
+#else
+YAT_IGNORE_MSVC_WARNING_POP()
+#endif
