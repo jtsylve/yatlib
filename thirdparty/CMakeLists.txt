@@ -17,8 +17,8 @@ check_cxx_source_compiles(
 if (NOT YATLIB_HAS_STDLIB_FILESYSTEM)
 
 FetchContent_Declare(ghc
-      GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-      GIT_TAG        "cd6805e94dd5d6346be1b75a54cdc27787319dd2" # v1.5.12
+      URL         ${PROJECT_SOURCE_DIR}/vendor/filesystem-1.5.12.tar.gz
+      URL_HASH    SHA1=57db44da760eeca784caf58e0158949713452cac
 )
 FetchContent_MakeAvailable(ghc)
 
@@ -41,8 +41,8 @@ check_cxx_source_compiles(
 if (NOT YATLIB_HAS_STDLIB_SPAN)
 
 FetchContent_Declare(GSL
-      GIT_REPOSITORY https://github.com/microsoft/GSL.git
-      GIT_TAG        "a3534567187d2edc428efd3f13466ff75fe5805c" # v4.0.0
+      URL         ${PROJECT_SOURCE_DIR}/vendor/GSL-4.0.0.tar.gz
+      URL_HASH    SHA1=909c9540a76fe4b4f71dbbd24126cab3925fb78e
 )
 FetchContent_MakeAvailable(GSL)
 
@@ -93,8 +93,8 @@ if (NOT (YATLIB_HAS_STDLIB_RANGES AND
          YATLIB_HAS_STDLIB_RANGES_ZIP AND    
          YATLIB_HAS_STDLIB_CONCEPTS))
 FetchContent_Declare(rangev3
-      GIT_REPOSITORY https://github.com/ericniebler/range-v3
-      GIT_TAG        "0fa54d7de5dc00655e38a08e87cda61f7aa6d5b9"
+      URL         ${PROJECT_SOURCE_DIR}/vendor/range-v3-0.12.0.tar.gz
+      URL_HASH    SHA1=c7893c255a437aadae3b46661c7a814a19012746
 )
 
 set(RANGES_BUILD_CALENDAR_EXAMPLE OFF CACHE BOOL "")
@@ -127,8 +127,8 @@ check_cxx_source_compiles(
 if (NOT YATLIB_HAS_STDLIB_CHRONO)
 
 FetchContent_Declare(date
-      GIT_REPOSITORY https://github.com/HowardHinnant/date.git
-      GIT_TAG        "e6f4aed4d11d4e50687e9aa8630c7f0db7d31dba"
+      URL         ${PROJECT_SOURCE_DIR}/vendor/date-22ceabf.tar.gz
+      URL_HASH    SHA1=af5a4c8a770578298974c0263d7d2628953f9749
 )
 
 set(BUILD_TZ_LIB ON CACHE BOOL "")
