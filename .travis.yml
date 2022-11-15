@@ -10,17 +10,33 @@ jobs:
     - name: Xcode 13.2
       os: osx
       osx_image: xcode13.2
+      before_install:
+        - HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install git-lfs
+      before_script:
+        - git lfs install && git lfs pull
     - name: Xcode 10.3
       os: osx
       osx_image: xcode10.3
+      before_install:
+        - HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install git-lfs
+      before_script:
+        - git lfs install && git lfs pull
     - name: Xcode 10.3 (targeting macOS 10.12)
       os: osx
       osx_image: xcode10.3
+      before_install:
+        - HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install git-lfs
+      before_script:
+        - git lfs install && git lfs pull
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
     - name: Xcode 13.2 (targeting macOS 10.12)
       os: osx
       osx_image: xcode13.2
+      before_install:
+        - HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install git-lfs
+      before_script:
+        - git lfs install && git lfs pull
       env:
         - MACOSX_DEPLOYMENT_TARGET="10.12"
 

@@ -161,12 +161,12 @@ class bitmap_view {
 
  public:
   /// Create a bitmap view a set of bits
-  constexpr bitmap_view(const void* data, uint64_t num_bits) noexcept
+  bitmap_view(const void* data, uint64_t num_bits) noexcept
       : _num_bits{num_bits},
         _bits{static_cast<const storage_type*>(data), cas(num_bits)} {}
 
   /// Create a bitmap view from a bitmap
-  constexpr bitmap_view(const bitmap& bm) noexcept
+  bitmap_view(const bitmap& bm) noexcept
       : bitmap_view{bm._storage.data(), bm._count} {}
 
   /// Access a given bit.  No bounds checking is performed and accessing an
