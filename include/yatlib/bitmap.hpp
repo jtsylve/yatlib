@@ -20,6 +20,7 @@
 
 #include "bit.hpp"
 #include "endian.hpp"
+#include "ranges.hpp"
 #include "span.hpp"
 
 namespace yat {
@@ -34,7 +35,7 @@ class bitmap {
       std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculate the number of storage ints we need to store n bits
-  static constexpr uint64_t storage_size(uint64_t n) noexcept {
+  static constexpr uint64_t cas(uint64_t n) noexcept {
     return (n + storage_bits - 1) / storage_bits;
   }
 
@@ -54,11 +55,13 @@ class bitmap {
   bitmap() noexcept {};  // clang 5 had a bug when using "= default" here
 
   /// Create a bitmap with `n` unset bits
-  explicit bitmap(uint64_t n) : _storage(storage_size(n)), _count{n} {}
+  explicit bitmap(uint64_t n) : _storage(cas(n)), _count{n} {}
 
   /// Access a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
-  bool operator[](uint64_t n) const { return (_storage[si(n)] & bm(n)) != 0; }
+  bool operator[](uint64_t n) const noexcept {
+    return (_storage[si(n)] & bm(n)) != 0;
+  }
 
   /// Set a given bit.  No bounds checking is performed and accessing an
   /// invalid index is undefined behavior.
@@ -118,7 +121,7 @@ class bitmap {
 
   /// Resize the bitset
   void resize(uint64_t n) {
-    _storage.resize(storage_size(n));
+    _storage.resize(cas(n));
     _count = n;
   }
 
@@ -126,29 +129,64 @@ class bitmap {
   std::vector<storage_type> _storage{};  ///< Underlying bit storage
   uint64_t _count{};                     ///< Number of bits in bitset
 
-  friend class bitmap_scanner;
+  friend class bitmap_view;
 };
 
-/// A bitmap scanner is used to scan bitmaps for ranges of set or unset bits.
-///
-/// It assumes that bitmaps are stored as an array of bytes that count bits from
-/// LSB->MSB.
-class bitmap_scanner {
-  /// Special marker that is returned when there are no bits left to scan
-  static constexpr uint64_t no_bits_left = std::numeric_limits<uint64_t>::max();
-
+/// A view into a bitmap
+class bitmap_view {
+ protected:
   //
   //  Rather than reading one byte at a time, we can use little endian unsigned
   //  integers of any size and the byte reordering will work as expected.
   //
-  using storage_type = yat::little_scalar<uintmax_t>;
-  static constexpr auto storage_bits =
+  using storage_type = yat::little_uint64_t;
+  static constexpr uint64_t storage_bits =
       std::numeric_limits<storage_type::value_type>::digits;
 
   /// Calculates the needed array size to hold a certain amount of bits
   static constexpr size_t cas(uint64_t block_count) noexcept {
     return static_cast<size_t>((block_count + storage_bits - 1) / storage_bits);
   }
+
+  /// Calculate the storage index
+  static constexpr uint64_t si(uint64_t n) noexcept { return n / storage_bits; }
+
+  /// Calculate the bit index
+  static constexpr uint64_t bi(uint64_t n) noexcept { return n % storage_bits; }
+
+  /// Calculate the bitmask for an index
+  static constexpr storage_type::value_type bm(uint64_t n) noexcept {
+    return 1ULL << bi(n);
+  }
+
+ public:
+  /// Create a bitmap view a set of bits
+  constexpr bitmap_view(const void* data, uint64_t num_bits) noexcept
+      : _num_bits{num_bits},
+        _bits{static_cast<const storage_type*>(data), cas(num_bits)} {}
+
+  /// Create a bitmap view from a bitmap
+  constexpr bitmap_view(const bitmap& bm) noexcept
+      : bitmap_view{bm._storage.data(), bm._count} {}
+
+  /// Access a given bit.  No bounds checking is performed and accessing an
+  /// invalid index is undefined behavior.
+  bool operator[](uint64_t n) const noexcept {
+    return (_bits[si(n)] & bm(n)) != 0;
+  }
+
+ protected:
+  uint64_t _num_bits{};  ///< The number of bits that we're scanning for
+  yat::span<const storage_type> _bits{};  ///< The view into the data
+};
+
+/// A bitmap scanner is used to scan bitmaps for ranges of set or unset bits.
+///
+/// It assumes that bitmaps are stored as an array of bytes that count bits from
+/// LSB->MSB.
+class bitmap_scanner : public bitmap_view {
+  /// Special marker that is returned when there are no bits left to scan
+  static constexpr uint64_t no_bits_left = std::numeric_limits<uint64_t>::max();
 
   /// An iterator for bitmap_scanner that iterates through the scanned ranges
   class iterator {
@@ -180,6 +218,11 @@ class bitmap_scanner {
     /// Inequality operator
     friend bool operator!=(const iterator& lhs, const iterator& rhs) noexcept {
       return (lhs._bm != rhs._bm) || (lhs._next_block != rhs._next_block);
+    }
+
+    /// Sentinel equality
+    bool operator==(const yat::default_sentinel_t&) const noexcept {
+      return _bm == nullptr;
     }
 
     /// Dereference operator
@@ -221,7 +264,7 @@ class bitmap_scanner {
 
     /// Scan for the next set bit
     uint64_t scan() noexcept {
-      while (_next_block < _bm->_block_count) {
+      while (_next_block < _bm->_num_bits) {
         // Calculate the bit we're starting our scan
         const auto i = _next_block % _bm->storage_bits;
 
@@ -252,7 +295,7 @@ class bitmap_scanner {
         _next_block += static_cast<uint64_t>(c) + 1 - i;
 
         // If the last black is within range then return it
-        if (const uint64_t next = _next_block - 1; next < _bm->_block_count) {
+        if (const uint64_t next = _next_block - 1; next < _bm->_num_bits) {
           return next;
         }
 
@@ -286,7 +329,7 @@ class bitmap_scanner {
       // If there's no end then we set the end of the range to the end of the
       // bitmap
       if (e == no_bits_left) {
-        e = _bm->_block_count;
+        e = _bm->_num_bits;
       }
 
       _range = {s, e - s};
@@ -306,17 +349,15 @@ class bitmap_scanner {
   /// Creates a bitmap scanner from raw data
   ///
   /// \param data The bitmap data to scan
-  /// \param count The number of bits to scan in the bitmap
+  /// \param num_bits The number of bits to scan in the bitmap
   /// \param scan_set Indicates that we're scanning for ranges of set bits
-  bitmap_scanner(const void* data, uint64_t count,
+  bitmap_scanner(const void* data, uint64_t num_bits,
                  bool scan_set = true) noexcept
-      : _scan_set{scan_set},
-        _block_count{count},
-        _bits{static_cast<const storage_type*>(data), cas(count)} {}
+      : bitmap_view(data, num_bits), _scan_set{scan_set} {}
 
   /// Creates a bitmap scanner for a given bitmap
   bitmap_scanner(const bitmap& bitmap, bool scan_set = true) noexcept
-      : bitmap_scanner(bitmap._storage.data(), bitmap._count, scan_set) {}
+      : bitmap_view(bitmap), _scan_set{scan_set} {}
 
   /// Returns an iterator to the start of the ranges
   [[nodiscard]] iterator begin() const noexcept { return iterator{this}; }
@@ -331,9 +372,7 @@ class bitmap_scanner {
   [[nodiscard]] explicit operator bool() const noexcept { return is_valid(); }
 
  private:
-  bool _scan_set{};         ///< True if scanning for ranges of set bits
-  uint64_t _block_count{};  ///< The number of bits that we're scanning for
-  yat::span<const storage_type> _bits{};  ///< The view into the data
+  bool _scan_set{};  ///< True if scanning for ranges of set bits
 };
 
 }  // namespace yat

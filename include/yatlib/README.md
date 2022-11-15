@@ -123,12 +123,17 @@ NOTE: On MSVC compilers, this function is not `constexpr`
 
 ```cpp
 class bitmap;
+class bitmap_view;
 class bitmap_scanner;
 ```
 
 ### yat::bitmap
 
 `yat::bitmap` represents a sequence of bits that can be manipulated efficiently. This is similar to std::vector<bool>, but the layout of the bits in memory is well defined.
+
+### yat::bitmap_view
+
+`yat::bitmap_view` provides a view into a bitmap that gives access to each bit.
 
 ### yat::bitmap_scanner
 
