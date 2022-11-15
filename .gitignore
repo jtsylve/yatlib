@@ -39,3 +39,6 @@ build
 
 # CMake User
 CMakeUserPresets.json
+
+# macOS files
+.DS_Store
